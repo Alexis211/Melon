@@ -11,7 +11,7 @@ namespace Disp {
 
 	u16int textCols();
 	u16int textRows();
-	void putChar(u16int line, u16int col, char c, char color);
+	void putChar(u16int line, u16int col, char c, u8int color);
 	void moveCursor(u16int line, u16int col);
 	void clear();
 

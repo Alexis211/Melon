@@ -21,8 +21,21 @@ STACKSIZE equ 0x4000                  ; that's 16k.
 extern start_ctors, end_ctors, start_dtors, end_dtors
  
 loader:
+	lgdt [trickgdt]
+	mov cx, 0x10;
+	mov ds, cx;
+	mov es, cx;
+	mov fs, cx;
+	mov gs, cx;
+	mov ss, cx;
+
+	jmp 0x08:higherhalf
+
+
+higherhalf:
    mov esp, stack+STACKSIZE           ; set up the stack
    push eax                           ; pass Multiboot magic number
+   add ebx, 0xC0000000				  ; update the MB info structure so that it is in the new seg.
    push ebx                           ; pass Multiboot info structure
 
 static_ctors_loop:
@@ -52,8 +65,21 @@ static_dtors_loop:					 ; useless, kernel should never return
 hang:
    hlt                                ; halt machine should kernel return
    jmp   hang
+
+[section .setup]
+
+trickgdt:
+   dw gdt_end - gdt - 1
+   dd gdt
+
+gdt:
+   dd 0, 0
+   db 0xFF, 0xFF, 0, 0, 0, 10011010b, 11001111b, 0x40
+   db 0xFF, 0xFF, 0, 0, 0, 10010010b, 11001111b, 0x40
+
+gdt_end:
  
-section .bss
+[section .bss]
 align 32
 stack:
    resb STACKSIZE                     ; reserve 16k stack on a quadword boundary

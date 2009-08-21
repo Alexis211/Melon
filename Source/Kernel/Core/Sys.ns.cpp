@@ -1,5 +1,8 @@
 //This automatically includes Sys.ns.h
 #include <Core/common.wtf.h>
+#include <VTManager/VirtualTerminal.class.h>
+
+#define DEBUGVT(x) VirtualTerminal *x = new VirtualTerminal(5, 46, 0, 15); x->map(); x->put('\n');
 
 using namespace CMem;
 
@@ -43,20 +46,24 @@ void bochs_output(char *message, char *file, u32int line) {
 void panic(char *message, char *file, u32int line) {
 	asm volatile("cli");
 
-	bochs_output("PANIC : ", file, 0);
+	DEBUGVT(vt);
+	bochs_output("PANIC : ", file, line);
 	bochs_output(message, file, 0);
+	*vt << "  PANIC : " << message << "\n    In " << file << ":" << (s32int)line << "\n";
 
-	while (1); //Enter infinite loop for halt
+	while (1) asm volatile("hlt"); //Enter infinite loop for halt
 }
 
 //Used by ASSERT() macro (see common.wtf.h)
 void panic_assert(char *file, u32int line, char *desc) {
 	asm volatile("cli");
 
-	bochs_output("ASSERTION FAILED : ", file, 0);
+	DEBUGVT(vt);
+	bochs_output("ASSERTION FAILED : ", file, line);
 	bochs_output(desc, file, 0);
+	*vt << "  ASSERTION FAILED : " << desc << "\n    In " << file << ":" << (s32int)line << "\n";
 
-	while (1); //Enter infinite loop for halt
+	while (1) asm volatile("hlt"); //Enter infinite loop for halt
 }
 
 void reboot() {

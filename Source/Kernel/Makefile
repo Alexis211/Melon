@@ -15,7 +15,9 @@ Objects = Core/kmain.wtf.o \
 		  Core/cppsupport.wtf.o \
 		  Core/Sys.ns.o \
 		  Core/CMem.ns.o \
+		  MemoryManager/Mem.ns.o \
 		  DisplayManager/Disp.ns.o \
+		  VTManager/VirtualTerminal.class.o \
 		  Devices/Display/VGATextOutput.class.o
 
 all: $(OutFile)

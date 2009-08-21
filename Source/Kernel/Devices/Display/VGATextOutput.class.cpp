@@ -1,5 +1,7 @@
 #include "VGATextOutput.class.h"
 
+#define RAM_ADDR 0xC00B8000
+
 using namespace Sys;	//For outb
 
 u16int VGATextOutput::textCols() {
@@ -10,8 +12,8 @@ u16int VGATextOutput::textRows() {
 	return 25;
 }
 
-void VGATextOutput::putChar(u16int line, u16int col, char c, char color) {
-	u16int* where = (u16int*)0xB8000;
+void VGATextOutput::putChar(u16int line, u16int col, char c, u8int color) {
+	u16int* where = (u16int*)RAM_ADDR;
 	where[(80 * line) + col] = (color << 8) | c;
 }
 
@@ -24,6 +26,6 @@ void VGATextOutput::moveCursor(u16int line, u16int col) {
 }
 
 void VGATextOutput::clear() {
-	u16int* where = (u16int*)0xB8000;
+	u16int* where = (u16int*)RAM_ADDR;
 	for (int i = 0; i < 25 * 80; i++) where[i] = 0;
 }
