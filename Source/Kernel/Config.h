@@ -1,0 +1,6 @@
+#ifndef DEF_MELON_KERNEL_CONFIG
+#define DEF_MELON_KERNEL_CONFIG
+
+#define OPT_DEBUG
+
+#endif

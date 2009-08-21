@@ -1,0 +1,163 @@
+
+Discarded input sections
+
+ .group         0x00000000        0x0 Core/kmain.wtf.o
+ .group         0x00000000        0x0 Core/kmain.wtf.o
+ .group         0x00000000        0x0 Core/kmain.wtf.o
+ .group         0x00000000        0x0 Devices/Display/VGATextOutput.class.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x00100000                . = 0x100000
+
+.text           0x00100000      0x6cf
+ *(.text)
+ .text          0x00100000      0x106 Core/kmain.wtf.o
+                0x00100000                kmain
+ *fill*         0x00100106        0xa 00
+ .text          0x00100110       0x53 Core/loader.wtf.o
+                0x0010011c                loader
+ *fill*         0x00100163        0x1 00
+ .text          0x00100164        0xf Core/cppsupport.wtf.o
+                0x00100164                __cxa_pure_virtual
+                0x00100169                __cxa_atexit
+ *fill*         0x00100173        0x1 00
+ .text          0x00100174      0x1ec Core/Sys.ns.o
+                0x001001ce                Sys::bochs_output(char*, char*, unsigned int)
+                0x00100192                Sys::inb(unsigned short)
+                0x001001af                Sys::inw(unsigned short)
+                0x001002c8                Sys::panic(char*, char*, unsigned int)
+                0x00100344                Sys::reboot()
+                0x00100174                Sys::outb(unsigned short, unsigned char)
+                0x00100306                Sys::panic_assert(char*, unsigned int, char*)
+ .text          0x00100360       0xd5 Core/CMem.ns.o
+                0x00100396                CMem::memset(unsigned char*, unsigned char, int)
+                0x001003cd                CMem::memsetw(unsigned short*, unsigned short, int)
+                0x00100408                CMem::strlen(char const*)
+                0x00100360                CMem::memcpy(unsigned char*, unsigned char const*, int)
+ *fill*         0x00100435        0x3 00
+ .text          0x00100438      0x167 DisplayManager/Disp.ns.o
+                0x0010044c                Disp::putChar(unsigned short, unsigned short, char, char)
+                0x00100442                Disp::textRows()
+                0x0010052e                Disp::clear()
+                0x00100438                Disp::textCols()
+                0x0010054c                Disp::setDisplay(Display*)
+                0x001004cd                Disp::moveCursor(unsigned short, unsigned short)
+ *fill*         0x0010059f        0x1 00
+ .text          0x001005a0      0x12f Devices/Display/VGATextOutput.class.o
+                0x001005a0                VGATextOutput::textCols()
+                0x00100698                VGATextOutput::clear()
+                0x00100612                VGATextOutput::moveCursor(unsigned short, unsigned short)
+                0x001005aa                VGATextOutput::textRows()
+                0x001005b4                VGATextOutput::putChar(unsigned short, unsigned short, char, char)
+
+.text._ZN7DisplayC2Ev
+                0x001006d0        0xe
+ .text._ZN7DisplayC2Ev
+                0x001006d0        0xe Core/kmain.wtf.o
+                0x001006d0                Display::Display()
+
+.text._ZN13VGATextOutputC1Ev
+                0x001006de       0x1c
+ .text._ZN13VGATextOutputC1Ev
+                0x001006de       0x1c Core/kmain.wtf.o
+                0x001006de                VGATextOutput::VGATextOutput()
+
+.rodata         0x00101000      0x220
+ *(.rodata)
+ .rodata        0x00101000      0x1fd Core/kmain.wtf.o
+ .rodata        0x001011fd       0x23 Core/Sys.ns.o
+
+.rodata._ZTV7Display
+                0x00101220       0x1c
+ .rodata._ZTV7Display
+                0x00101220       0x1c Core/kmain.wtf.o
+                0x00101220                vtable for Display
+
+.rodata._ZTV13VGATextOutput
+                0x00101240       0x1c
+ .rodata._ZTV13VGATextOutput
+                0x00101240       0x1c Devices/Display/VGATextOutput.class.o
+                0x00101240                vtable for VGATextOutput
+
+.rel.dyn        0x0010125c        0x0
+ .rel.text      0x00000000        0x0 Core/kmain.wtf.o
+ .rel.text._ZN7DisplayC2Ev
+                0x00000000        0x0 Core/kmain.wtf.o
+ .rel.text._ZN13VGATextOutputC1Ev
+                0x00000000        0x0 Core/kmain.wtf.o
+ .rel.rodata._ZTV7Display
+                0x00000000        0x0 Core/kmain.wtf.o
+
+.data           0x00102000       0x24
+                0x00102000                start_ctors = .
+ *(.ctor*)
+                0x00102000                end_ctors = .
+                0x00102000                start_dtors = .
+ *(.dtor*)
+                0x00102000                end_dtors = .
+ *(.data)
+ .data          0x00102000       0x24 Core/kmain.wtf.o
+                0x00102020                melonLogoCols
+                0x00102000                melonLogo
+                0x0010201c                melonLogoLines
+ .data          0x00102024        0x0 Core/cppsupport.wtf.o
+ .data          0x00102024        0x0 Core/Sys.ns.o
+ .data          0x00102024        0x0 Core/CMem.ns.o
+ .data          0x00102024        0x0 DisplayManager/Disp.ns.o
+ .data          0x00102024        0x0 Devices/Display/VGATextOutput.class.o
+
+.bss            0x00102024     0x4010
+                0x00102024                sbss = .
+ *(COMMON)
+ *(.bss)
+ .bss           0x00102024        0x0 Core/kmain.wtf.o
+ .bss           0x00102024     0x4000 Core/loader.wtf.o
+ .bss           0x00106024        0x4 Core/cppsupport.wtf.o
+                0x00106024                __dso_handle
+ .bss           0x00106028        0x0 Core/Sys.ns.o
+ .bss           0x00106028        0x0 Core/CMem.ns.o
+ .bss           0x00106028        0xc DisplayManager/Disp.ns.o
+                0x00106028                Disp::mode
+ .bss           0x00106034        0x0 Devices/Display/VGATextOutput.class.o
+                0x00106034                ebss = .
+                0x00106034                end = .
+                0x00106034                _end = .
+                0x00106034                __end = .
+LOAD Core/kmain.wtf.o
+LOAD Core/loader.wtf.o
+LOAD Core/cppsupport.wtf.o
+LOAD Core/Sys.ns.o
+LOAD Core/CMem.ns.o
+LOAD DisplayManager/Disp.ns.o
+LOAD Devices/Display/VGATextOutput.class.o
+OUTPUT(Melon.ke elf32-i386)
+
+.comment        0x00000000       0x8b
+ .comment       0x00000000       0x12 Core/kmain.wtf.o
+ .comment       0x00000012       0x1f Core/loader.wtf.o
+ .comment       0x00000031       0x12 Core/cppsupport.wtf.o
+ .comment       0x00000043       0x12 Core/Sys.ns.o
+ .comment       0x00000055       0x12 Core/CMem.ns.o
+ .comment       0x00000067       0x12 DisplayManager/Disp.ns.o
+ .comment       0x00000079       0x12 Devices/Display/VGATextOutput.class.o
+
+.note.GNU-stack
+                0x00000000        0x0
+ .note.GNU-stack
+                0x00000000        0x0 Core/kmain.wtf.o
+ .note.GNU-stack
+                0x00000000        0x0 Core/cppsupport.wtf.o
+ .note.GNU-stack
+                0x00000000        0x0 Core/Sys.ns.o
+ .note.GNU-stack
+                0x00000000        0x0 Core/CMem.ns.o
+ .note.GNU-stack
+                0x00000000        0x0 DisplayManager/Disp.ns.o
+ .note.GNU-stack
+                0x00000000        0x0 Devices/Display/VGATextOutput.class.o
