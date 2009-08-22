@@ -16,9 +16,22 @@ Objects = Core/kmain.wtf.o \
 		  Core/Sys.ns.o \
 		  Core/CMem.ns.o \
 		  MemoryManager/Mem.ns.o \
-		  DisplayManager/Disp.ns.o \
+		  MemoryManager/PhysMem.ns.o \
+		  MemoryManager/GDT.wtf.o \
+		  MemoryManager/GDT.ns.o \
+		  MemoryManager/PageDirectory.class.o \
+		  MemoryManager/PageAlloc.ns.o \
+		  DeviceManager/Disp.ns.o \
+		  DeviceManager/Dev.ns.o \
+		  DeviceManager/Time.ns.o \
 		  VTManager/VirtualTerminal.class.o \
-		  Devices/Display/VGATextOutput.class.o
+		  VTManager/VT.ns.o \
+		  Library/Bitset.class.o \
+		  Library/String.class.o \
+		  SyscallManager/IDT.ns.o \
+		  SyscallManager/IDT.wtf.o \
+		  Devices/Display/VGATextOutput.class.o \
+		  Devices/Timer.class.o
 
 all: $(OutFile)
 	echo "* Done with $(OutFile)."

@@ -2,7 +2,7 @@
 #include <Core/common.wtf.h>
 #include <VTManager/VirtualTerminal.class.h>
 
-#define DEBUGVT(x) VirtualTerminal *x = new VirtualTerminal(5, 46, 0, 15); x->map(); x->put('\n');
+#define DEBUGVT(x) VirtualTerminal *x = new VirtualTerminal(4, 46, 0, 15); x->map(); x->put('\n');
 
 using namespace CMem;
 
@@ -40,7 +40,15 @@ void bochs_output(char *message, char *file, u32int line) {
 	outb(0xE9, '\n');
 } 
 
-//TODO : make PANIC output a visible message
+void bochs_output_hex(u32int i) {
+	char hexdigits[] = "0123456789ABCDEF";
+	outb(0xE9, '0');
+	outb(0xE9, 'x');
+	for (u32int j = 0; j < 8; j++) {
+		outb(0xE9, hexdigits[(i & 0xF0000000) >> 28]);
+		i = i << 4;
+	}
+}
 
 //Used by PANIC() macro (see common.wtf.h)
 void panic(char *message, char *file, u32int line) {
@@ -49,7 +57,7 @@ void panic(char *message, char *file, u32int line) {
 	DEBUGVT(vt);
 	bochs_output("PANIC : ", file, line);
 	bochs_output(message, file, 0);
-	*vt << "  PANIC : " << message << "\n    In " << file << ":" << (s32int)line << "\n";
+	*vt << "  PANIC : " << message << "\n    In " << file << ":" << (s32int)line;
 
 	while (1) asm volatile("hlt"); //Enter infinite loop for halt
 }
@@ -61,7 +69,7 @@ void panic_assert(char *file, u32int line, char *desc) {
 	DEBUGVT(vt);
 	bochs_output("ASSERTION FAILED : ", file, line);
 	bochs_output(desc, file, 0);
-	*vt << "  ASSERTION FAILED : " << desc << "\n    In " << file << ":" << (s32int)line << "\n";
+	*vt << "  ASSERTION FAILED : " << desc << "\n    In " << file << ":" << (s32int)line;
 
 	while (1) asm volatile("hlt"); //Enter infinite loop for halt
 }

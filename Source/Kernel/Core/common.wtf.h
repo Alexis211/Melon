@@ -3,6 +3,8 @@
 
 #include <Config.h>
 
+//This file is very important : it contains type definitions, macro definitions and new/delete implementations.
+
 #define NULL 0
 
 typedef unsigned int	u32int;
@@ -20,8 +22,10 @@ typedef char	s8int;
 
 #ifdef OPT_DEBUG
 #define DEBUG(m) Sys::bochs_output(m, __FILE__, __LINE__)
+#define DEBUG_HEX(m) Sys::bochs_output_hex(m);
 #else
 #define DEBUG(m)
+#define DEBUG_HEX(m)
 #endif
 
 #include <MemoryManager/Mem.ns.h>

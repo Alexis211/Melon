@@ -21,6 +21,7 @@ class VirtualTerminal {
 
 	public:
 	VirtualTerminal(u32int rows, u32int cols, u8int fgcolor = 7, u8int bgcolor = 0);
+	~VirtualTerminal();
 
 	void setColor(u8int fgcolor, u8int bgcolor = 0xFF);
 	void putChar(u32int row, u32int col, char c);

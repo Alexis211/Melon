@@ -1,5 +1,5 @@
-global loader           ; making entry point visible to linker
-extern kmain            ; kmain is defined elsewhere
+[GLOBAL loader]           ; making entry point visible to linker
+[EXTERN kmain]            ; kmain is defined in kmain.wtf.cpp
  
 ; setting up the Multiboot header - see GRUB docs for details
 MODULEALIGN equ  1<<0                   ; align loaded modules on page boundaries
@@ -18,9 +18,9 @@ MultiBootHeader:
 ; reserve initial kernel stack space
 STACKSIZE equ 0x4000                  ; that's 16k.
 
-extern start_ctors, end_ctors, start_dtors, end_dtors
+extern start_ctors, end_ctors, start_dtors, end_dtors	; these are required for global objects
  
-loader:
+loader:		;here, we load our false GDT, used for having the kernel in higher half
 	lgdt [trickgdt]
 	mov cx, 0x10;
 	mov ds, cx;
@@ -32,13 +32,14 @@ loader:
 	jmp 0x08:higherhalf
 
 
-higherhalf:
+higherhalf:		; now we're running in higher half
+
    mov esp, stack+STACKSIZE           ; set up the stack
    push eax                           ; pass Multiboot magic number
    add ebx, 0xC0000000				  ; update the MB info structure so that it is in the new seg.
    push ebx                           ; pass Multiboot info structure
 
-static_ctors_loop:
+static_ctors_loop:			; construct global objects
    mov ebx, start_ctors
    jmp .test
 .body:
@@ -50,10 +51,10 @@ static_ctors_loop:
  
    call  kmain                       ; call kernel proper
 
-   cli
+   cli		; disable interuptions
 
 static_dtors_loop:					 ; useless, kernel should never return
-   mov ebx, start_dtors
+   mov ebx, start_dtors				; destruct global objects
    jmp .test
 .body:
    call [ebx]
@@ -66,16 +67,16 @@ hang:
    hlt                                ; halt machine should kernel return
    jmp   hang
 
-[section .setup]
+[section .setup]	; this is included in the .setup section, so that it thinks it is at 0x00100000
 
-trickgdt:
-   dw gdt_end - gdt - 1
-   dd gdt
+trickgdt:		; our false GDT
+   dw gdt_end - gdt - 1		; gdt limit
+   dd gdt					; gdt base
 
 gdt:
-   dd 0, 0
-   db 0xFF, 0xFF, 0, 0, 0, 10011010b, 11001111b, 0x40
-   db 0xFF, 0xFF, 0, 0, 0, 10010010b, 11001111b, 0x40
+   dd 0, 0					; null GDT entry
+   db 0xFF, 0xFF, 0, 0, 0, 10011010b, 11001111b, 0x40	; kernel code segment
+   db 0xFF, 0xFF, 0, 0, 0, 10010010b, 11001111b, 0x40	; kernel data segment
 
 gdt_end:
  

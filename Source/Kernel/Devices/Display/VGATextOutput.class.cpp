@@ -1,8 +1,17 @@
 #include "VGATextOutput.class.h"
 
+//Virtual address in higher half
 #define RAM_ADDR 0xC00B8000
 
 using namespace Sys;	//For outb
+
+String VGATextOutput::getClass() {
+	return "display.text";
+}
+
+String VGATextOutput::getName() {
+	return "Standard mode0 VGA text display";
+}
 
 u16int VGATextOutput::textCols() {
 	return 80;

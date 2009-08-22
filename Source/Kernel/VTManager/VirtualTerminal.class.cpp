@@ -1,7 +1,8 @@
 #include "VirtualTerminal.class.h"
-#include <DisplayManager/Disp.ns.h>
+#include <DeviceManager/Disp.ns.h>
+#include <VTManager/VT.ns.h>
 
-#define BUFCHR(l, c) m_buff[(l * m_rows) + c]
+#define BUFCHR(l, c) m_buff[((l) * m_cols) + (c)]
 
 VirtualTerminal::VirtualTerminal(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) {
 	m_buff = new chr[rows * cols];
@@ -15,6 +16,11 @@ VirtualTerminal::VirtualTerminal(u32int rows, u32int cols, u8int fgcolor, u8int 
 	m_csrlin = 0;
 }
 
+VirtualTerminal::~VirtualTerminal() {
+	if (m_mapped) VT::unmap(this);
+	delete [] m_buff;
+}
+
 void VirtualTerminal::setColor(u8int fgcolor, u8int bgcolor) {
 	if (bgcolor == 0xFF) {
 		m_color = (m_color & 0xF0) | fgcolor;
@@ -24,6 +30,7 @@ void VirtualTerminal::setColor(u8int fgcolor, u8int bgcolor) {
 }
 
 void VirtualTerminal::putChar(u32int row, u32int col, char c) {
+	if (row >= m_rows or col >= m_cols) return;
 	chr* ch = &BUFCHR(row, col);
 	ch->c = c;
 	ch->color = m_color;
@@ -44,10 +51,12 @@ void VirtualTerminal::map(s32int row, s32int col) {
 	m_mapcol = (col == -1 ? (Disp::textCols() / 2) - (m_cols / 2) : col);
 	m_mapped = true;
 	redraw();
+	VT::map(this);
 }
 
 void VirtualTerminal::unmap() {
 	m_mapped = false;
+	VT::unmap(this);
 }
 
 void VirtualTerminal::redraw() {
@@ -68,7 +77,8 @@ void VirtualTerminal::scroll() {
 	for (u32int c = 0; c < m_cols; c++) {
 		BUFCHR(m_rows - 1, c).c = ' ';
 		BUFCHR(m_rows - 1, c).color = m_color;
-	}
+	}	
+	if (m_mapped) redraw();
 }
 
 void VirtualTerminal::updateCursor() {
@@ -112,7 +122,7 @@ void VirtualTerminal::put(char c, bool updatecsr) {
 		m_csrcol = 0;
 		m_csrlin++;
 	}
-	if (m_csrlin >= m_rows) {
+	while (m_csrlin >= m_rows) {
 		scroll();
 		m_csrlin--;
 	}

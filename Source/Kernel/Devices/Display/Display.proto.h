@@ -2,8 +2,9 @@
 #define DEF_DISPLAY_PROTO_H
 
 #include <Core/common.wtf.h>
+#include <Devices/Device.proto.h>
 
-class Display {
+class Display : public Device {
 	public:
 	virtual u16int textCols() = 0;
 	virtual u16int textRows() = 0;

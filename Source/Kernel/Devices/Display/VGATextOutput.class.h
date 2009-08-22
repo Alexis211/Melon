@@ -5,6 +5,9 @@
 
 class VGATextOutput : public Display {
 	public:
+	String getClass();
+	String getName();
+
 	u16int textCols();
 	u16int textRows();
 	void putChar(u16int line, u16int col, char c, u8int color);
