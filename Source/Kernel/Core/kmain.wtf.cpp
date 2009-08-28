@@ -23,6 +23,14 @@ extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
 
+	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
+		Mem::placementAddress = (u32int)&end;	//Setup basic stuff so that PANIC will work
+		VGATextOutput *vgaout = new VGATextOutput();
+		Disp::setDisplay(vgaout);
+		PANIC("Error with multiboot header.");
+	}
+	
+	//Setup placement address so that we can use new without overwriting modules
 	Mem::placementAddress = (u32int)&end;
 	mbd->cmdline += 0xC0000000; mbd->mods_addr += 0xC0000000; //Take stuff into acount
 	module_t *mods = (module_t*)mbd->mods_addr;
@@ -33,14 +41,11 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			Mem::placementAddress = mods[i].mod_end + 0x1000;
 	}
 
+	//Create text output
 	VGATextOutput *vgaout = new VGATextOutput();
-
 	Disp::setDisplay(vgaout);
 
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
-		PANIC("Error with multiboot header.");
-	}
-	
+	//Create a VT for handling the Melon bootup logo
 	VirtualTerminal *melonLogoVT = new VirtualTerminal(melonLogoLines, melonLogoCols, 7, 0);
 	for (int i = 0; i < melonLogoLines; i++) {
 		for (int j = 0; j < melonLogoCols; j++) {
@@ -49,13 +54,13 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	}
 	melonLogoVT->map(2);
 
+	//Create a VT for logging what kernel does
 	VirtualTerminal *kvt = new VirtualTerminal(12, 40, 0, 2);
 	kvt->map(melonLogoLines + 4);
 
 	*kvt << "* Kernel initializing in HIGHER HALF!\n";
-
 	*kvt << "- Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
-	*kvt << "- Kernel command line : " << (u32int)mbd->cmdline << "\n";
+	*kvt << "- Kernel command line @ " << (u32int)mbd->cmdline << "\n";
 	*kvt << "- Modules@" << (u32int)mbd->mods_addr << ", mbd@" << (u32int)mbd << "\n";
 	*kvt << "- Placement address : " << (u32int)Mem::placementAddress << "\n";
 
@@ -87,5 +92,6 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	asm volatile("sti");
 
-	//PANIC("END OF KMAIN");
+	while(1) asm volatile("sti; hlt");
+	PANIC("END OF KMAIN");
 }

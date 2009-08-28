@@ -5,7 +5,7 @@ namespace Dev {
 Vector<Device*> devices;
 Device* irqHandler[16] = { NULL };
 
-void handleIRQ(registers_t *regs, int irq) {
+void handleIRQ(registers_t regs, int irq) {
 	if (irqHandler[irq] != NULL)
 		irqHandler[irq]->handleIRQ(regs, irq);
 }

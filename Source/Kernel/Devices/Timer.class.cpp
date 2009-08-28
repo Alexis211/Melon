@@ -2,6 +2,7 @@
 
 #include <DeviceManager/Dev.ns.h>
 #include <DeviceManager/Time.ns.h>
+#include <DeviceManager/Disp.ns.h>
 
 using namespace Sys; //For outb
 
@@ -43,13 +44,15 @@ u32int Timer::time() {
 }
 
 void Timer::handleIRQ(registers_t registers, int irq) {
+	char what[] = "-\\|/";
 	if (irq == 0) {
 		m_ticks++;
 		if (m_ticks == m_frequency) {
 			m_ticks = 0;
 			m_seconds++;
 		}
-		//Switching task is called in Dev::handleInterrupt
+		Disp::putChar(0, 0, what[m_ticks / (m_frequency / 4)], 0x07);
+		//Switching task is called in IRQ::interrupt_handler
 	}
 }
 

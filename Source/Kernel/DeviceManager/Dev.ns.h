@@ -5,7 +5,7 @@
 #include <Library/Vector.class.h>
 
 namespace Dev {
-	void handleIRQ(registers_t *regs, int irq);
+	void handleIRQ(registers_t regs, int irq);
 	
 	void registerDevice(Device* dev);
 	void unregisterDevice(Device* dev);

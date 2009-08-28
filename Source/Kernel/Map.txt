@@ -65,13 +65,13 @@ Discarded input sections
                 0x00000000        0x0 SyscallManager/IDT.ns.o
  .group         0x00000000        0x0 Devices/Display/VGATextOutput.class.o
  .group         0x00000000        0x0 Devices/Display/VGATextOutput.class.o
- .text._ZN6Device9handleIRQEP11registers_ti
+ .text._ZN6Device9handleIRQE11registers_ti
                 0x00000000        0x0 Devices/Display/VGATextOutput.class.o
  .group         0x00000000        0x0 Devices/Timer.class.o
  .group         0x00000000        0x0 Devices/Timer.class.o
  .group         0x00000000        0x0 Devices/Timer.class.o
  .group         0x00000000        0x0 Devices/Timer.class.o
- .text._ZN6Device9handleIRQEP11registers_ti
+ .text._ZN6Device9handleIRQE11registers_ti
                 0x00000000        0x0 Devices/Timer.class.o
  .text._ZN6DeviceC2Ev
                 0x00000000        0x0 Devices/Timer.class.o
@@ -92,405 +92,407 @@ Linker script and memory map
  .setup         0x00100000       0x1e Core/loader.wtf.o
                 0xc010001e                . = (. + 0xc0000000)
 
-.text           0xc0100020     0x4c2d load address 0x00100020
+.text           0xc0100020     0x4e2e load address 0x00100020
  *(.text)
- .text          0xc0100020      0x500 Core/kmain.wtf.o
+ .text          0xc0100020      0x533 Core/kmain.wtf.o
                 0xc0100020                kmain
- .text          0xc0100520       0x75 Core/loader.wtf.o
-                0xc010052c                loader
- *fill*         0xc0100595        0x3 00
- .text          0xc0100598        0xf Core/cppsupport.wtf.o
-                0xc0100598                __cxa_pure_virtual
-                0xc010059d                __cxa_atexit
- *fill*         0xc01005a7        0x1 00
- .text          0xc01005a8      0x41a Core/Sys.ns.o
-                0xc0100602                Sys::bochs_output(char*, char*, unsigned int)
-                0xc01005c6                Sys::inb(unsigned short)
-                0xc01005e3                Sys::inw(unsigned short)
-                0xc0100786                Sys::panic(char*, char*, unsigned int)
-                0xc01009a6                Sys::reboot()
-                0xc01005a8                Sys::outb(unsigned short, unsigned char)
-                0xc01006fc                Sys::bochs_output_hex(unsigned int)
-                0xc0100896                Sys::panic_assert(char*, unsigned int, char*)
- *fill*         0xc01009c2        0x2 00
- .text          0xc01009c4       0xd5 Core/CMem.ns.o
-                0xc01009fa                CMem::memset(unsigned char*, unsigned char, int)
-                0xc0100a31                CMem::memsetw(unsigned short*, unsigned short, int)
-                0xc0100a6c                CMem::strlen(char const*)
-                0xc01009c4                CMem::memcpy(unsigned char*, unsigned char const*, int)
- *fill*         0xc0100a99        0x3 00
- .text          0xc0100a9c      0x8b4 MemoryManager/Mem.ns.o
-                0xc0100f4f                Mem::contractHeap()
-                0xc0100b56                Mem::insertIntoHeapIndex(Mem::heap_header_t*)
-                0xc0100cfa                Mem::removeFromHeapIndex(Mem::heap_header_t*)
-                0xc0100cb1                Mem::removeFromHeapIndex(unsigned int)
-                0xc0100d21                Mem::createHeap()
-                0xc0100e2f                Mem::expandHeap(unsigned int)
-                0xc01011ee                Mem::kfree(void*)
-                0xc010105f                Mem::kalloc(unsigned int, bool)
-                0xc0100c6f                Mem::heapIndexFindEntry(Mem::heap_header_t*)
-                0xc0100a9c                Mem::kallocInternal(unsigned int, bool)
- .text          0xc0101350      0x35c MemoryManager/PhysMem.ns.o
-                0xc01016a2                PhysMem::total()
-                0xc01014f2                PhysMem::removeTemporaryPages()
-                0xc010162d                PhysMem::freeFrame(page_t*)
-                0xc010167c                PhysMem::free()
-                0xc0101546                PhysMem::allocFrame(page_t*, bool, bool)
-                0xc0101350                PhysMem::initPaging(unsigned int)
- *fill*         0xc01016ac        0x4 00
- .text          0xc01016b0       0x1d MemoryManager/GDT.wtf.o
-                0xc01016b0                gdt_flush
- *fill*         0xc01016cd        0x3 00
- .text          0xc01016d0      0x193 MemoryManager/GDT.ns.o
-                0xc010175f                GDT::init()
-                0xc01016d0                GDT::setGate(int, unsigned int, unsigned int, unsigned char, unsigned char)
- *fill*         0xc0101863        0x1 00
- .text          0xc0101864      0x2db MemoryManager/PageDirectory.class.o
-                0xc01019cc                PageDirectory::getPage(unsigned int, bool)
-                0xc0101864                PageDirectory::PageDirectory()
-                0xc010197a                PageDirectory::~PageDirectory()
-                0xc0101928                PageDirectory::~PageDirectory()
-                0xc0101ade                PageDirectory::freeFrame(unsigned int)
-                0xc01018c6                PageDirectory::PageDirectory()
-                0xc0101a8c                PageDirectory::allocFrame(unsigned int, bool, bool)
-                0xc0101b18                PageDirectory::switchTo()
- *fill*         0xc0101b3f        0x1 00
- .text          0xc0101b40      0x239 MemoryManager/PageAlloc.ns.o
-                0xc0101d5d                PageAlloc::free(void*)
-                0xc0101b94                PageAlloc::alloc(unsigned int*)
-                0xc0101b40                PageAlloc::init()
- *fill*         0xc0101d79        0x3 00
- .text          0xc0101d7c      0x16a DeviceManager/Disp.ns.o
-                0xc0101d86                Disp::textRows()
-                0xc0101e72                Disp::clear()
-                0xc0101d7c                Disp::textCols()
-                0xc0101e90                Disp::setDisplay(Display*)
-                0xc0101e11                Disp::moveCursor(unsigned short, unsigned short)
-                0xc0101d90                Disp::putChar(unsigned short, unsigned short, char, unsigned char)
- *fill*         0xc0101ee6        0x2 00
- .text          0xc0101ee8      0x310 DeviceManager/Dev.ns.o
-                0xc0101f2c                Dev::registerDevice(Device*)
-                0xc0102000                Dev::findDevice(String)
-                0xc0101f52                Dev::unregisterDevice(Device*)
-                0xc0101fd4                Dev::requestIRQ(Device*, int)
-                0xc0101ee8                Dev::handleIRQ(registers_t*, int)
- .text          0xc01021f8       0x37 DeviceManager/Time.ns.o
-                0xc01021f8                Time::setTimer(Timer*)
-                0xc010221a                Time::time()
-                0xc0102205                Time::uptime()
- *fill*         0xc010222f        0x1 00
- .text          0xc0102230      0x941 VTManager/VirtualTerminal.class.o
-                0xc0102522                VirtualTerminal::map(int, int)
-                0xc010259c                VirtualTerminal::unmap()
-                0xc010282a                VirtualTerminal::put(char, bool)
-                0xc01027f2                VirtualTerminal::setCursorLine(unsigned int)
-                0xc0102398                VirtualTerminal::setColor(unsigned char, unsigned char)
-                0xc0102330                VirtualTerminal::~VirtualTerminal()
-                0xc010280e                VirtualTerminal::setCursorCol(unsigned int)
-                0xc01022b0                VirtualTerminal::VirtualTerminal(unsigned int, unsigned int, unsigned char, unsigned char)
-                0xc0102790                VirtualTerminal::updateCursor()
-                0xc0102980                VirtualTerminal::write(char*, bool)
-                0xc01029d4                VirtualTerminal::writeDec(int, bool)
-                0xc0102364                VirtualTerminal::~VirtualTerminal()
-                0xc01025b6                VirtualTerminal::redraw()
-                0xc01023e6                VirtualTerminal::putChar(unsigned int, unsigned int, char)
-                0xc0102ad6                VirtualTerminal::writeHex(unsigned int, bool)
-                0xc0102690                VirtualTerminal::scroll()
-                0xc0102230                VirtualTerminal::VirtualTerminal(unsigned int, unsigned int, unsigned char, unsigned char)
-                0xc01024b8                VirtualTerminal::clear()
-                0xc01027cc                VirtualTerminal::moveCursor(unsigned int, unsigned int)
- *fill*         0xc0102b71        0x3 00
- .text          0xc0102b74      0x156 VTManager/VT.ns.o
-                0xc0102b9a                VT::unmap(VirtualTerminal*)
-                0xc0102c21                VT::redrawScreen()
-                0xc0102b74                VT::map(VirtualTerminal*)
- *fill*         0xc0102cca        0x2 00
- .text          0xc0102ccc      0x2f1 Library/Bitset.class.o
-                0xc0102fb2                Bitset::usedBits()
-                0xc0102ccc                Bitset::Bitset()
-                0xc0102ed4                Bitset::testBit(unsigned int)
-                0xc0102d9a                Bitset::~Bitset()
-                0xc0102e6c                Bitset::clearBit(unsigned int)
-                0xc0102db0                Bitset::init(unsigned int, unsigned int*)
-                0xc0102cd8                Bitset::Bitset(unsigned int)
-                0xc0102cd2                Bitset::Bitset()
-                0xc0102d0c                Bitset::Bitset(unsigned int)
-                0xc0102e06                Bitset::setBit(unsigned int)
-                0xc0102d84                Bitset::~Bitset()
-                0xc0102d62                Bitset::Bitset(unsigned int, unsigned int*)
-                0xc0102d40                Bitset::Bitset(unsigned int, unsigned int*)
-                0xc0102f1c                Bitset::firstFreeBit()
- *fill*         0xc0102fbd        0x3 00
- .text          0xc0102fc0      0xd2c Library/String.class.o
-                0xc0102fc0                String::hex(unsigned int)
-                0xc01035e4                String::operator==(char*)
-                0xc01039b6                String::toInt()
-                0xc01033ac                String::String(String const&)
-                0xc0103208                String::String()
-                0xc0103220                String::String()
-                0xc0103b32                String::size()
-                0xc0103074                String::number(int)
-                0xc0103582                String::operator==(String&)
-                0xc0103914                String::operator+(char*)
-                0xc0103442                String::~String()
-                0xc0103334                String::String(String const&)
-                0xc010399c                String::operator char*()
-                0xc0103424                String::~String()
-                0xc0103460                String::operator=(String const&)
-                0xc0103238                String::String(char*)
-                0xc0103656                String::operator+=(String&)
-                0xc0103b22                String::operator[](int)
-                0xc0103b3e                String::clear()
-                0xc0103b66                String::empty()
-                0xc0103824                String::operator+=(char)
-                0xc0103b76                String::split(char)
-                0xc0103a6a                String::toInt16()
-                0xc0103c50                String::substr(int, int)
-                0xc0103954                String::operator+(char)
-                0xc01032b6                String::String(char*)
-                0xc0103732                String::operator+=(char*)
-                0xc01034ee                String::operator=(char*)
-                0xc01038d4                String::operator+(String&)
- .text          0xc0103cec      0x9b8 SyscallManager/IDT.ns.o
-                0xc0104591                IDT::handleException(registers_t*, int)
-                0xc0103d94                IDT::init()
-                0xc0103d2d                IDT::setGate(unsigned char, unsigned int, unsigned short, unsigned char)
-                0xc0103cec                interrupt_handler
- *fill*         0xc01046a4        0xc 00
- .text          0xc01046b0      0x204 SyscallManager/IDT.wtf.o
-                0xc01046e0                isr4
-                0xc01047ba                isr27
-                0xc0104732                isr13
-                0xc0104864                irq12
-                0xc0104788                isr22
-                0xc0104742                isr15
-                0xc0104850                irq10
-                0xc0104878                irq14
-                0xc0104710                isr9
-                0xc010483c                irq8
-                0xc0104792                isr23
-                0xc01047ce                isr29
-                0xc01047e2                isr31
-                0xc010477e                isr21
-                0xc010485a                irq11
-                0xc01047c4                isr28
-                0xc0104708                isr8
-                0xc010481e                irq5
-                0xc0104774                isr20
-                0xc010473a                isr14
-                0xc01046ea                isr5
-                0xc0104828                irq6
-                0xc01047f6                irq1
-                0xc01046c2                isr1
-                0xc0104846                irq9
-                0xc01047b0                isr26
-                0xc0104722                isr11
-                0xc010486e                irq13
-                0xc010472a                isr12
-                0xc01046b8                isr0
-                0xc0104800                irq2
-                0xc010479c                isr24
-                0xc010474c                isr16
-                0xc01046d6                isr3
-                0xc01046f4                isr6
-                0xc0104832                irq7
-                0xc0104760                isr18
-                0xc01047ec                irq0
-                0xc010471a                isr10
-                0xc0104756                isr17
-                0xc01046cc                isr2
-                0xc010476a                isr19
-                0xc01046b0                idt_flush
-                0xc01047d8                isr30
-                0xc0104882                irq15
-                0xc01046fe                isr7
-                0xc01047a6                isr25
-                0xc0104814                irq4
-                0xc010480a                irq3
- .text          0xc01048b4      0x17f Devices/Display/VGATextOutput.class.o
-                0xc01048dc                VGATextOutput::getName()
-                0xc0104904                VGATextOutput::textCols()
-                0xc01049fc                VGATextOutput::clear()
-                0xc01048b4                VGATextOutput::getClass()
-                0xc0104976                VGATextOutput::moveCursor(unsigned short, unsigned short)
-                0xc0104918                VGATextOutput::putChar(unsigned short, unsigned short, char, unsigned char)
-                0xc010490e                VGATextOutput::textRows()
- *fill*         0xc0104a33        0x1 00
- .text          0xc0104a34      0x219 Devices/Timer.class.o
-                0xc0104b4c                Timer::setFrequency(unsigned char)
-                0xc0104a34                Timer::Timer(unsigned char)
-                0xc0104afc                Timer::getClass()
-                0xc0104b24                Timer::getName()
-                0xc0104bd0                Timer::time()
-                0xc0104c0a                Timer::handleIRQ(registers_t, int)
-                0xc0104bc4                Timer::uptime()
-                0xc0104a98                Timer::Timer(unsigned char)
+ *fill*         0xc0100553        0xd 00
+ .text          0xc0100560       0x75 Core/loader.wtf.o
+                0xc010056c                loader
+ *fill*         0xc01005d5        0x3 00
+ .text          0xc01005d8        0xf Core/cppsupport.wtf.o
+                0xc01005d8                __cxa_pure_virtual
+                0xc01005dd                __cxa_atexit
+ *fill*         0xc01005e7        0x1 00
+ .text          0xc01005e8      0x41a Core/Sys.ns.o
+                0xc0100642                Sys::bochs_output(char*, char*, unsigned int)
+                0xc0100606                Sys::inb(unsigned short)
+                0xc0100623                Sys::inw(unsigned short)
+                0xc01007c6                Sys::panic(char*, char*, unsigned int)
+                0xc01009e6                Sys::reboot()
+                0xc01005e8                Sys::outb(unsigned short, unsigned char)
+                0xc010073c                Sys::bochs_output_hex(unsigned int)
+                0xc01008d6                Sys::panic_assert(char*, unsigned int, char*)
+ *fill*         0xc0100a02        0x2 00
+ .text          0xc0100a04       0xd5 Core/CMem.ns.o
+                0xc0100a3a                CMem::memset(unsigned char*, unsigned char, int)
+                0xc0100a71                CMem::memsetw(unsigned short*, unsigned short, int)
+                0xc0100aac                CMem::strlen(char const*)
+                0xc0100a04                CMem::memcpy(unsigned char*, unsigned char const*, int)
+ *fill*         0xc0100ad9        0x3 00
+ .text          0xc0100adc      0x8b4 MemoryManager/Mem.ns.o
+                0xc0100f8f                Mem::contractHeap()
+                0xc0100b96                Mem::insertIntoHeapIndex(Mem::heap_header_t*)
+                0xc0100d3a                Mem::removeFromHeapIndex(Mem::heap_header_t*)
+                0xc0100cf1                Mem::removeFromHeapIndex(unsigned int)
+                0xc0100d61                Mem::createHeap()
+                0xc0100e6f                Mem::expandHeap(unsigned int)
+                0xc010122e                Mem::kfree(void*)
+                0xc010109f                Mem::kalloc(unsigned int, bool)
+                0xc0100caf                Mem::heapIndexFindEntry(Mem::heap_header_t*)
+                0xc0100adc                Mem::kallocInternal(unsigned int, bool)
+ .text          0xc0101390      0x35c MemoryManager/PhysMem.ns.o
+                0xc01016e2                PhysMem::total()
+                0xc0101532                PhysMem::removeTemporaryPages()
+                0xc010166d                PhysMem::freeFrame(page_t*)
+                0xc01016bc                PhysMem::free()
+                0xc0101586                PhysMem::allocFrame(page_t*, bool, bool)
+                0xc0101390                PhysMem::initPaging(unsigned int)
+ *fill*         0xc01016ec        0x4 00
+ .text          0xc01016f0       0x1d MemoryManager/GDT.wtf.o
+                0xc01016f0                gdt_flush
+ *fill*         0xc010170d        0x3 00
+ .text          0xc0101710      0x193 MemoryManager/GDT.ns.o
+                0xc010179f                GDT::init()
+                0xc0101710                GDT::setGate(int, unsigned int, unsigned int, unsigned char, unsigned char)
+ *fill*         0xc01018a3        0x1 00
+ .text          0xc01018a4      0x2db MemoryManager/PageDirectory.class.o
+                0xc0101a0c                PageDirectory::getPage(unsigned int, bool)
+                0xc01018a4                PageDirectory::PageDirectory()
+                0xc01019ba                PageDirectory::~PageDirectory()
+                0xc0101968                PageDirectory::~PageDirectory()
+                0xc0101b1e                PageDirectory::freeFrame(unsigned int)
+                0xc0101906                PageDirectory::PageDirectory()
+                0xc0101acc                PageDirectory::allocFrame(unsigned int, bool, bool)
+                0xc0101b58                PageDirectory::switchTo()
+ *fill*         0xc0101b7f        0x1 00
+ .text          0xc0101b80      0x239 MemoryManager/PageAlloc.ns.o
+                0xc0101d9d                PageAlloc::free(void*)
+                0xc0101bd4                PageAlloc::alloc(unsigned int*)
+                0xc0101b80                PageAlloc::init()
+ *fill*         0xc0101db9        0x3 00
+ .text          0xc0101dbc      0x16a DeviceManager/Disp.ns.o
+                0xc0101dc6                Disp::textRows()
+                0xc0101eb2                Disp::clear()
+                0xc0101dbc                Disp::textCols()
+                0xc0101ed0                Disp::setDisplay(Display*)
+                0xc0101e51                Disp::moveCursor(unsigned short, unsigned short)
+                0xc0101dd0                Disp::putChar(unsigned short, unsigned short, char, unsigned char)
+ *fill*         0xc0101f26        0x2 00
+ .text          0xc0101f28      0x37d DeviceManager/Dev.ns.o
+                0xc0101fd9                Dev::registerDevice(Device*)
+                0xc01020ad                Dev::findDevice(String)
+                0xc0101fff                Dev::unregisterDevice(Device*)
+                0xc0102081                Dev::requestIRQ(Device*, int)
+                0xc0101f28                Dev::handleIRQ(registers_t, int)
+ *fill*         0xc01022a5        0x3 00
+ .text          0xc01022a8       0x37 DeviceManager/Time.ns.o
+                0xc01022a8                Time::setTimer(Timer*)
+                0xc01022ca                Time::time()
+                0xc01022b5                Time::uptime()
+ *fill*         0xc01022df        0x1 00
+ .text          0xc01022e0      0x941 VTManager/VirtualTerminal.class.o
+                0xc01025d2                VirtualTerminal::map(int, int)
+                0xc010264c                VirtualTerminal::unmap()
+                0xc01028da                VirtualTerminal::put(char, bool)
+                0xc01028a2                VirtualTerminal::setCursorLine(unsigned int)
+                0xc0102448                VirtualTerminal::setColor(unsigned char, unsigned char)
+                0xc01023e0                VirtualTerminal::~VirtualTerminal()
+                0xc01028be                VirtualTerminal::setCursorCol(unsigned int)
+                0xc0102360                VirtualTerminal::VirtualTerminal(unsigned int, unsigned int, unsigned char, unsigned char)
+                0xc0102840                VirtualTerminal::updateCursor()
+                0xc0102a30                VirtualTerminal::write(char*, bool)
+                0xc0102a84                VirtualTerminal::writeDec(int, bool)
+                0xc0102414                VirtualTerminal::~VirtualTerminal()
+                0xc0102666                VirtualTerminal::redraw()
+                0xc0102496                VirtualTerminal::putChar(unsigned int, unsigned int, char)
+                0xc0102b86                VirtualTerminal::writeHex(unsigned int, bool)
+                0xc0102740                VirtualTerminal::scroll()
+                0xc01022e0                VirtualTerminal::VirtualTerminal(unsigned int, unsigned int, unsigned char, unsigned char)
+                0xc0102568                VirtualTerminal::clear()
+                0xc010287c                VirtualTerminal::moveCursor(unsigned int, unsigned int)
+ *fill*         0xc0102c21        0x3 00
+ .text          0xc0102c24      0x156 VTManager/VT.ns.o
+                0xc0102c4a                VT::unmap(VirtualTerminal*)
+                0xc0102cd1                VT::redrawScreen()
+                0xc0102c24                VT::map(VirtualTerminal*)
+ *fill*         0xc0102d7a        0x2 00
+ .text          0xc0102d7c      0x2f1 Library/Bitset.class.o
+                0xc0103062                Bitset::usedBits()
+                0xc0102d7c                Bitset::Bitset()
+                0xc0102f84                Bitset::testBit(unsigned int)
+                0xc0102e4a                Bitset::~Bitset()
+                0xc0102f1c                Bitset::clearBit(unsigned int)
+                0xc0102e60                Bitset::init(unsigned int, unsigned int*)
+                0xc0102d88                Bitset::Bitset(unsigned int)
+                0xc0102d82                Bitset::Bitset()
+                0xc0102dbc                Bitset::Bitset(unsigned int)
+                0xc0102eb6                Bitset::setBit(unsigned int)
+                0xc0102e34                Bitset::~Bitset()
+                0xc0102e12                Bitset::Bitset(unsigned int, unsigned int*)
+                0xc0102df0                Bitset::Bitset(unsigned int, unsigned int*)
+                0xc0102fcc                Bitset::firstFreeBit()
+ *fill*         0xc010306d        0x3 00
+ .text          0xc0103070      0xd2c Library/String.class.o
+                0xc0103070                String::hex(unsigned int)
+                0xc0103694                String::operator==(char*)
+                0xc0103a66                String::toInt()
+                0xc010345c                String::String(String const&)
+                0xc01032b8                String::String()
+                0xc01032d0                String::String()
+                0xc0103be2                String::size()
+                0xc0103124                String::number(int)
+                0xc0103632                String::operator==(String&)
+                0xc01039c4                String::operator+(char*)
+                0xc01034f2                String::~String()
+                0xc01033e4                String::String(String const&)
+                0xc0103a4c                String::operator char*()
+                0xc01034d4                String::~String()
+                0xc0103510                String::operator=(String const&)
+                0xc01032e8                String::String(char*)
+                0xc0103706                String::operator+=(String&)
+                0xc0103bd2                String::operator[](int)
+                0xc0103bee                String::clear()
+                0xc0103c16                String::empty()
+                0xc01038d4                String::operator+=(char)
+                0xc0103c26                String::split(char)
+                0xc0103b1a                String::toInt16()
+                0xc0103d00                String::substr(int, int)
+                0xc0103a04                String::operator+(char)
+                0xc0103366                String::String(char*)
+                0xc01037e2                String::operator+=(char*)
+                0xc010359e                String::operator=(char*)
+                0xc0103984                String::operator+(String&)
+ .text          0xc0103d9c      0xabf SyscallManager/IDT.ns.o
+                0xc010474e                IDT::handleException(registers_t, int)
+                0xc0103f51                IDT::init()
+                0xc0103eea                IDT::setGate(unsigned char, unsigned int, unsigned short, unsigned char)
+                0xc0103d9c                interrupt_handler
+ *fill*         0xc010485b        0x5 00
+ .text          0xc0104860      0x204 SyscallManager/IDT.wtf.o
+                0xc0104890                isr4
+                0xc010496a                isr27
+                0xc01048e2                isr13
+                0xc0104a14                irq12
+                0xc0104938                isr22
+                0xc01048f2                isr15
+                0xc0104a00                irq10
+                0xc0104a28                irq14
+                0xc01048c0                isr9
+                0xc01049ec                irq8
+                0xc0104942                isr23
+                0xc010497e                isr29
+                0xc0104992                isr31
+                0xc010492e                isr21
+                0xc0104a0a                irq11
+                0xc0104974                isr28
+                0xc01048b8                isr8
+                0xc01049ce                irq5
+                0xc0104924                isr20
+                0xc01048ea                isr14
+                0xc010489a                isr5
+                0xc01049d8                irq6
+                0xc01049a6                irq1
+                0xc0104872                isr1
+                0xc01049f6                irq9
+                0xc0104960                isr26
+                0xc01048d2                isr11
+                0xc0104a1e                irq13
+                0xc01048da                isr12
+                0xc0104868                isr0
+                0xc01049b0                irq2
+                0xc010494c                isr24
+                0xc01048fc                isr16
+                0xc0104886                isr3
+                0xc01048a4                isr6
+                0xc01049e2                irq7
+                0xc0104910                isr18
+                0xc010499c                irq0
+                0xc01048ca                isr10
+                0xc0104906                isr17
+                0xc010487c                isr2
+                0xc010491a                isr19
+                0xc0104860                idt_flush
+                0xc0104988                isr30
+                0xc0104a32                irq15
+                0xc01048ae                isr7
+                0xc0104956                isr25
+                0xc01049c4                irq4
+                0xc01049ba                irq3
+ .text          0xc0104a64      0x17f Devices/Display/VGATextOutput.class.o
+                0xc0104a8c                VGATextOutput::getName()
+                0xc0104ab4                VGATextOutput::textCols()
+                0xc0104bac                VGATextOutput::clear()
+                0xc0104a64                VGATextOutput::getClass()
+                0xc0104b26                VGATextOutput::moveCursor(unsigned short, unsigned short)
+                0xc0104ac8                VGATextOutput::putChar(unsigned short, unsigned short, char, unsigned char)
+                0xc0104abe                VGATextOutput::textRows()
+ *fill*         0xc0104be3        0x1 00
+ .text          0xc0104be4      0x26a Devices/Timer.class.o
+                0xc0104cfc                Timer::setFrequency(unsigned char)
+                0xc0104be4                Timer::Timer(unsigned char)
+                0xc0104cac                Timer::getClass()
+                0xc0104cd4                Timer::getName()
+                0xc0104d80                Timer::time()
+                0xc0104dba                Timer::handleIRQ(registers_t, int)
+                0xc0104d74                Timer::uptime()
+                0xc0104c48                Timer::Timer(unsigned char)
 
-.text._Znwj     0xc0104c4d       0x1b load address 0x00104c4d
- .text._Znwj    0xc0104c4d       0x1b Core/kmain.wtf.o
-                0xc0104c4d                operator new(unsigned int)
+.text._Znwj     0xc0104e4e       0x1b load address 0x00104e4e
+ .text._Znwj    0xc0104e4e       0x1b Core/kmain.wtf.o
+                0xc0104e4e                operator new(unsigned int)
 
-.text._ZN6Device9handleIRQEP11registers_ti
-                0xc0104c68        0x5 load address 0x00104c68
- .text._ZN6Device9handleIRQEP11registers_ti
-                0xc0104c68        0x5 Core/kmain.wtf.o
-                0xc0104c68                Device::handleIRQ(registers_t*, int)
+.text._ZN6Device9handleIRQE11registers_ti
+                0xc0104e6a        0x5 load address 0x00104e6a
+ .text._ZN6Device9handleIRQE11registers_ti
+                0xc0104e6a        0x5 Core/kmain.wtf.o
+                0xc0104e6a                Device::handleIRQ(registers_t, int)
 
 .text._ZN15VirtualTerminallsEPc
-                0xc0104c6e       0x25 load address 0x00104c6e
+                0xc0104e70       0x25 load address 0x00104e70
  .text._ZN15VirtualTerminallsEPc
-                0xc0104c6e       0x25 Core/kmain.wtf.o
-                0xc0104c6e                VirtualTerminal::operator<<(char*)
+                0xc0104e70       0x25 Core/kmain.wtf.o
+                0xc0104e70                VirtualTerminal::operator<<(char*)
 
 .text._ZN15VirtualTerminallsEi
-                0xc0104c94       0x25 load address 0x00104c94
+                0xc0104e96       0x25 load address 0x00104e96
  .text._ZN15VirtualTerminallsEi
-                0xc0104c94       0x25 Core/kmain.wtf.o
-                0xc0104c94                VirtualTerminal::operator<<(int)
+                0xc0104e96       0x25 Core/kmain.wtf.o
+                0xc0104e96                VirtualTerminal::operator<<(int)
 
 .text._ZN15VirtualTerminallsEj
-                0xc0104cba       0x25 load address 0x00104cba
+                0xc0104ebc       0x25 load address 0x00104ebc
  .text._ZN15VirtualTerminallsEj
-                0xc0104cba       0x25 Core/kmain.wtf.o
-                0xc0104cba                VirtualTerminal::operator<<(unsigned int)
+                0xc0104ebc       0x25 Core/kmain.wtf.o
+                0xc0104ebc                VirtualTerminal::operator<<(unsigned int)
 
 .text._ZN6DeviceC2Ev
-                0xc0104ce0        0xe load address 0x00104ce0
+                0xc0104ee2        0xe load address 0x00104ee2
  .text._ZN6DeviceC2Ev
-                0xc0104ce0        0xe Core/kmain.wtf.o
-                0xc0104ce0                Device::Device()
+                0xc0104ee2        0xe Core/kmain.wtf.o
+                0xc0104ee2                Device::Device()
 
 .text._ZN7DisplayC2Ev
-                0xc0104cee       0x1c load address 0x00104cee
+                0xc0104ef0       0x1c load address 0x00104ef0
  .text._ZN7DisplayC2Ev
-                0xc0104cee       0x1c Core/kmain.wtf.o
-                0xc0104cee                Display::Display()
+                0xc0104ef0       0x1c Core/kmain.wtf.o
+                0xc0104ef0                Display::Display()
 
 .text._ZN13VGATextOutputC1Ev
-                0xc0104d0a       0x1c load address 0x00104d0a
+                0xc0104f0c       0x1c load address 0x00104f0c
  .text._ZN13VGATextOutputC1Ev
-                0xc0104d0a       0x1c Core/kmain.wtf.o
-                0xc0104d0a                VGATextOutput::VGATextOutput()
+                0xc0104f0c       0x1c Core/kmain.wtf.o
+                0xc0104f0c                VGATextOutput::VGATextOutput()
 
-.text._ZnwjPv   0xc0104d26        0x8 load address 0x00104d26
- .text._ZnwjPv  0xc0104d26        0x8 MemoryManager/PhysMem.ns.o
-                0xc0104d26                operator new(unsigned int, void*)
+.text._ZnwjPv   0xc0104f28        0x8 load address 0x00104f28
+ .text._ZnwjPv  0xc0104f28        0x8 MemoryManager/PhysMem.ns.o
+                0xc0104f28                operator new(unsigned int, void*)
 
-.text._ZdaPv    0xc0104d2e       0x13 load address 0x00104d2e
- .text._ZdaPv   0xc0104d2e       0x13 DeviceManager/Dev.ns.o
-                0xc0104d2e                operator delete[](void*)
+.text._ZdaPv    0xc0104f30       0x13 load address 0x00104f30
+ .text._ZdaPv   0xc0104f30       0x13 DeviceManager/Dev.ns.o
+                0xc0104f30                operator delete[](void*)
 
 .text._ZN6VectorIP6DeviceEC1Ev
-                0xc0104d42       0x18 load address 0x00104d42
+                0xc0104f44       0x18 load address 0x00104f44
  .text._ZN6VectorIP6DeviceEC1Ev
-                0xc0104d42       0x18 DeviceManager/Dev.ns.o
-                0xc0104d42                Vector<Device*>::Vector()
+                0xc0104f44       0x18 DeviceManager/Dev.ns.o
+                0xc0104f44                Vector<Device*>::Vector()
 
 .text._ZN6VectorIP6DeviceE4pushES1_
-                0xc0104d5a       0x91 load address 0x00104d5a
+                0xc0104f5c       0x91 load address 0x00104f5c
  .text._ZN6VectorIP6DeviceE4pushES1_
-                0xc0104d5a       0x91 DeviceManager/Dev.ns.o
-                0xc0104d5a                Vector<Device*>::push(Device*)
+                0xc0104f5c       0x91 DeviceManager/Dev.ns.o
+                0xc0104f5c                Vector<Device*>::push(Device*)
 
 .text._ZN6VectorIP6DeviceE4sizeEv
-                0xc0104dec        0xb load address 0x00104dec
+                0xc0104fee        0xb load address 0x00104fee
  .text._ZN6VectorIP6DeviceE4sizeEv
-                0xc0104dec        0xb DeviceManager/Dev.ns.o
-                0xc0104dec                Vector<Device*>::size()
+                0xc0104fee        0xb DeviceManager/Dev.ns.o
+                0xc0104fee                Vector<Device*>::size()
 
 .text._ZN6VectorIP6DeviceEixEj
-                0xc0104df8       0x12 load address 0x00104df8
+                0xc0104ffa       0x12 load address 0x00104ffa
  .text._ZN6VectorIP6DeviceEixEj
-                0xc0104df8       0x12 DeviceManager/Dev.ns.o
-                0xc0104df8                Vector<Device*>::operator[](unsigned int)
+                0xc0104ffa       0x12 DeviceManager/Dev.ns.o
+                0xc0104ffa                Vector<Device*>::operator[](unsigned int)
 
 .text._ZN6VectorIP6DeviceE4backEv
-                0xc0104e0a       0x19 load address 0x00104e0a
+                0xc010500c       0x19 load address 0x0010500c
  .text._ZN6VectorIP6DeviceE4backEv
-                0xc0104e0a       0x19 DeviceManager/Dev.ns.o
-                0xc0104e0a                Vector<Device*>::back()
+                0xc010500c       0x19 DeviceManager/Dev.ns.o
+                0xc010500c                Vector<Device*>::back()
 
 .text._ZN6VectorIP6DeviceE3popEv
-                0xc0104e24       0x6d load address 0x00104e24
+                0xc0105026       0x6d load address 0x00105026
  .text._ZN6VectorIP6DeviceE3popEv
-                0xc0104e24       0x6d DeviceManager/Dev.ns.o
-                0xc0104e24                Vector<Device*>::pop()
+                0xc0105026       0x6d DeviceManager/Dev.ns.o
+                0xc0105026                Vector<Device*>::pop()
 
 .text._ZN6VectorIP6DeviceEC1ERKS2_
-                0xc0104e92       0x7f load address 0x00104e92
+                0xc0105094       0x7f load address 0x00105094
  .text._ZN6VectorIP6DeviceEC1ERKS2_
-                0xc0104e92       0x7f DeviceManager/Dev.ns.o
-                0xc0104e92                Vector<Device*>::Vector(Vector<Device*> const&)
+                0xc0105094       0x7f DeviceManager/Dev.ns.o
+                0xc0105094                Vector<Device*>::Vector(Vector<Device*> const&)
 
 .text._ZN6VectorIP6DeviceED1Ev
-                0xc0104f12       0x27 load address 0x00104f12
+                0xc0105114       0x27 load address 0x00105114
  .text._ZN6VectorIP6DeviceED1Ev
-                0xc0104f12       0x27 DeviceManager/Dev.ns.o
-                0xc0104f12                Vector<Device*>::~Vector()
+                0xc0105114       0x27 DeviceManager/Dev.ns.o
+                0xc0105114                Vector<Device*>::~Vector()
 
-.text._Znaj     0xc0104f39       0x1b load address 0x00104f39
- .text._Znaj    0xc0104f39       0x1b VTManager/VirtualTerminal.class.o
-                0xc0104f39                operator new[](unsigned int)
+.text._Znaj     0xc010513b       0x1b load address 0x0010513b
+ .text._Znaj    0xc010513b       0x1b VTManager/VirtualTerminal.class.o
+                0xc010513b                operator new[](unsigned int)
 
 .text._ZN6VectorIP15VirtualTerminalEC1Ev
-                0xc0104f54       0x18 load address 0x00104f54
+                0xc0105156       0x18 load address 0x00105156
  .text._ZN6VectorIP15VirtualTerminalEC1Ev
-                0xc0104f54       0x18 VTManager/VT.ns.o
-                0xc0104f54                Vector<VirtualTerminal*>::Vector()
+                0xc0105156       0x18 VTManager/VT.ns.o
+                0xc0105156                Vector<VirtualTerminal*>::Vector()
 
 .text._ZN6VectorIP15VirtualTerminalE4pushES1_
-                0xc0104f6c       0x91 load address 0x00104f6c
+                0xc010516e       0x91 load address 0x0010516e
  .text._ZN6VectorIP15VirtualTerminalE4pushES1_
-                0xc0104f6c       0x91 VTManager/VT.ns.o
-                0xc0104f6c                Vector<VirtualTerminal*>::push(VirtualTerminal*)
+                0xc010516e       0x91 VTManager/VT.ns.o
+                0xc010516e                Vector<VirtualTerminal*>::push(VirtualTerminal*)
 
 .text._ZN6VectorIP15VirtualTerminalE4sizeEv
-                0xc0104ffe        0xb load address 0x00104ffe
+                0xc0105200        0xb load address 0x00105200
  .text._ZN6VectorIP15VirtualTerminalE4sizeEv
-                0xc0104ffe        0xb VTManager/VT.ns.o
-                0xc0104ffe                Vector<VirtualTerminal*>::size()
+                0xc0105200        0xb VTManager/VT.ns.o
+                0xc0105200                Vector<VirtualTerminal*>::size()
 
 .text._ZN6VectorIP15VirtualTerminalEixEj
-                0xc010500a       0x12 load address 0x0010500a
+                0xc010520c       0x12 load address 0x0010520c
  .text._ZN6VectorIP15VirtualTerminalEixEj
-                0xc010500a       0x12 VTManager/VT.ns.o
-                0xc010500a                Vector<VirtualTerminal*>::operator[](unsigned int)
+                0xc010520c       0x12 VTManager/VT.ns.o
+                0xc010520c                Vector<VirtualTerminal*>::operator[](unsigned int)
 
 .text._ZN6VectorIP15VirtualTerminalE4backEv
-                0xc010501c       0x19 load address 0x0010501c
+                0xc010521e       0x19 load address 0x0010521e
  .text._ZN6VectorIP15VirtualTerminalE4backEv
-                0xc010501c       0x19 VTManager/VT.ns.o
-                0xc010501c                Vector<VirtualTerminal*>::back()
+                0xc010521e       0x19 VTManager/VT.ns.o
+                0xc010521e                Vector<VirtualTerminal*>::back()
 
 .text._ZN6VectorIP15VirtualTerminalE3popEv
-                0xc0105036       0x6d load address 0x00105036
+                0xc0105238       0x6d load address 0x00105238
  .text._ZN6VectorIP15VirtualTerminalE3popEv
-                0xc0105036       0x6d VTManager/VT.ns.o
-                0xc0105036                Vector<VirtualTerminal*>::pop()
+                0xc0105238       0x6d VTManager/VT.ns.o
+                0xc0105238                Vector<VirtualTerminal*>::pop()
 
 .text._ZN6VectorIP15VirtualTerminalED1Ev
-                0xc01050a4       0x27 load address 0x001050a4
+                0xc01052a6       0x27 load address 0x001052a6
  .text._ZN6VectorIP15VirtualTerminalED1Ev
-                0xc01050a4       0x27 VTManager/VT.ns.o
-                0xc01050a4                Vector<VirtualTerminal*>::~Vector()
+                0xc01052a6       0x27 VTManager/VT.ns.o
+                0xc01052a6                Vector<VirtualTerminal*>::~Vector()
 
 .text._ZN6VectorI6StringEC1Ev
-                0xc01050cc       0x18 load address 0x001050cc
+                0xc01052ce       0x18 load address 0x001052ce
  .text._ZN6VectorI6StringEC1Ev
-                0xc01050cc       0x18 Library/String.class.o
-                0xc01050cc                Vector<String>::Vector()
+                0xc01052ce       0x18 Library/String.class.o
+                0xc01052ce                Vector<String>::Vector()
 
 .text._ZN6VectorI6StringE4pushES0_
-                0xc01050e4       0x9b load address 0x001050e4
+                0xc01052e6       0x9b load address 0x001052e6
  .text._ZN6VectorI6StringE4pushES0_
-                0xc01050e4       0x9b Library/String.class.o
-                0xc01050e4                Vector<String>::push(String)
+                0xc01052e6       0x9b Library/String.class.o
+                0xc01052e6                Vector<String>::push(String)
 
 .text._ZN6VectorI6StringE4backEv
-                0xc0105180       0x19 load address 0x00105180
+                0xc0105382       0x19 load address 0x00105382
  .text._ZN6VectorI6StringE4backEv
-                0xc0105180       0x19 Library/String.class.o
-                0xc0105180                Vector<String>::back()
+                0xc0105382       0x19 Library/String.class.o
+                0xc0105382                Vector<String>::back()
 
 .rodata         0xc0106000      0x6f3 load address 0x00106000
  *(.rodata)
@@ -563,8 +565,6 @@ Linker script and memory map
  .rel.text._ZN6VectorI6StringE4pushES0_
                 0x00000000        0x0 Core/kmain.wtf.o
  .rel.rodata._ZTV13VGATextOutput
-                0x00000000        0x0 Core/kmain.wtf.o
- .rel.rodata._ZTV5Timer
                 0x00000000        0x0 Core/kmain.wtf.o
 
 .data           0xc0107000       0x2c load address 0x00107000

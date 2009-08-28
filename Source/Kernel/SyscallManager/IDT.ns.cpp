@@ -58,9 +58,12 @@ extern "C" void idt_flush(u32int);
 
 extern "C" void interrupt_handler(registers_t regs) {
 	if (regs.int_no < 32) {
-		IDT::handleException(&regs, regs.int_no);
+		IDT::handleException(regs, regs.int_no);
 	} else if (regs.int_no < 48) {
-		Dev::handleIRQ(&regs, (regs.int_no - 32));
+		if (regs.int_no >= 40)
+			outb(0xA0, 0x20);
+		outb(0x20, 0x20);
+		Dev::handleIRQ(regs, (regs.int_no - 32));
 	}
 }
 
@@ -149,7 +152,7 @@ void init() {
 	idt_flush((u32int)&idt_ptr);
 }
 
-void handleException(registers_t *regs, int no) {
+void handleException(registers_t regs, int no) {
 	asm volatile("cli;");
 	char* exceptions[] = {
 		"Division by zero", "Debug exception", "Non maskable interrupt", 
@@ -167,8 +170,8 @@ void handleException(registers_t *regs, int no) {
 	VirtualTerminal *vt = new VirtualTerminal(5, 50, 0, 15);
 	vt->map();
 
-	*vt << "\n  Unhandled exception " << (s32int)no << " at " << (u32int)regs->cs << ":" <<
-	   	(u32int)regs->eip << "\n  :: " << exceptions[no];
+	*vt << "\n  Unhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
+	   	(u32int)regs.eip << "\n  :: " << exceptions[no];
 
 	asm volatile("hlt");
 }
