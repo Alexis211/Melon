@@ -24,6 +24,10 @@ Objects = Core/kmain.wtf.o \
 		  DeviceManager/Disp.ns.o \
 		  DeviceManager/Dev.ns.o \
 		  DeviceManager/Time.ns.o \
+		  TaskManager/Process.class.o \
+		  TaskManager/Thread.class.o \
+		  TaskManager/Task.ns.o \
+		  TaskManager/Task.wtf.o \
 		  VTManager/VirtualTerminal.class.o \
 		  VTManager/VT.ns.o \
 		  Library/Bitset.class.o \

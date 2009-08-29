@@ -11,6 +11,7 @@
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
 #include <MemoryManager/GDT.ns.h>
+#include <TaskManager/Task.ns.h>
 #include <SyscallManager/IDT.ns.h>
 #include <Library/String.class.h>
 
@@ -55,7 +56,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	melonLogoVT->map(2);
 
 	//Create a VT for logging what kernel does
-	VirtualTerminal *kvt = new VirtualTerminal(12, 40, 0, 2);
+	VirtualTerminal *kvt = new VirtualTerminal(12, 40, 0, 7);
 	kvt->map(melonLogoLines + 4);
 
 	*kvt << "* Kernel initializing in HIGHER HALF!\n";
@@ -88,10 +89,16 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	*kvt << "OK.\n> Initializing PIT...";
 	Dev::registerDevice(new Timer());
 
+	*kvt << "OK.\n> Initializing multitasking...";
+	Task::initialize(String((char*)mbd->cmdline));
+
 	*kvt << "OK.\n";
 
 	asm volatile("sti");
 
-	while(1) asm volatile("sti; hlt");
+	while(1) {
+		Task::currentThread->sleep(1000);
+		*kvt << ".";
+	}
 	PANIC("END OF KMAIN");
 }

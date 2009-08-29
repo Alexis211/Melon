@@ -28,11 +28,20 @@ idt_flush:
 %endmacro
 
 %macro IRQ 2
-  global irq%1
+  [GLOBAL irq%1]
   irq%1:
     cli
     push byte 0
     push byte %2
+    jmp interrupt_common_stub
+%endmacro
+
+%macro SYSCALL 1
+  [GLOBAL int%1]
+  int%1:
+    cli
+    push byte 0
+    push byte %1
     jmp interrupt_common_stub
 %endmacro
 
@@ -87,6 +96,8 @@ IRQ	12,	44
 IRQ	13,	45
 IRQ	14,	46
 IRQ	15,	47
+
+SYSCALL 64	; this syscall requests a task switch
 
 ; ******************************************************************
 

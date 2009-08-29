@@ -23,6 +23,7 @@ struct PageDirectory {
 	u32int physicalAddr;
 
 	PageDirectory();
+	PageDirectory(PageDirectory* other);	//Clones the other pagedir
 	~PageDirectory();
 	page_t *getPage(u32int address, bool make);
 	void allocFrame(u32int address, bool is_user, bool is_writable);

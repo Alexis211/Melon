@@ -1,6 +1,9 @@
 #include "PageDirectory.class.h"
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
+#include <TaskManager/Task.ns.h>
+
+extern "C" void copy_page_physical(u32int src, u32int dest);
 
 PageDirectory::PageDirectory() {
 	tablesPhysical = (u32int*)PageAlloc::alloc(&physicalAddr);
@@ -10,10 +13,44 @@ PageDirectory::PageDirectory() {
 	}
 }
 
+PageDirectory::PageDirectory(PageDirectory* other) {
+	tablesPhysical = (u32int*)PageAlloc::alloc(&physicalAddr);
+	for (u32int i = 0; i < 768; i++) {
+		if (other->tablesPhysical[i] != 0) {
+			u32int tmp;
+			tables[i] = (page_table_t*)PageAlloc::alloc(&tmp);
+			tablesPhysical[i] = tmp | 0x07;
+			for (u32int j = 0; j < 1024; j++) {
+				if (!(other->tables[i]->pages[j].frame))
+					continue;
+				PhysMem::allocFrame(&tables[i]->pages[j], true, true);
+				tables[i]->pages[j].present = other->tables[i]->pages[j].present;
+				tables[i]->pages[j].rw = other->tables[i]->pages[j].rw;
+				tables[i]->pages[j].user = other->tables[i]->pages[j].user;
+				tables[i]->pages[j].accessed = other->tables[i]->pages[j].accessed;
+				tables[i]->pages[j].dirty = other->tables[i]->pages[j].dirty;
+				copy_page_physical(other->tables[i]->pages[j].frame * 0x1000, tables[i]->pages[j].frame * 0x1000);
+			}
+		} else {
+			tables[i] = 0;
+			tablesPhysical[i] = 0;
+		}
+	}
+	for (u32int i = 768; i < 1024; i++)	{	//Link kernel page tables
+		tablesPhysical[i] = other->tablesPhysical[i];
+		tables[i] = other->tables[i];
+	}
+}
+
 PageDirectory::~PageDirectory() {
 	PageAlloc::free((void*)tablesPhysical);
-	for (int i = 0; i < 1024; i++) {
-		if (tables[i] != 0) PageAlloc::free((void*)tables[i]);
+	for (int i = 0; i < 768; i++) {		//Only free addresses below 0xC0000000, upper is kernel space
+		if (tables[i] != 0) {
+			for (int j = 0; j < 1024; j++) {
+				PhysMem::freeFrame(&(tables[i]->pages[j]));
+			}
+			PageAlloc::free((void*)tables[i]);
+		}
 	}
 }
 
@@ -27,6 +64,8 @@ page_t *PageDirectory::getPage(u32int address, bool make) {
 		tables[tableIdx] = (page_table_t*)PageAlloc::alloc(&tmp);
 		CMem::memset((u8int*)tables[tableIdx], 0, 0x1000);
 		tablesPhysical[tableIdx] = tmp | 0x07;
+		if (tableIdx >= 768)
+			Task::allocKernelPageTable(tableIdx, tables[tableIdx], tablesPhysical[tableIdx]);
 		return &(tables[tableIdx]->pages[address % 1024]);
 	} else {
 		return 0;

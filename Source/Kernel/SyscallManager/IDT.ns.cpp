@@ -1,6 +1,7 @@
 #include "IDT.ns.h"
 #include <VTManager/VirtualTerminal.class.h>
 #include <DeviceManager/Dev.ns.h>
+#include <TaskManager/Task.ns.h>
 
 using namespace Sys; 	//For outb
 
@@ -54,9 +55,12 @@ extern "C" void irq13();
 extern "C" void irq14();
 extern "C" void irq15();
 
+extern "C" void int64();
+
 extern "C" void idt_flush(u32int);
 
 extern "C" void interrupt_handler(registers_t regs) {
+	bool doSwitch = (regs.int_no == 32 or regs.int_no == 64);
 	if (regs.int_no < 32) {
 		IDT::handleException(regs, regs.int_no);
 	} else if (regs.int_no < 48) {
@@ -64,7 +68,9 @@ extern "C" void interrupt_handler(registers_t regs) {
 			outb(0xA0, 0x20);
 		outb(0x20, 0x20);
 		Dev::handleIRQ(regs, (regs.int_no - 32));
+		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
+	if (doSwitch) Task::doSwitch();
 }
 
 namespace IDT {
@@ -148,6 +154,8 @@ void init() {
 	setGate(45, (u32int)irq13, 0x08, 0x8E);
 	setGate(46, (u32int)irq14, 0x08, 0x8E);
 	setGate(47, (u32int)irq15, 0x08, 0x8E);
+
+	setGate(64, (u32int)int64, 0x08, 0x8E);
 	
 	idt_flush((u32int)&idt_ptr);
 }
@@ -172,6 +180,21 @@ void handleException(registers_t regs, int no) {
 
 	*vt << "\n  Unhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
 	   	(u32int)regs.eip << "\n  :: " << exceptions[no];
+
+	if (no == 14) {	//Page fault
+		int present = !(regs.err_code & 0x1);
+		int rw = regs.err_code & 0x2;
+		int us = regs.err_code & 0x4;
+		int rsvd = regs.err_code & 0x8;
+		u32int faddr;
+		asm volatile("mov %%cr2, %0" : "=r"(faddr));
+		*vt << "\n   ";
+		if (present) *vt << "Present ";
+		if (rw) *vt << "R/W ";
+		if (us) *vt << "User ";
+		if (rsvd) *vt << "Rsvd ";
+		*vt << "At:" << (u32int)faddr;
+	}
 
 	asm volatile("hlt");
 }
