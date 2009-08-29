@@ -43,6 +43,6 @@ qemu:
 stats:
 	echo; echo " ** Statistics for project O3S ** "; \
 	echo -n "Lines of code : "; \
-	cat src/{*,*/*,*/*/*}.{c,asm,cpp,h} 2> /dev/null | wc -l; \
+	cat src/*/{*,*/*}.{c,asm,cpp,h} 2> /dev/null | wc -l; \
 	echo "TODOs : "; \
 	cat src/{*,*/*,*/*/*}.{c,asm,cpp,h} 2> /dev/null | grep TODO;

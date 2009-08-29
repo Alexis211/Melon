@@ -56,6 +56,10 @@ String::String() {
 
 String::String(char* string) {
 	m_length = strlen(string);
+	if (m_length == 0) {
+		m_string = 0;
+		return;
+	}
 	m_string = (char*)Mem::kalloc(m_length + 1);
 	for (u32int i = 0; i < m_length; i++) {
 		m_string[i] = string[i];	
@@ -65,6 +69,10 @@ String::String(char* string) {
 
 String::String(const String &other) {
 	m_length = other.m_length;
+	if (m_length == 0) {
+		m_string = 0;
+		return;
+	}
 	m_string = (char*)Mem::kalloc(m_length + 1);
 	for (u32int i = 0; i < m_length; i++) {
 		m_string[i] = other.m_string[i];
@@ -79,6 +87,10 @@ String::~String() {
 void String::operator= (const String &other) {
 	m_length = other.m_length;
 	if (m_string != 0) Mem::kfree(m_string);
+	if (m_length == 0) {
+		m_string = 0;
+		return;
+	}
 	m_string = (char*)Mem::kalloc(m_length + 1);
 	for (u32int i = 0; i < m_length; i++) {
 		m_string[i] = other.m_string[i];
@@ -89,6 +101,10 @@ void String::operator= (const String &other) {
 void String::operator= (char* string) {
 	m_length = strlen(string);
 	if (m_string != 0) Mem::kfree(m_string);
+	if (m_length == 0) {
+		m_string = 0;
+		return;
+	}
 	m_string = (char*)Mem::kalloc(m_length + 1);
 	for (u32int i = 0; i < m_length; i++) {
 		m_string[i] = string[i];	
