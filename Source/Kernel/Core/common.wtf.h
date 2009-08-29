@@ -7,12 +7,15 @@
 
 #define NULL 0
 
-typedef unsigned int	u32int;
-typedef unsigned short	u16int;
-typedef unsigned char	u8int;
-typedef int 	s32int;
-typedef short	s16int;
-typedef char	s8int;
+typedef unsigned int		addr_t;
+typedef unsigned long long	u64int;
+typedef unsigned int		u32int;
+typedef unsigned short		u16int;
+typedef unsigned char		u8int;
+typedef long long	s64int;
+typedef int 		s32int;
+typedef short		s16int;
+typedef char		s8int;
 
 #include <Core/CMem.ns.h>
 #include <Core/Sys.ns.h>
