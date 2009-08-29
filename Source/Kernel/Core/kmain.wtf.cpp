@@ -14,6 +14,7 @@
 #include <TaskManager/Task.ns.h>
 #include <SyscallManager/IDT.ns.h>
 #include <Library/String.class.h>
+#include <Library/wchar.class.h>
 
 #include <Ressources/logo.cd>
 

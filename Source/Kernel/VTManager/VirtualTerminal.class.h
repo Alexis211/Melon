@@ -2,10 +2,11 @@
 #define DEF_VIRTUALTERMINAL_CLASS_H
 
 #include <Core/common.wtf.h>
+#include <Library/String.class.h>
 
 struct chr {
 	u8int color;
-	char c;
+	wchar c;
 	};
 
 class VirtualTerminal {
@@ -24,7 +25,7 @@ class VirtualTerminal {
 	~VirtualTerminal();
 
 	void setColor(u8int fgcolor, u8int bgcolor = 0xFF);
-	void putChar(u32int row, u32int col, char c);
+	void putChar(u32int row, u32int col, wchar c);
 	void clear();
 
 	void map(s32int row = -1, s32int col = -1);
@@ -38,13 +39,13 @@ class VirtualTerminal {
 	void setCursorCol(u32int col);
 
 	//Display functions
-	void put(char c, bool updatecsr = true);
-	void write(char *c, bool updatecsr = true);
+	void put(wchar c, bool updatecsr = true);
+	void write(String s, bool updatecsr = true);
 	void writeDec(s32int i, bool updatecsr = true);
 	void writeHex(u32int i, bool updatecsr = true);
 	
-	inline VirtualTerminal& operator<<(char *c) { write(c); return *this; }
-	inline VirtualTerminal& operator<<(char c) { put(c); return *this; }
+	inline VirtualTerminal& operator<<(String s) { write(s); return *this; }
+	//inline VirtualTerminal& operator<<(wchar c) { put(c); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 };

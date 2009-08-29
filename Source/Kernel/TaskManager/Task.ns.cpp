@@ -75,7 +75,7 @@ void doSwitch() {
 }
 
 void triggerSwitch() {
-	asm volatile("int $64");	//TODO :: setup handler for hand-made task switch
+	asm volatile("int $64");
 }
 
 u32int nextPid() {

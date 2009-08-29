@@ -29,7 +29,7 @@ void VirtualTerminal::setColor(u8int fgcolor, u8int bgcolor) {
 	}
 }
 
-void VirtualTerminal::putChar(u32int row, u32int col, char c) {
+void VirtualTerminal::putChar(u32int row, u32int col, wchar c) {
 	if (row >= m_rows or col >= m_cols) return;
 	chr* ch = &BUFCHR(row, col);
 	ch->c = c;
@@ -103,18 +103,18 @@ void VirtualTerminal::setCursorCol(u32int col) {
 
 
 // Display functionn
-void VirtualTerminal::put(char c, bool updatecsr) {
-	if (c == 0x08) {	//Ascii backspace
+void VirtualTerminal::put(wchar c, bool updatecsr) {
+	if (c.value == 0x08) {	//Ascii backspace
 		if (m_csrcol > 0) m_csrcol--;
 		putChar(m_csrlin, m_csrcol, ' ');
-	} else if (c == 0x09) {	//Ascii tab
+	} else if (c.value == 0x09) {	//Ascii tab
 		m_csrcol = (m_csrcol + 8) &~(8 - 1);
-	} else if (c == '\r') {
+	} else if (c.value == '\r') {
 		m_csrcol = 0;
-	} else if (c == '\n') {
+	} else if (c.value == '\n') {
 		m_csrcol = 0;
 		m_csrlin++;
-	} else if (c >= ' ') {	//Printable character
+	} else if (c.value >= ' ') {	//Printable character
 		putChar(m_csrlin, m_csrcol, c);
 		m_csrcol++;
 	}
@@ -129,9 +129,9 @@ void VirtualTerminal::put(char c, bool updatecsr) {
 	if (updatecsr) updateCursor();
 }
 
-void VirtualTerminal::write(char* c, bool updatecsr) {
-	while (*c) {
-		put(*(c++), false);
+void VirtualTerminal::write(String s, bool updatecsr) {
+	for (u32int i = 0; i < s.size(); i++) {
+		put(s[i], false);
 	}
 	if (updatecsr) updateCursor();
 }

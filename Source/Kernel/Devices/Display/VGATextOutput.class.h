@@ -10,7 +10,7 @@ class VGATextOutput : public Display {
 
 	u16int textCols();
 	u16int textRows();
-	void putChar(u16int line, u16int col, char c, u8int color);
+	void putChar(u16int line, u16int col, wchar c, u8int color);
 	void moveCursor(u16int line, u16int col);
 	void clear();
 };

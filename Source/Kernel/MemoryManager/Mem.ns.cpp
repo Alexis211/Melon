@@ -181,7 +181,7 @@ void *kalloc(u32int sz, bool align) {
 		if (heapIndex.data[iterator]->size >= newsize) break;
 		iterator++;
 	}
-	if (iterator == heapIndex.size) {	//TODO : expand heap
+	if (iterator == heapIndex.size) {
 		expandHeap((sz & 0xFFFFF000) + 0x1000);
 		return kalloc(sz);	//Recurse call
 	}
@@ -217,7 +217,7 @@ void *kalloc(u32int sz, bool align) {
 	return (void*)((u32int)loc + sizeof(heap_header_t));
 }
 
-void kfree(void *ptr) { //TODO
+void kfree(void *ptr) {
 	if (ptr == 0) return;
 
 	heap_header_t *header = (heap_header_t*) ((u32int)ptr - sizeof(heap_header_t));

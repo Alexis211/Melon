@@ -2,12 +2,13 @@
 #define DEF_STRING_CLASS
 
 #include <Core/common.wtf.h>
+#include <Library/wchar.class.h>
 
 template <typename T> class Vector;
 
 class String {
 	private:
-	char *m_string;
+	wchar *m_string;
 	u32int m_length;
 
 	public:
@@ -26,20 +27,19 @@ class String {
 	bool operator== (char* string);
 	String &operator+= (String &other);
 	String &operator+= (char* other);
-	String &operator+= (char other);
+	String &operator+= (wchar other);
 	String &operator+ (String &other);
 	String &operator+ (char* other);
-	String &operator+ (char other);
-	operator char* ();
+	String &operator+ (wchar other);
 	s32int toInt();
 	u32int toInt16();	//From HEX
-	char& operator[] (int index);
+	wchar& operator[] (int index);
 
 	u32int size();
 	void clear();
 	bool empty();
 
-	Vector<String> split(char c);
+	Vector<String> split(wchar c);
 
 	String substr(s32int start, s32int size);
 };

@@ -5,7 +5,7 @@ CXX = g++
 LD = ld
 LDFLAGS = -T Link.ld -Map Map.txt --oformat=elf32-i386
 CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror
-CXXFLAGS = -nostartfiles -nostdlib -fno-rtti -fno-exceptions -I . -Wall -Werror -Wno-write-strings
+CXXFLAGS = -nostartfiles -nostdlib -fno-rtti -fno-exceptions -I . -Wall -Werror -Wno-write-strings -funsigned-char
 ASM = nasm
 ASMFLAGS = -f elf
 
@@ -32,6 +32,7 @@ Objects = Core/kmain.wtf.o \
 		  VTManager/VT.ns.o \
 		  Library/Bitset.class.o \
 		  Library/String.class.o \
+		  Library/wchar.class.o \
 		  SyscallManager/IDT.ns.o \
 		  SyscallManager/IDT.wtf.o \
 		  Devices/Display/VGATextOutput.class.o \
