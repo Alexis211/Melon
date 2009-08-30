@@ -17,13 +17,15 @@ u32int currentThreadId = 0;
 
 u32int nextpid = 1;
 
-void initialize(String cmdline) {
+void initialize(String cmdline, VirtualTerminal *vt) {
+	asm volatile ("cli");
 	threads.clear();
 	processes.clear();
-	currentProcess = Process::createKernel(cmdline);
+	currentProcess = Process::createKernel(cmdline, vt);
 	idleThread = new Thread(idle_task, true);
 	currentThread = threads[0];
 	currentThreadId = 0;
+	asm volatile ("sti");
 }
 
 Thread* nextThread() {

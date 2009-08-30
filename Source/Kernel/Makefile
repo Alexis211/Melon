@@ -10,8 +10,8 @@ ASM = nasm
 ASMFLAGS = -f elf
 
 OutFile = Melon.ke
-Objects = Core/kmain.wtf.o \
-		  Core/loader.wtf.o \
+Objects = Core/loader.wtf.o \
+		  Core/kmain.wtf.o \
 		  Core/cppsupport.wtf.o \
 		  Core/Sys.ns.o \
 		  Core/CMem.ns.o \
@@ -24,11 +24,14 @@ Objects = Core/kmain.wtf.o \
 		  DeviceManager/Disp.ns.o \
 		  DeviceManager/Dev.ns.o \
 		  DeviceManager/Time.ns.o \
+		  DeviceManager/Kbd.ns.o \
 		  TaskManager/Process.class.o \
 		  TaskManager/Thread.class.o \
 		  TaskManager/Task.ns.o \
 		  TaskManager/Task.wtf.o \
+		  TaskManager/Mutex.class.o \
 		  VTManager/VirtualTerminal.class.o \
+		  VTManager/VirtualTerminal-kbd.class.o \
 		  VTManager/VT.ns.o \
 		  Library/Bitset.class.o \
 		  Library/String.class.o \
@@ -36,6 +39,7 @@ Objects = Core/kmain.wtf.o \
 		  SyscallManager/IDT.ns.o \
 		  SyscallManager/IDT.wtf.o \
 		  Devices/Display/VGATextOutput.class.o \
+		  Devices/Keyboard/PS2Keyboard.class.o \
 		  Devices/Timer.class.o
 
 all: $(OutFile)

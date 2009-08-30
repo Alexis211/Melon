@@ -40,6 +40,21 @@ void bochs_output(char *message, char *file, u32int line) {
 	outb(0xE9, '\n');
 } 
 
+void bochs_output(String message, char *file, u32int line) {
+	for (u32int i = 0; i < message.size(); i++) {
+		outb(0xE9, message[i].toAscii());
+	}
+	char* t = (char*)" (in ";
+	for (u32int i = 0; i < strlen(t); i++) {
+		outb(0xE9, t[i]);
+	}
+	for (u32int i = 0; i < strlen(file); i++) {
+		outb(0xE9, file[i]);
+	}
+	outb(0xE9, ')');
+	outb(0xE9, '\n');
+} 
+
 void bochs_output_hex(u32int i) {
 	char hexdigits[] = "0123456789ABCDEF";
 	outb(0xE9, '0');

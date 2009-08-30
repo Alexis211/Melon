@@ -2,12 +2,13 @@
 #define DEF_TASK_NS_H
 
 #include <TaskManager/Thread.class.h>
+#include <VTManager/VirtualTerminal.class.h>
 
 namespace Task {
 	extern Thread* currentThread;
 	extern Process* currentProcess;
 
-	void initialize(String cmdline);	//cmdline should be the bootloader kernel command line, if anybody needs it
+	void initialize(String cmdline, VirtualTerminal *vt);	//cmdline should be the bootloader kernel command line, if anybody needs it
 	void doSwitch();
 	void triggerSwitch();
 	u32int nextPid();

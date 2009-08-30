@@ -4,9 +4,11 @@
 #include <Core/multiboot.wtf.h>
 
 #include <Devices/Display/VGATextOutput.class.h>
+#include <Devices/Keyboard/PS2Keyboard.class.h>
 #include <Devices/Timer.class.h>
 #include <DeviceManager/Disp.ns.h>
 #include <DeviceManager/Dev.ns.h>
+#include <DeviceManager/Kbd.ns.h>
 #include <VTManager/VirtualTerminal.class.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
@@ -17,10 +19,16 @@
 #include <Library/wchar.class.h>
 
 #include <Ressources/logo.cd>
+#include <Ressources/keymap-fr.wtf.c>
 
 extern u32int end;	//Placement address
 
 extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
+
+#define INFO(vt) vt->setColor(0); *vt << " - "; vt->setColor(8);
+#define PROCESSING(vt, m) vt->setColor(6); *vt << " > "; vt->setColor(0); *vt << m; \
+	vt->setCursorCol(60); vt->setColor(8); *vt << ": ";
+#define OK(vt) vt->setColor(0); *vt << "[ "; vt->setColor(1); *vt << "OK"; vt->setColor(0); *vt << " ]\n";
 
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
@@ -48,58 +56,70 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Disp::setDisplay(vgaout);
 
 	//Create a VT for handling the Melon bootup logo
-	VirtualTerminal *melonLogoVT = new VirtualTerminal(melonLogoLines, melonLogoCols, 7, 0);
+	VirtualTerminal *melonLogoVT = new VirtualTerminal(melonLogoLines, melonLogoCols, 9, 0);
 	for (int i = 0; i < melonLogoLines; i++) {
 		for (int j = 0; j < melonLogoCols; j++) {
 			melonLogoVT->putChar(i, j, melonLogo[i][j]);
 		}
 	}
-	melonLogoVT->map(2);
+	melonLogoVT->map(1);
 
 	//Create a VT for logging what kernel does
-	VirtualTerminal *kvt = new VirtualTerminal(12, 40, 0, 7);
-	kvt->map(melonLogoLines + 4);
+	VirtualTerminal *kvt = new VirtualTerminal(15, 76, 0, 7);
+	kvt->map(melonLogoLines + 2);
 
-	*kvt << "* Kernel initializing in HIGHER HALF!\n";
-	*kvt << "- Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
-	*kvt << "- Kernel command line @ " << (u32int)mbd->cmdline << "\n";
-	*kvt << "- Modules@" << (u32int)mbd->mods_addr << ", mbd@" << (u32int)mbd << "\n";
-	*kvt << "- Placement address : " << (u32int)Mem::placementAddress << "\n";
+	INFO(kvt); *kvt << "Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
+	INFO(kvt); *kvt << "Placement address : " << (u32int)Mem::placementAddress << "\n";
 
-	*kvt << "> Loading IDT...";
-	IDT::init();
+	PROCESSING(kvt, "Loading IDT...");
+	IDT::init(); OK(kvt);
 
-	*kvt << "OK.\n> Initializing paging...";
+	PROCESSING(kvt, "Initializing paging...");
 	u32int totalRam = ((mbd->mem_upper + 1024) * 1024);
-	PhysMem::initPaging(totalRam);
+	PhysMem::initPaging(totalRam); OK(kvt);
 
-	*kvt << "OK.\n- Total ram : " << (s32int)(totalRam / 1024) << "k.\n";
+	INFO(kvt); *kvt << "Total ram : " << (s32int)(totalRam / 1024) << "k.\n";
+	PROCESSING(kvt, "Initializing GDT and cleaning page directory...");
 	GDT::init();
-	*kvt << "> GDT OK. Cleaning page directory...";
-	PhysMem::removeTemporaryPages();
+	PhysMem::removeTemporaryPages(); OK(kvt);
 
-	*kvt << "OK.\n> Creating heap...";
-	Mem::createHeap();
-	*kvt << "OK.\n";
-	*kvt << "- Free frames : " << (s32int)PhysMem::free() << "/" << 
-		(s32int)PhysMem::total();
+	PROCESSING(kvt, "Creating heap...");
+	Mem::createHeap(); OK(kvt);
+	INFO(kvt); *kvt << "Free frames : " << (s32int)PhysMem::free() << "/" << 
+		(s32int)PhysMem::total() << "\n";
 	
-	*kvt << "\n> Registering vgaout...";
-	Dev::registerDevice(vgaout);
+	PROCESSING(kvt, "Registering vgaout...");
+	Dev::registerDevice(vgaout); OK(kvt);
 
-	*kvt << "OK.\n> Initializing PIT...";
-	Dev::registerDevice(new Timer());
+	PROCESSING(kvt,"Initializing PIT...");
+	Dev::registerDevice(new Timer()); OK(kvt);
 
-	*kvt << "OK.\n> Initializing multitasking...";
-	Task::initialize(String((char*)mbd->cmdline));
+	PROCESSING(kvt, "Initializing multitasking...");
+	Task::initialize(String((char*)mbd->cmdline), kvt); OK(kvt);
 
-	*kvt << "OK.\n";
+	PROCESSING(kvt, "Setting up keyboard...");
+	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
+	Kbd::setKeymap(keymapFR_normal, keymapFR_shift, keymapFR_altgr, keymapFR_shiftaltgr);	//Load keymap
+	Kbd::setFocus(kvt);	//Set focus to virtual terminal
+	OK(kvt);
 
 	asm volatile("sti");
 
 	while(1) {
-		Task::currentThread->sleep(1000);
-		*kvt << ".";
+		kvt->setColor(0);
+		*kvt << "> ";
+		kvt->setColor(8);
+		String tmp = kvt->readLine();
+		kvt->setColor(0);
+		if (tmp == "help") {
+			*kvt << " - Command list for integrated kernel shell:\n";
+			*kvt << "  - help          shows this help screen\n";
+			*kvt << "  - reboot        reboots your computer\n";
+		} else if (tmp == "reboot") {
+			Sys::reboot();
+		} else if (!tmp.empty()) {
+			*kvt << " - Unrecognized command: " << tmp << "\n";
+		}
 	}
 	PANIC("END OF KMAIN");
 }

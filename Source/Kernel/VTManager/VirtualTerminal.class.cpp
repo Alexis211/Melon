@@ -4,7 +4,7 @@
 
 #define BUFCHR(l, c) m_buff[((l) * m_cols) + (c)]
 
-VirtualTerminal::VirtualTerminal(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) {
+VirtualTerminal::VirtualTerminal(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) : m_kbdMutex(false) {
 	m_buff = new chr[rows * cols];
 	m_rows = rows;
 	m_cols = cols;
@@ -104,10 +104,10 @@ void VirtualTerminal::setCursorCol(u32int col) {
 
 // Display functionn
 void VirtualTerminal::put(wchar c, bool updatecsr) {
-	if (c.value == 0x08) {	//Ascii backspace
+	if (c.value == '\b') {
 		if (m_csrcol > 0) m_csrcol--;
 		putChar(m_csrlin, m_csrcol, ' ');
-	} else if (c.value == 0x09) {	//Ascii tab
+	} else if (c.value == '\t') {
 		m_csrcol = (m_csrcol + 8) &~(8 - 1);
 	} else if (c.value == '\r') {
 		m_csrcol = 0;

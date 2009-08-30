@@ -42,6 +42,10 @@ void wchar::affectAscii(char c) {
 }
 
 u32int wchar::affectUtf8(char* c) {	//Returns the number of bytes for the character
+	/*if ((c[0] & 0xB0) == 0x80) {	//11000000b == 10000000b, means we are IN a sequence
+		value = 0;
+		return 1;
+	}*/
 	if ((c[0] & 0x80) == 0) {
 		value = c[0];		//0x80 = 10000000b
 		return 1;
@@ -54,6 +58,8 @@ u32int wchar::affectUtf8(char* c) {	//Returns the number of bytes for the charac
 	if ((c[0] & 0xF0) == 0xE0) {	// 11110000b, 11100000b
 		value = ((c[0] & 0x0F) << 12) | ((c[1] & 0x3F) << 6) | (c[2] & 0x3F);
 		if (value < 2048) value = 0; //Bad value	
+		if (value >= 0xD800 and value <= 0xDFFF) value = 0;	//These values are unallowed
+		if (value >= 0xFFFE and value <= 0xFFFF) value = 0;	
 		return 3;
 	}
 	if ((c[0] & 0xF8) == 0xF0) {	// 11111000b, 11110000b

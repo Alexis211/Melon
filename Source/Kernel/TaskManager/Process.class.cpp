@@ -5,7 +5,7 @@
 Process::Process() {	//Private constructor, does nothing
 }
 
-Process* Process::createKernel(String cmdline) {
+Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	Process* p = new Process();
 	p->m_pid = 0;
 	p->m_cmdline = cmdline;
@@ -35,6 +35,7 @@ Process::Process(String cmdline, u32int uid) {
 	m_state = P_RUNNING;
 	m_pagedir = new PageDirectory(kernelPageDirectory);
 	m_uid = uid;
+	m_vt = Task::currentProcess->getVirtualTerminal();
 	m_stacksstart = 0xC0000000;
 }
 
@@ -82,4 +83,12 @@ void Process::threadFinishes(Thread* thread, u32int retval) {
 
 PageDirectory* Process::getPagedir() {
 	return m_pagedir;
+}
+
+VirtualTerminal* Process::getVirtualTerminal() {
+	return m_vt;
+}
+
+void Process::setVirtualTerminal(VirtualTerminal* vt) {
+	m_vt = vt;
 }

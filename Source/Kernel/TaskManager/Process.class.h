@@ -4,6 +4,7 @@
 #include <Library/String.class.h>
 #include <Library/Vector.class.h>
 #include <MemoryManager/PageDirectory.class.h>
+#include <VTManager/VirtualTerminal.class.h>
 
 #define P_ZOMBIE 0
 #define P_RUNNING 1
@@ -30,11 +31,12 @@ class Process {
 	PageDirectory* m_pagedir;
 	u32int m_uid;	//User ID
 	u32int m_stacksstart;
+	VirtualTerminal *m_vt;
 
 	Vector<Thread*> m_threads;
 	
 	public:
-	static Process* createKernel(String cmdline);	//Also creates a Thread for what's curently happening
+	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
 	Process(String cmdline, u32int uid);
 	~Process();
 
@@ -44,6 +46,9 @@ class Process {
 	void threadFinishes(Thread* thread, u32int retval); //Called when a thread finishes
 
 	PageDirectory* getPagedir();
+
+	VirtualTerminal* getVirtualTerminal();
+	void setVirtualTerminal(VirtualTerminal* vt);
 
 };
 

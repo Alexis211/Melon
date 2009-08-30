@@ -3,6 +3,9 @@
 
 #include <Core/common.wtf.h>
 #include <Library/String.class.h>
+#include <TaskManager/Mutex.class.h>
+#include <DeviceManager/Kbd.ns.h>
+#include <Library/Vector.class.h>
 
 struct chr {
 	u8int color;
@@ -19,6 +22,9 @@ class VirtualTerminal {
 	bool m_mapped;
 	
 	u32int m_csrlin, m_csrcol;
+
+	Mutex m_kbdMutex;
+	Vector<Kbd::keypress_t> m_kbdbuff;	//Key press events buffer
 
 	public:
 	VirtualTerminal(u32int rows, u32int cols, u8int fgcolor = 7, u8int bgcolor = 0);
@@ -48,6 +54,11 @@ class VirtualTerminal {
 	//inline VirtualTerminal& operator<<(wchar c) { put(c); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
+
+	//Keyboard functions
+	void keyPress(Kbd::keypress_t kp);	//Called by Kbd:: when a key is pressed
+	Kbd::keypress_t getKeypress(bool show = true, bool block = true);	//Block : must we wait for a key to be pressed ?
+	String readLine(bool show = true);
 };
 
 #endif
