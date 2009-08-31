@@ -2,7 +2,7 @@
 #include <Core/common.wtf.h>
 #include <VTManager/VirtualTerminal.class.h>
 
-#define DEBUGVT(x) VirtualTerminal *x = new VirtualTerminal(4, 46, 0, 15); x->map(); x->put('\n');
+#define DEBUGVT(x) VirtualTerminal *x = new VirtualTerminal(4, 56, 0, 15); x->map(); x->put('\n');
 
 using namespace CMem;
 

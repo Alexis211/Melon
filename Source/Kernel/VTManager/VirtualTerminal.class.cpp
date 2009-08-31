@@ -158,6 +158,7 @@ void VirtualTerminal::writeDec(s32int i, bool updatecsr) {
 }
 
 void VirtualTerminal::writeHex(u32int i, bool updatecsr) {
+	if (m_cols < 60) return;
 	write("0x", false);
 	char hexdigits[] = "0123456789ABCDEF";
 	for (u32int j = 0; j < 8; j++) {
@@ -165,4 +166,31 @@ void VirtualTerminal::writeHex(u32int i, bool updatecsr) {
 		i = i << 4;
 	}
 	if (updatecsr) updateCursor();
+}
+
+void VirtualTerminal::hexDump(u8int *ptr, u32int sz) {
+	if (m_cols < 76) return;	//Not enough space
+	write("HEX Dump, from "); writeHex((u32int)ptr); write("\n");
+	char hexdigits[] = "0123456789ABCDEF";
+	for (u32int i = 0; i < sz; i += 16) {
+		writeHex(i);
+		write(" ");
+		for (u32int j = 0; j < 16; j++) {
+			u8int b = ptr[i + j];
+			if (j > 7) put(" ");
+			put(hexdigits[b >> 4]);
+			put(hexdigits[b & 0xF]);
+			if (j < 8) put(" ");
+		}
+		write(" ");
+		for (u32int j = 0; j < 16; j++) {
+			u8int b = ptr[i + j];
+			if (b >= 0x20 && b < 128) {
+				put(wchar(b));
+			} else {
+				put(".");
+			}
+		}
+		if (m_cols > 76) write("\n");
+	}
 }

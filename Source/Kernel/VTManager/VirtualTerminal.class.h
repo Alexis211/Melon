@@ -49,6 +49,8 @@ class VirtualTerminal {
 	void write(String s, bool updatecsr = true);
 	void writeDec(s32int i, bool updatecsr = true);
 	void writeHex(u32int i, bool updatecsr = true);
+
+	void hexDump(u8int* ptr, u32int sz);
 	
 	inline VirtualTerminal& operator<<(String s) { write(s); return *this; }
 	//inline VirtualTerminal& operator<<(wchar c) { put(c); return *this; }

@@ -5,6 +5,7 @@
 
 #include <Devices/Display/VGATextOutput.class.h>
 #include <Devices/Keyboard/PS2Keyboard.class.h>
+#include <Devices/Floppy/FloppyDrive.class.h>
 #include <Devices/Timer.class.h>
 #include <DeviceManager/Disp.ns.h>
 #include <DeviceManager/Dev.ns.h>
@@ -18,6 +19,7 @@
 #include <SyscallManager/IDT.ns.h>
 #include <Library/String.class.h>
 #include <Library/wchar.class.h>
+#include <VFS/Part.ns.h>
 
 #include <Ressources/logo.cd>
 #include <Ressources/keymap-fr.wtf.c>
@@ -104,6 +106,9 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
 	OK(kvt);
 
+	PROCESSING(kvt, "Detecting floppy drives...");
+	FloppyController::detect(); OK(kvt);
+
 	asm volatile("sti");
 
 	while(1) {
@@ -119,6 +124,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << "  - devices       shows all detected devices on your computer\n";
 			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
 			*kvt << "  - uptime        shows seconds since boot\n";
+			*kvt << "  - part          shows all detected block devices and partitions\n";
 		} else if (tmp == "reboot") {
 			Sys::reboot();
 		} else if (tmp == "devices") {
@@ -138,6 +144,26 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 				"Ko) of " << (s32int)(kh / 1024 / 1024) << "Mo (" << (s32int)(kh / 1024) << "Ko).\n";
 		} else if (tmp == "uptime") {
 			*kvt << " - Uptime : " << (s32int)(Time::uptime()) << "s.\n";
+		} else if (tmp == "part") {
+			*kvt << " *  Dev ID\tClass                    Name\n";
+			for (u32int i = 0; i < Part::devices.size(); i++) {
+				*kvt << "  - " << (s32int)i << "\t\t";
+				if (Part::devices[i] == 0) {
+					*kvt << "[none]\n";
+				} else {
+					*kvt << Part::devices[i]->getClass();
+					kvt->setCursorCol(41);
+					*kvt << Part::devices[i]->getName() << "\n";
+					for (u32int j = 0; j < Part::partitions.size(); j++) {
+						if (Part::partitions[j]->getDevice() == Part::devices[i]) {
+							*kvt << "\t   - Partition " << (s32int)Part::partitions[j]->getPartNumber() <<
+								", start at " << (s32int)Part::partitions[j]->getStartBlock() <<
+								", size " << (s32int)Part::partitions[j]->getBlockCount() << "\n";
+						}
+					}
+				}
+				*kvt << "\n";
+			}
 		} else if (!tmp.empty()) {
 			*kvt << " - Unrecognized command: " << tmp << "\n";
 		}

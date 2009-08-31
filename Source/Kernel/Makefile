@@ -5,7 +5,7 @@ CXX = g++
 LD = ld
 LDFLAGS = -T Link.ld -Map Map.txt --oformat=elf32-i386
 CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror
-CXXFLAGS = -nostartfiles -nostdlib -fno-rtti -fno-exceptions -I . -Wall -Werror -Wno-write-strings -funsigned-char
+CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -Wall -Werror -Wno-write-strings -funsigned-char
 ASM = nasm
 ASMFLAGS = -f elf
 
@@ -36,10 +36,14 @@ Objects = Core/loader.wtf.o \
 		  Library/Bitset.class.o \
 		  Library/String.class.o \
 		  Library/wchar.class.o \
+		  VFS/Partition.class.o \
+		  VFS/Part.ns.o \
 		  SyscallManager/IDT.ns.o \
 		  SyscallManager/IDT.wtf.o \
 		  Devices/Display/VGATextOutput.class.o \
 		  Devices/Keyboard/PS2Keyboard.class.o \
+		  Devices/Floppy/FloppyController.class.o \
+		  Devices/Floppy/FloppyDrive.class.o \
 		  Devices/Timer.class.o
 
 all: $(OutFile)
