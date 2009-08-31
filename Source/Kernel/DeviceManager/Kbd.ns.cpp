@@ -66,7 +66,7 @@ void setKeymap(wchar* kmNormal, wchar* kmShift, wchar* kmAltgr, wchar* kmShiftAl
 }
 
 void updateLeds() {
-	Vector<Device*> kbds = Dev::findDevice("keyboard");
+	Vector<Device*> kbds = Dev::findDevices("keyboard");
 	for (u32int i = 0; i < kbds.size(); i++) {
 		((Keyboard*)(kbds[i]))->updateLeds(kbdstatus);
 	}

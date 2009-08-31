@@ -34,7 +34,7 @@ bool requestIRQ(Device* dev, int irq) {
 	}
 }
 
-Vector<Device*> findDevice(String _class) {
+Vector<Device*> findDevices(String _class) {
 	if (_class.empty()) return devices;
 	Vector<Device*> ret;
 	for (u32int i = 0; i < devices.size(); i++) {

@@ -142,6 +142,7 @@ void expandHeap(u32int quantity) {
 	}
 
 	heapEnd = newEnd;
+	kheapFree += quantity;
 }
 
 void contractHeap() {	//Automatically work out how much we can contract
@@ -156,6 +157,7 @@ void contractHeap() {	//Automatically work out how much we can contract
 	if (quantity == 0) return;
 
 	u32int newEnd = heapEnd - quantity;
+	kheapFree -= quantity;
 
 	removeFromHeapIndex(last_header);
 	last_header->size -= quantity;
@@ -254,6 +256,10 @@ void kfree(void *ptr) {
 			header->size >= 0x2000 and (heapEnd - heapStart > HEAP_MIN_SIZE)) {
 		contractHeap();
 	}
+}
+
+u32int kheapSize() {
+	return (heapEnd - heapStart);
 }
 
 }

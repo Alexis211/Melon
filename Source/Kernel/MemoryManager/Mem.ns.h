@@ -31,6 +31,8 @@ namespace Mem {
 	void createHeap();
 	void *kalloc(u32int sz, bool align = false);
 	void kfree(void *ptr);
+
+	u32int kheapSize();
 }
 
 #endif

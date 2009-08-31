@@ -9,6 +9,7 @@
 #include <DeviceManager/Disp.ns.h>
 #include <DeviceManager/Dev.ns.h>
 #include <DeviceManager/Kbd.ns.h>
+#include <DeviceManager/Time.ns.h>
 #include <VTManager/VirtualTerminal.class.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
@@ -115,8 +116,28 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << " - Command list for integrated kernel shell:\n";
 			*kvt << "  - help          shows this help screen\n";
 			*kvt << "  - reboot        reboots your computer\n";
+			*kvt << "  - devices       shows all detected devices on your computer\n";
+			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
+			*kvt << "  - uptime        shows seconds since boot\n";
 		} else if (tmp == "reboot") {
 			Sys::reboot();
+		} else if (tmp == "devices") {
+			Vector<Device*> dev = Dev::findDevices();
+			*kvt << " - Detected devices :\n";
+			for (u32int i = 0; i < dev.size(); i++) {
+				*kvt << "  - " << dev[i]->getClass();
+				kvt->setCursorCol(25);
+				*kvt << dev[i]->getName() << "\n";
+			}
+		} else if (tmp == "free") {
+			u32int frames = PhysMem::total(), freef = PhysMem::free();
+			*kvt << " - Free frames : " << (s32int)freef << " (" << (s32int)(freef * 4 / 1024) << "Mo) of "
+			   	<< (s32int)frames << " (" << (s32int)(frames * 4 / 1024) << "Mo).\n";
+			u32int kh = Mem::kheapSize(), freek = Mem::kheapFree;
+			*kvt << " - Kernel heap free : " << (s32int)(freek / 1024 / 1024) << "Mo (" << (s32int)(freek / 1024) <<
+				"Ko) of " << (s32int)(kh / 1024 / 1024) << "Mo (" << (s32int)(kh / 1024) << "Ko).\n";
+		} else if (tmp == "uptime") {
+			*kvt << " - Uptime : " << (s32int)(Time::uptime()) << "s.\n";
 		} else if (!tmp.empty()) {
 			*kvt << " - Unrecognized command: " << tmp << "\n";
 		}

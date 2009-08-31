@@ -12,7 +12,7 @@ namespace Dev {
 
 	bool requestIRQ(Device* dev, int irq);
 
-	Vector<Device*> findDevice(String _class = "");
+	Vector<Device*> findDevices(String _class = "");
 }
 
 #endif
