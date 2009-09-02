@@ -55,7 +55,7 @@ void doSwitch() {
 	if (eip == 0x12345)
 		return;
 
-	currentThread->setState(esp, ebp, eip);
+	if ((u32int)currentThread != 0xFFFFFFFF) currentThread->setState(esp, ebp, eip);
 
 	currentThread = nextThread();
 	currentProcess = currentThread->getProcess();

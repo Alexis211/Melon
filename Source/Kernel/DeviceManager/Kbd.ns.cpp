@@ -75,6 +75,7 @@ void updateLeds() {
 void keyPress(u8int scancode) {
 	keypress_t kp;
 	kp.pressed = true;
+	kp.modifiers = kbdstatus & 0x0F;
 	u8int cmd = ctrlkeys[scancode];
 	scancode &= 0x7F;
 	if (cmd == 0) cmd = ctrlkeys[scancode];
@@ -83,7 +84,6 @@ void keyPress(u8int scancode) {
 		kp.character = 0;
 		if ((kbdstatus & STATUS_ALT) or (kbdstatus & STATUS_CTRL)) {
 			kp.hascmd = true;
-			kp.command = kbdstatus & 0x0F;
 		}
 		if ((kbdstatus & STATUS_SHIFT) xor (kbdstatus & STATUS_CAPS)) {
 			if (kbdstatus & STATUS_ALTGR) {
@@ -102,7 +102,6 @@ void keyPress(u8int scancode) {
 		kp.haschar = true;
 		if ((kbdstatus & STATUS_ALT) or (kbdstatus & STATUS_CTRL)) {
 			kp.hascmd = true;
-			kp.command = kbdstatus & 0xF0;
 		}
 		if (cmd == KBDC_KPDEL) {
 			kp.character = (u32int)'.';
@@ -113,7 +112,6 @@ void keyPress(u8int scancode) {
 		kp.haschar = true;
 		if ((kbdstatus & STATUS_ALT) or (kbdstatus & STATUS_CTRL)) {
 			kp.hascmd = true;
-			kp.command = kbdstatus & 0xF0;
 		}
 		kp.character = (u32int)'/';
 	} else if (cmd == KBDC_ALT) {
@@ -144,6 +142,7 @@ void keyPress(u8int scancode) {
 void keyRelease(u8int scancode) {
 	keypress_t kp;
 	kp.pressed = false;
+	kp.modifiers = kbdstatus & 0x0F;
 	u8int cmd = ctrlkeys[scancode];
 	scancode &= 0x7F;
 	if (cmd == 0) cmd = ctrlkeys[scancode];
@@ -152,7 +151,6 @@ void keyRelease(u8int scancode) {
 		kp.character = 0;
 		if ((kbdstatus & STATUS_ALT) or (kbdstatus & STATUS_CTRL)) {
 			kp.hascmd = true;
-			kp.command = kbdstatus & 0x0F;
 		}
 		if ((kbdstatus & STATUS_SHIFT) xor (kbdstatus & STATUS_CAPS)) {
 			if (kbdstatus & STATUS_ALTGR) {
@@ -171,7 +169,6 @@ void keyRelease(u8int scancode) {
 		kp.haschar = true;
 		if ((kbdstatus & STATUS_ALT) or (kbdstatus & STATUS_CTRL)) {
 			kp.hascmd = true;
-			kp.command = kbdstatus & 0xF0;
 		}
 		if (cmd == KBDC_KPDEL) {
 			kp.character = (u32int)'.';
@@ -187,7 +184,7 @@ void keyRelease(u8int scancode) {
 	} else if (cmd == KBDC_LEFTSHIFT or cmd == KBDC_RIGHTSHIFT) {
 		kbdstatus &= ~STATUS_SHIFT;
 	}
-	if (!kp.haschar) {
+	if (!kp.haschar && cmd) {
 		kp.hascmd = true;
 		kp.command = cmd;
 	}

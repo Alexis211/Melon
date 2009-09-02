@@ -8,11 +8,11 @@ void VirtualTerminal::keyPress(keypress_t kp) {
 	if (!m_kbdMutex.locked()) {
 		if (kp.haschar && !kp.hascmd) {
 			put(kp.character);
-		} else if (kp.hascmd && kp.command == KBDC_ENTER) {
+		} else if (kp.hascmd && !kp.haschar && kp.command == KBDC_ENTER) {
 			put("\n");
-		} else if (kp.hascmd && kp.command == KBDC_TAB) {
+		} else if (kp.hascmd && !kp.haschar && kp.command == KBDC_TAB) {
 			put("\t");
-		} else if (kp.hascmd && kp.command == KBDC_BACKSPACE) {
+		} else if (kp.hascmd && !kp.haschar && kp.command == KBDC_BACKSPACE) {
 			put("\b");
 		}
 	}
@@ -39,11 +39,11 @@ keypress_t VirtualTerminal::getKeypress(bool show, bool block) {
 	if (show) {
 		if (ret.haschar && !ret.hascmd) {
 			put(ret.character);
-		} else if (ret.hascmd && ret.command == KBDC_ENTER) {
+		} else if (ret.hascmd && !ret.haschar && ret.command == KBDC_ENTER) {
 			put("\n");
-		} else if (ret.hascmd && ret.command == KBDC_TAB) {
+		} else if (ret.hascmd && !ret.haschar && ret.command == KBDC_TAB) {
 			put("\t");
-		} else if (ret.hascmd && ret.command == KBDC_BACKSPACE) {
+		} else if (ret.hascmd && !ret.haschar && ret.command == KBDC_BACKSPACE) {
 			put("\b");
 		}
 	}
@@ -55,11 +55,11 @@ keypress_t VirtualTerminal::getKeypress(bool show, bool block) {
 String VirtualTerminal::readLine(bool show) {
 	String ret = "";
 	keypress_t tmp = getKeypress(show);
-	while (!(tmp.hascmd and tmp.command == KBDC_ENTER)) {
-		if (tmp.hascmd and tmp.command == KBDC_BACKSPACE) {
+	while (!(tmp.hascmd && !tmp.haschar && tmp.command == KBDC_ENTER)) {
+		if (tmp.hascmd && !tmp.haschar && tmp.command == KBDC_BACKSPACE) {
 			if (!ret.empty()) ret = ret.substr(0, ret.size() - 1);
 			else put(" ");	//Put a space so that cursor stays at same place
-		} else if (tmp.haschar) {
+		} else if (tmp.haschar && !tmp.hascmd) {
 			ret += tmp.character;
 		}
 		tmp = getKeypress(show);

@@ -76,11 +76,17 @@
 class VirtualTerminal;
 
 namespace Kbd {
+	//== Possible cases for keypress_t :
+	// - hascmd && !haschar : this is a command key press/release (all grey keys except alt/ctrl/altgr/shift)
+	// - haschar && !hascmd : this is a character key press/release. Modifiers can haz STATUS_SHIFT or STATUS_ALTGR
+	// - haschar && hascmd : this is a character key press, but with ctrl and/or alt. See that in modifiers.
+	// - !haschar && !hascmd : invalid keypress
 	struct keypress_t {
 		bool pressed;
 		bool hascmd;
 		bool haschar;
-		u8int command;	//is 0 if !hascmd, is one of KBDC_* if !haschar, and is a mask of STATUS_* if haschar
+		u8int modifiers;
+		u8int command;	
 		wchar character; //is 0 if !haschar
 		keypress_t() : hascmd(false), haschar(false), command(0), character('\0') {};
 	};

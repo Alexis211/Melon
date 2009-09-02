@@ -55,12 +55,14 @@ extern "C" void irq13();
 extern "C" void irq14();
 extern "C" void irq15();
 
-extern "C" void int64();
+extern "C" void int65();		//IRQ to request a task switch
+extern "C" void int66();		//IRQ to signal that thread ended
 
 extern "C" void idt_flush(u32int);
 
 extern "C" void interrupt_handler(registers_t regs) {
-	bool doSwitch = (regs.int_no == 32 or regs.int_no == 64);
+	Task::currentThread->enterInterrupt();	//Do that so that whatever is called here can use waitIRQ
+	bool doSwitch = (regs.int_no == 32 or regs.int_no >= 65);	//SYSCALLS >= 65 are task-managing-related
 	if (regs.int_no < 32) {
 		IDT::handleException(regs, regs.int_no);
 	} else if (regs.int_no < 48) {
@@ -70,7 +72,11 @@ extern "C" void interrupt_handler(registers_t regs) {
 		Dev::handleIRQ(regs, (regs.int_no - 32));
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
+	if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
+		Task::currentThread->finish(regs.eax);
+	}
 	if (doSwitch) Task::doSwitch();
+	Task::currentThread->exitInterrupt();
 }
 
 namespace IDT {
@@ -155,12 +161,13 @@ void init() {
 	setGate(46, (u32int)irq14, 0x08, 0x8E);
 	setGate(47, (u32int)irq15, 0x08, 0x8E);
 
-	setGate(64, (u32int)int64, 0x08, 0x8E);
+	setGate(65, (u32int)int65, 0x08, 0x8E);
+	setGate(66, (u32int)int66, 0x08, 0x8E);
 	
 	idt_flush((u32int)&idt_ptr);
 }
 
-void handleException(registers_t regs, int no) {
+void handleException(registers_t regs, int no) {	//TODO :: make exception handling work with task managment
 	asm volatile("cli;");
 	char* exceptions[] = {
 		"Division by zero", "Debug exception", "Non maskable interrupt", 

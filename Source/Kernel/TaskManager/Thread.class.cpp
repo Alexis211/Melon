@@ -5,7 +5,8 @@
 
 void runThread(Thread* thread, u32int (*entry_point)()) {
 	asm volatile("sti");
-	thread->run(entry_point);
+	u32int ret = entry_point();	//Run !
+	asm volatile("mov %0, %%eax; int $66;" : : "r"(ret));	//Syscall for thread ending
 }
 
 Thread::Thread() {	//Private constructor, does nothing
@@ -32,6 +33,7 @@ Thread::Thread(Process* process, u32int (*entry_point)()) {
 }
 
 Thread::~Thread() {
+	if (Task::currentThread == this) Task::currentThread = (Thread*)0xFFFFFFFF;	//Signal that current thread is invalid
 	if (m_isKernel)
 		PageAlloc::free((void*)m_kernelStackFrame);
 	Task::unregisterThread(this);
@@ -57,16 +59,17 @@ void Thread::setup(u32int (*entry_point)(), u32int esp) {
 }
 
 void Thread::finish(u32int errcode) {
+	if (errcode == E_PAGEFAULT and m_isKernel) {
+		PANIC("Page fault in kernel thread !");
+	}
+	if (errcode == E_UNHANDLED_EXCEPTION and m_isKernel) {
+		PANIC("Unhandled exception in kernel thread !");
+	}
 	//Needs not set m_state to a finished state, either :
 	// - thread is unregistered from process and everywhere
 	// - errcode is an exception or this is main thread, process exits
 	m_process->threadFinishes(this, errcode);
 } 
-
-void Thread::run(u32int (*entry_point)()) {
-	u32int ret = entry_point();	//Run !
-	finish(ret);
-}
 
 void Thread::setState(u32int esp, u32int ebp, u32int eip) {
 	m_esp = esp;
@@ -88,7 +91,7 @@ void Thread::sleep(u32int msecs) {
 }
 
 void Thread::waitIRQ(u8int irq) {
-	if (m_process->m_uid != 0) return;
+	if (!m_isKernel and !m_isRunningAnInterrupt) return;
 
 	m_state = T_IRQWAIT;
 	waitfor.m_irq = irq;

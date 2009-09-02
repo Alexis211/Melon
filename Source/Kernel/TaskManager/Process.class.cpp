@@ -68,7 +68,7 @@ void Process::registerThread(Thread* t) {
 
 void Process::threadFinishes(Thread* thread, u32int retval) {
 	// If it is the main thread of the process, or if it pagefaulted
-	if (thread == m_threads[0] or retval == 0x0FFFFF00) {
+	if (thread == m_threads[0] or retval == E_PAGEFAULT) {
 		exit();
 	} else {
 		//Simply unregister thread

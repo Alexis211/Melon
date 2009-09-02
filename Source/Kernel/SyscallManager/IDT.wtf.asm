@@ -97,7 +97,10 @@ IRQ	13,	45
 IRQ	14,	46
 IRQ	15,	47
 
-SYSCALL 64	; this syscall requests a task switch
+SYSCALL 64  ; this syscall is the one and only useful syscall. It does everything.
+; The next syscalls are task-managing-specific
+SYSCALL 65	; this syscall requests a task switch
+SYSCALL 66  ; signals to kernel that thread has finished (retval in eax)
 
 ; ******************************************************************
 

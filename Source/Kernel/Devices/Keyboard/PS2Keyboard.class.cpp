@@ -6,6 +6,14 @@ using namespace Sys;
 
 PS2Keyboard::PS2Keyboard() {
 	Dev::requestIRQ(this, 1);
+
+	//Read all waiting characters, so that keyboard buffer is empty
+	u8int temp = inb(0x60), temp2 = 0;
+	while (temp != temp2) {
+		temp2 = temp;
+		temp = inb(0x60);
+	}
+
 	m_escaped = false;
 }
 
