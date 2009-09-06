@@ -2,6 +2,7 @@
 #define DEF_THREAD_CLASS_H
 
 #include <TaskManager/Process.class.h>
+#include <SyscallManager/IDT.ns.h>
 
 #define T_ZOMBIE 0
 #define T_RUNNING 1
@@ -33,6 +34,7 @@ class Thread {
 	Thread(Process* process, u32int (*entry_point)());
 	~Thread();
 	void finish(u32int errcode);	//Called by run() when thread returns, and by exception handler. Can also be called by the thread itself
+	void handleException(registers_t regs, int no);
 
 	void setState(u32int esp, u32int ebp, u32int eip);
 	u32int getEsp();

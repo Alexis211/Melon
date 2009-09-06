@@ -71,6 +71,45 @@ void Thread::finish(u32int errcode) {
 	m_process->threadFinishes(this, errcode);
 } 
 
+void Thread::handleException(registers_t regs, int no) {
+	char* exceptions[] = {
+		"Division by zero", "Debug exception", "Non maskable interrupt", 
+		"Breakpoint exception", "'Into detected overflow'", "Out of bounds exception",
+		"Invalid opcode exception", "No coprocessor exception", "Double fault",
+		"Coprocessor segment overrun", "Bad TSS", "Segment not present",
+		"Stack fault", "General protection fault", "Page fault",
+		"Unknown", "Coprocessor fault", "Alignement check exception",
+		"Machine check exception", "", "",
+		"", "", "",
+		"", "", "",
+		"", "", "",
+		"", ""};
+
+	*(m_process->m_vt) << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
+		(u32int)regs.eip << "\n:: " << exceptions[no];
+
+	if (no == 14) {	//Page fault
+		int present = !(regs.err_code & 0x1);
+		int rw = regs.err_code & 0x2;
+		int us = regs.err_code & 0x4;
+		int rsvd = regs.err_code & 0x8;
+		u32int faddr;
+		asm volatile("mov %%cr2, %0" : "=r"(faddr));
+		*(m_process->m_vt) << "\n   ";
+		if (present) *(m_process->m_vt) << "Present ";
+		if (rw) *(m_process->m_vt) << "R/W ";
+		if (us) *(m_process->m_vt) << "User ";
+		if (rsvd) *(m_process->m_vt) << "Rsvd ";
+		*(m_process->m_vt) << "At:" << (u32int)faddr;
+
+		*(m_process->m_vt) << "\nThread finishing.\n";
+		finish(E_PAGEFAULT);
+		return;
+	}
+	*(m_process->m_vt) << "\nThread finishing.\n";
+	finish(E_UNHANDLED_EXCEPTION);
+}
+
 void Thread::setState(u32int esp, u32int ebp, u32int eip) {
 	m_esp = esp;
 	m_ebp = ebp;

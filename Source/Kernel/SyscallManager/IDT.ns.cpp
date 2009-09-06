@@ -55,15 +55,17 @@ extern "C" void irq13();
 extern "C" void irq14();
 extern "C" void irq15();
 
-extern "C" void int65();		//IRQ to request a task switch
-extern "C" void int66();		//IRQ to signal that thread ended
+extern "C" void int65();		//Syscall to request a task switch
+extern "C" void int66();		//Syscall to signal that thread ended
 
 extern "C" void idt_flush(u32int);
 
 extern "C" void interrupt_handler(registers_t regs) {
 	bool doSwitch = (regs.int_no == 32 or regs.int_no >= 65);	//SYSCALLS >= 65 are task-managing-related
 	if (regs.int_no < 32) {
-		IDT::handleException(regs, regs.int_no);
+		if ((u32int)Task::currentThread == 0xFFFFFFFF or Task::currentThread == 0)
+			PANIC("Exception cannot be handled.");
+		Task::currentThread->handleException(regs, regs.int_no);
 	} else if (regs.int_no < 48) {
 		if (regs.int_no >= 40)
 			outb(0xA0, 0x20);
@@ -163,46 +165,6 @@ void init() {
 	setGate(66, (u32int)int66, 0x08, 0x8E);
 	
 	idt_flush((u32int)&idt_ptr);
-}
-
-void handleException(registers_t regs, int no) {	//TODO :: make exception handling work with task managment
-	asm volatile("cli;");
-	char* exceptions[] = {
-		"Division by zero", "Debug exception", "Non maskable interrupt", 
-		"Breakpoint exception", "'Into detected overflow'", "Out of bounds exception",
-		"Invalid opcode exception", "No coprocessor exception", "Double fault",
-		"Coprocessor segment overrun", "Bad TSS", "Segment not present",
-		"Stack fault", "General protection fault", "Page fault",
-		"Unknown", "Coprocessor fault", "Alignement check exception",
-		"Machine check exception", "", "",
-		"", "", "",
-		"", "", "",
-		"", "", "",
-		"", ""};
-
-	VirtualTerminal *vt = new VirtualTerminal(5, 50, 0, 15);
-	vt->map();
-
-	*vt << "\n  Unhandled exception " << (s32int)no << " at ";
-	vt->writeHex(regs.cs); *vt <<":"; vt->writeHex(regs.eip);
-	*vt << "\n  :: " << exceptions[no];
-
-	if (no == 14) {	//Page fault
-		int present = !(regs.err_code & 0x1);
-		int rw = regs.err_code & 0x2;
-		int us = regs.err_code & 0x4;
-		int rsvd = regs.err_code & 0x8;
-		u32int faddr;
-		asm volatile("mov %%cr2, %0" : "=r"(faddr));
-		*vt << "\n   ";
-		if (present) *vt << "Present ";
-		if (rw) *vt << "R/W ";
-		if (us) *vt << "User ";
-		if (rsvd) *vt << "Rsvd ";
-		*vt << "At:" << (u32int)faddr;
-	}
-
-	asm volatile("hlt");
 }
 
 }

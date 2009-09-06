@@ -25,7 +25,6 @@ namespace IDT {
 	}__attribute__((packed));
 
 	void init();
-	void handleException(registers_t regs, int no);
 }
 
 #endif

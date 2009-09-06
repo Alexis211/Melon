@@ -14,6 +14,7 @@ Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	p->m_pagedir = kernelPageDirectory;
 	p->m_uid = 0;
 	p->m_stacksstart = 0;
+	p->m_vt = vt;
 	
 	Thread* t = new Thread();
 	t->m_process = p;
