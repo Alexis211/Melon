@@ -15,6 +15,10 @@ class Partition {
 	bool readBlocks(u64int startblock, u32int count, u8int *data);
 	bool writeBlocks(u64int startblock, u32int count, u8int *data);
 
+	//These two just use the readBlocks && writeBlocks defined above
+	bool read(u64int start, u32int length, u8int *data);
+	bool write(u64int start, u32int length, u8int *data);
+
 	//Accessors :
 	BlockDevice* getDevice();
 	u64int getStartBlock();

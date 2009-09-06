@@ -88,8 +88,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	PROCESSING(kvt, "Creating heap...");
 	Mem::createHeap(); OK(kvt);
-	INFO(kvt); *kvt << "Free frames : " << (s32int)PhysMem::free() << "/" << 
-		(s32int)PhysMem::total() << "\n";
+	INFO(kvt); *kvt << "Free frames : " << (s32int)PhysMem::free() << "/" << (s32int)PhysMem::total() << "\n";
 	
 	PROCESSING(kvt, "Registering vgaout...");
 	Dev::registerDevice(vgaout); OK(kvt);
@@ -145,14 +144,14 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 		} else if (tmp == "uptime") {
 			*kvt << " - Uptime : " << (s32int)(Time::uptime()) << "s.\n";
 		} else if (tmp == "part") {
-			*kvt << " *  Dev ID\tClass                    Name\n";
+			*kvt << " *  ID\tClass                    Name\n";
 			for (u32int i = 0; i < Part::devices.size(); i++) {
-				*kvt << "  - " << (s32int)i << "\t\t";
+				*kvt << "  - " << (s32int)i << "\t";
 				if (Part::devices[i] == 0) {
 					*kvt << "[none]\n";
 				} else {
 					*kvt << Part::devices[i]->getClass();
-					kvt->setCursorCol(41);
+					kvt->setCursorCol(33);
 					*kvt << Part::devices[i]->getName() << "\n";
 					for (u32int j = 0; j < Part::partitions.size(); j++) {
 						if (Part::partitions[j]->getDevice() == Part::devices[i]) {
@@ -162,7 +161,6 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 						}
 					}
 				}
-				*kvt << "\n";
 			}
 		} else if (!tmp.empty()) {
 			*kvt << " - Unrecognized command: " << tmp << "\n";
