@@ -77,7 +77,7 @@ void doSwitch() {
 }
 
 void triggerSwitch() {
-	asm volatile("int $64");
+	asm volatile("int $65");
 }
 
 u32int nextPid() {

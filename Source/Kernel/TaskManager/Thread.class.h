@@ -23,7 +23,6 @@ class Thread {
 		u8int m_irq;		//An IRQ number
 	} waitfor;
 	
-	bool m_isRunningAnInterrupt;
 	bool m_isKernel;	//Says if stack is in kernel pagedir, and if thread should run in ring 0
 	u32int m_kernelStackFrame;	//Used for allocating and freeing a frame used as a stack
 
@@ -40,9 +39,6 @@ class Thread {
 	u32int getEbp();
 	u32int getEip();
 	Process* getProcess();
-
-	inline void enterInterrupt() { m_isRunningAnInterrupt = true; }
-	inline void exitInterrupt() { m_isRunningAnInterrupt = false; }
 
 	void sleep(u32int msecs);
 	void waitIRQ(u8int irq);

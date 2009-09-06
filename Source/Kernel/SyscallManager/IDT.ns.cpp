@@ -61,7 +61,6 @@ extern "C" void int66();		//IRQ to signal that thread ended
 extern "C" void idt_flush(u32int);
 
 extern "C" void interrupt_handler(registers_t regs) {
-	Task::currentThread->enterInterrupt();	//Do that so that whatever is called here can use waitIRQ
 	bool doSwitch = (regs.int_no == 32 or regs.int_no >= 65);	//SYSCALLS >= 65 are task-managing-related
 	if (regs.int_no < 32) {
 		IDT::handleException(regs, regs.int_no);
@@ -76,7 +75,6 @@ extern "C" void interrupt_handler(registers_t regs) {
 		Task::currentThread->finish(regs.eax);
 	}
 	if (doSwitch) Task::doSwitch();
-	Task::currentThread->exitInterrupt();
 }
 
 namespace IDT {
@@ -185,8 +183,9 @@ void handleException(registers_t regs, int no) {	//TODO :: make exception handli
 	VirtualTerminal *vt = new VirtualTerminal(5, 50, 0, 15);
 	vt->map();
 
-	*vt << "\n  Unhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
-	   	(u32int)regs.eip << "\n  :: " << exceptions[no];
+	*vt << "\n  Unhandled exception " << (s32int)no << " at ";
+	vt->writeHex(regs.cs); *vt <<":"; vt->writeHex(regs.eip);
+	*vt << "\n  :: " << exceptions[no];
 
 	if (no == 14) {	//Page fault
 		int present = !(regs.err_code & 0x1);

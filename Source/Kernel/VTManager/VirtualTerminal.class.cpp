@@ -158,7 +158,6 @@ void VirtualTerminal::writeDec(s32int i, bool updatecsr) {
 }
 
 void VirtualTerminal::writeHex(u32int i, bool updatecsr) {
-	if (m_cols < 60) return;
 	write("0x", false);
 	char hexdigits[] = "0123456789ABCDEF";
 	for (u32int j = 0; j < 8; j++) {

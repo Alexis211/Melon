@@ -91,8 +91,6 @@ void Thread::sleep(u32int msecs) {
 }
 
 void Thread::waitIRQ(u8int irq) {
-	if (!m_isKernel and !m_isRunningAnInterrupt) return;
-
 	m_state = T_IRQWAIT;
 	waitfor.m_irq = irq;
 
