@@ -45,4 +45,5 @@ stats:
 	echo -n "Lines of code : "; \
 	cat Source/*/{*,*/*,*/*/*}.{c,asm,cpp,h} 2> /dev/null | wc -l; \
 	echo "TODOs : "; \
-	cat Source/*/{*,*/*,*/*/*}.{c,asm,cpp,h} 2> /dev/null | grep TODO;
+	git grep TODO
+	#cat Source/*/{*,*/*,*/*/*}.{c,asm,cpp,h} 2> /dev/null | grep TODO;

@@ -115,7 +115,7 @@ void FloppyController::detect() {	//TODO : do this better
 
 	Vector<Device*> fdds = Dev::findDevices("block.floppy");
 	for (u32int i = 0; i < fdds.size(); i++) {
-		Part::registerDevice((BlockDevice*)fdds[i]);	//TODO
+		Part::registerDevice((BlockDevice*)fdds[i]);
 	}
 
 	new Thread(floppyMotorTimer, true);
