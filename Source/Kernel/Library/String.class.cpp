@@ -6,7 +6,7 @@ using namespace CMem;	//strlen and memcpy
 String String::hex(u32int number) {
 	String ret;
 	ret.m_length = 10;
-	ret.m_string = new wchar[11];
+	ret.m_string = new WChar[11];
 	ret.m_string[0] = '0';
 	ret.m_string[1] = 'x';
 	ret.m_string[10] = 0;
@@ -35,7 +35,7 @@ String String::number(s32int number) {
 
 	String ret;
 	ret.m_length = order;
-	ret.m_string = new wchar[order + 1];
+	ret.m_string = new WChar[order + 1];
 
 	for (u32int i = order; i > 0; i--) {
 		ret.m_string[i - 1] = numbers[number % 10];
@@ -55,12 +55,12 @@ String::String() {
 }
 
 String::String(char* string) {
-	m_length = wchar::utf8len(string);
+	m_length = WChar::utf8len(string);
 	if (m_length == 0) {
 		m_string = 0;
 		return;
 	}
-	m_string = new wchar[m_length + 1];
+	m_string = new WChar[m_length + 1];
 	int i = 0, l = strlen(string), c = 0;
 	while (i < l) {
 		i += m_string[c].affectUtf8(string + i);
@@ -75,7 +75,7 @@ String::String(const String &other) {
 		m_string = 0;
 		return;
 	}
-	m_string = new wchar[m_length + 1];
+	m_string = new WChar[m_length + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		m_string[i] = other.m_string[i];
 	}
@@ -93,7 +93,7 @@ void String::operator= (const String &other) {
 		m_string = 0;
 		return;
 	}
-	m_string = new wchar[m_length + 1];
+	m_string = new WChar[m_length + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		m_string[i] = other.m_string[i];
 	}
@@ -101,13 +101,13 @@ void String::operator= (const String &other) {
 }
 
 void String::operator= (char* string) {
-	m_length = wchar::utf8len(string);
+	m_length = WChar::utf8len(string);
 	if (m_string != 0) delete [] m_string;
 	if (m_length == 0) {
 		m_string = 0;
 		return;
 	}
-	m_string = new wchar[m_length + 1];
+	m_string = new WChar[m_length + 1];
 	int i = 0, l = strlen(string), c = 0;
 	while (i < l) {
 		i += m_string[c].affectUtf8(string + i);
@@ -125,9 +125,9 @@ bool String::operator== (String &other) {
 }
 
 bool String::operator== (char* string) {
-	if (m_length != wchar::utf8len(string)) return false;
+	if (m_length != WChar::utf8len(string)) return false;
 	int i = 0, l = strlen(string), c = 0;
-	wchar tmp;
+	WChar tmp;
 	while (i < l) {
 		i += tmp.affectUtf8(string + i);
 		if (m_string[c] != tmp) return false;
@@ -137,7 +137,7 @@ bool String::operator== (char* string) {
 }
 
 String& String::operator+= (String &other) {
-	wchar* newdata = new wchar[m_length + other.m_length + 1];
+	WChar* newdata = new WChar[m_length + other.m_length + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
 	}
@@ -152,7 +152,7 @@ String& String::operator+= (String &other) {
 }
 
 String& String::operator+= (char* other) {
-	wchar* newdata = new wchar[m_length + wchar::utf8len(other) + 1];
+	WChar* newdata = new WChar[m_length + WChar::utf8len(other) + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
 	}
@@ -168,8 +168,8 @@ String& String::operator+= (char* other) {
 	return *this;
 }
 
-String& String::operator+= (wchar other) {
-	wchar* newdata = new wchar[m_length + 2];
+String& String::operator+= (WChar other) {
+	WChar* newdata = new WChar[m_length + 2];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
 	}
@@ -191,7 +191,7 @@ String& String::operator+ (char* other) { //Can be optimized
 	return (ret += other);
 }
 
-String& String::operator+ (wchar other) {
+String& String::operator+ (WChar other) {
 	String ret(*this);
 	return (ret += other);
 }
@@ -236,7 +236,7 @@ u32int String::toInt16() {
 	return number;
 }
 
-wchar& String::operator[] (int index) {
+WChar& String::operator[] (int index) {
 	return m_string[index];
 }
 
@@ -254,7 +254,7 @@ bool String::empty() {
 	return (m_length == 0);
 }
 
-Vector<String> String::split(wchar c) {
+Vector<String> String::split(WChar c) {
 	Vector<String> ret;
 	ret.push(String(""));
 	for (u32int i = 0; i < m_length; i++) {
@@ -274,9 +274,9 @@ String String::substr(s32int start, s32int size) {
 		size = 0 - size;
 	}
 	String ret;
-	ret.m_string = new wchar[size + 1];
+	ret.m_string = new WChar[size + 1];
 	ret.m_length = size;
-	memcpy((u8int*)ret.m_string, (const u8int*)(m_string + start), size * sizeof(wchar));
+	memcpy((u8int*)ret.m_string, (const u8int*)(m_string + start), size * sizeof(WChar));
 	ret.m_string[size] = 0;
 	return ret;
 }

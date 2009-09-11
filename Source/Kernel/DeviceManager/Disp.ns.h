@@ -2,7 +2,7 @@
 #define DEF_DISP_NS_H
 
 #include <Devices/Display/Display.proto.h>
-#include <Library/wchar.class.h>
+#include <Library/WChar.class.h>
 
 namespace Disp {
 	struct mode_t {
@@ -12,7 +12,7 @@ namespace Disp {
 
 	u16int textCols();
 	u16int textRows();
-	void putChar(u16int line, u16int col, wchar c, u8int color);
+	void putChar(u16int line, u16int col, WChar c, u8int color);
 	void moveCursor(u16int line, u16int col);
 	void clear();
 

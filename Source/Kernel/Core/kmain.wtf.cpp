@@ -18,7 +18,6 @@
 #include <TaskManager/Task.ns.h>
 #include <SyscallManager/IDT.ns.h>
 #include <Library/String.class.h>
-#include <Library/wchar.class.h>
 #include <VFS/Part.ns.h>
 
 #include <Ressources/logo.cd>
@@ -101,7 +100,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	PROCESSING(kvt, "Setting up keyboard...");
 	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
-	Kbd::setKeymap(keymapFR_normal, keymapFR_shift, keymapFR_altgr, keymapFR_shiftaltgr);	//Load keymap
+	Kbd::setKeymap(keymapFR_normal, keymapFR_shift, keymapFR_caps, keymapFR_altgr, keymapFR_shiftaltgr);	//Load keymap
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
 	OK(kvt);
 

@@ -1,6 +1,6 @@
-#include "wchar.class.h"
+#include "WChar.class.h"
 
-wchar wchar::CP437[] = {	//These are the UTF8 equivalents for the 128 extra characters of code page 850
+WChar WChar::CP437[] = {	//These are the UTF8 equivalents for the 128 extra characters of code page 850
 	"Ç", "ü", "é", "â", "ä", "à", "å", "ç", "ê", "ë", "è", "ï", "î", "ì", "Ä", "Å",
 	"É", "æ", "Æ", "ô", "ö", "ò", "û", "ù", "ÿ", "Ö", "Ü", "¢", "£", "¥", "₧", "ƒ",
 	"á", "í", "ó", "ú", "ñ", "Ñ", "ª", "º", "¿", "⌐", "¬", "½", "¼", "¡", "«", "»",
@@ -11,19 +11,19 @@ wchar wchar::CP437[] = {	//These are the UTF8 equivalents for the 128 extra char
 	"≡", "±", "≥", "≤", "⌠", "⌡", "÷", "≈", "°", "∙", "·", "√", "ⁿ", "²", "■", "⍽"
 };
 
-wchar::wchar() {
+WChar::WChar() {
 	value = 0;
 }
 
-wchar::wchar(char c) {
+WChar::WChar(char c) {
 	affectAscii(c);
 }
 
-wchar::wchar(char* c) {
+WChar::WChar(char* c) {
 	affectUtf8(c);
 }
 
-u32int wchar::utf8len(char* c) {
+u32int WChar::utf8len(char* c) {
 	int i = 0, l = CMem::strlen(c), co = 0;
 	while (i < l) {
 		if ((c[i] & 0x80) == 0) i += 1;
@@ -36,12 +36,12 @@ u32int wchar::utf8len(char* c) {
 	return co;
 }
 
-void wchar::affectAscii(char c) {
+void WChar::affectAscii(char c) {
 	if (c >= 0)	value = c;
 	else value = CP437[c + 128];
 }
 
-u32int wchar::affectUtf8(char* c) {	//Returns the number of bytes for the character
+u32int WChar::affectUtf8(char* c) {	//Returns the number of bytes for the character
 	/*if ((c[0] & 0xB0) == 0x80) {	//11000000b == 10000000b, means we are IN a sequence
 		value = 0;
 		return 1;
@@ -71,7 +71,7 @@ u32int wchar::affectUtf8(char* c) {	//Returns the number of bytes for the charac
 	return 1;
 }
 
-u8int wchar::toAscii() {
+u8int WChar::toAscii() {
 	if (value < 128) return (char)value;
 	for (int i = 0; i < 128; i++) {
 		if (CP437[i] == value) return (i + 128);

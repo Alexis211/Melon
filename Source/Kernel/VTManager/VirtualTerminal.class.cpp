@@ -29,7 +29,7 @@ void VirtualTerminal::setColor(u8int fgcolor, u8int bgcolor) {
 	}
 }
 
-void VirtualTerminal::putChar(u32int row, u32int col, wchar c) {
+void VirtualTerminal::putChar(u32int row, u32int col, WChar c) {
 	if (row >= m_rows or col >= m_cols) return;
 	chr* ch = &BUFCHR(row, col);
 	ch->c = c;
@@ -103,7 +103,7 @@ void VirtualTerminal::setCursorCol(u32int col) {
 
 
 // Display functionn
-void VirtualTerminal::put(wchar c, bool updatecsr) {
+void VirtualTerminal::put(WChar c, bool updatecsr) {
 	if (c.value == '\b') {
 		if (m_csrcol > 0) m_csrcol--;
 		putChar(m_csrlin, m_csrcol, ' ');
@@ -185,7 +185,7 @@ void VirtualTerminal::hexDump(u8int *ptr, u32int sz) {
 		for (u32int j = 0; j < 16; j++) {
 			u8int b = ptr[i + j];
 			if (b >= 0x20 && b < 128) {
-				put(wchar(b));
+				put(WChar(b));
 			} else {
 				put(".");
 			}

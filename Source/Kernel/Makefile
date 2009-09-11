@@ -35,7 +35,7 @@ Objects = Core/loader.wtf.o \
 		  VTManager/VT.ns.o \
 		  Library/Bitset.class.o \
 		  Library/String.class.o \
-		  Library/wchar.class.o \
+		  Library/WChar.class.o \
 		  VFS/Partition.class.o \
 		  VFS/Part.ns.o \
 		  SyscallManager/IDT.ns.o \

@@ -5,6 +5,7 @@
 
 class Keyboard : public Device {
 	public:
+	virtual ~Keyboard() {}
 	virtual void updateLeds(u32int kbdstatus) = 0;
 };
 

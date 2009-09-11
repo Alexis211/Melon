@@ -12,7 +12,7 @@ u16int textRows() {
 	return mode.textRows;
 }
 
-void putChar(u16int line, u16int col, wchar c, u8int color) {
+void putChar(u16int line, u16int col, WChar c, u8int color) {
 	if (line >= mode.textRows or col >= mode.textCols) return;
 	mode.device->putChar(line, col, c, color);
 }

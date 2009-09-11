@@ -2,7 +2,7 @@
 #define DEF_KBD_NS_H
 
 #include <Core/common.wtf.h>
-#include <Library/wchar.class.h>
+#include <Library/WChar.class.h>
 
 //Used by variable kbdstatus
 #define STATUS_SCRL 0x40
@@ -87,12 +87,12 @@ namespace Kbd {
 		bool haschar;
 		u8int modifiers;
 		u8int command;	
-		wchar character; //is 0 if !haschar
+		WChar character; //is 0 if !haschar
 		keypress_t() : hascmd(false), haschar(false), command(0), character('\0') {};
 	};
 
 	void setFocus(VirtualTerminal* vt);
-	void setKeymap(wchar* kmNormal, wchar* kmShift, wchar* kmAltgr, wchar* kmShiftAltgr = NULL);
+	void setKeymap(WChar* kmNormal, WChar* kmShift, WChar* kmCaps, WChar* kmAltgr, WChar* kmShiftAltgr = NULL);
 	void updateLeds();
 	void keyPress(u8int scancode);
 	void keyRelease(u8int scancode);

@@ -26,7 +26,7 @@ u8int ctrlkeys[] = {
 /* 0xF0 */	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-wchar *keymapNormal = NULL, *keymapShift = NULL, *keymapAltgr = NULL, *keymapShiftAltgr = NULL;
+WChar *keymapNormal = NULL, *keymapShift = NULL, *keymapCaps = NULL, *keymapAltgr = NULL, *keymapShiftAltgr = NULL;
 u8int kbdstatus = 0;
 VirtualTerminal *focusedVT = NULL;	//This is the VT that must receive the character
 
@@ -58,9 +58,10 @@ void setFocus(VirtualTerminal* vt) {
 	focusedVT = vt;
 }
 
-void setKeymap(wchar* kmNormal, wchar* kmShift, wchar* kmAltgr, wchar* kmShiftAltgr) {
+void setKeymap(WChar* kmNormal, WChar* kmShift, WChar* kmCaps, WChar* kmAltgr, WChar* kmShiftAltgr) {
 	keymapNormal = kmNormal;
 	keymapShift = kmShift;
+	keymapCaps = kmCaps;
 	keymapAltgr = kmAltgr;
 	keymapShiftAltgr = kmShiftAltgr;
 }
@@ -85,11 +86,14 @@ void keyPress(u8int scancode) {
 		if ((kbdstatus & STATUS_ALT) or (kbdstatus & STATUS_CTRL)) {
 			kp.hascmd = true;
 		}
-		if ((kbdstatus & STATUS_SHIFT) xor (kbdstatus & STATUS_CAPS)) {
+		if (((kbdstatus & STATUS_SHIFT) != 0) xor ((kbdstatus & STATUS_CAPS) != 0)) {
 			if (kbdstatus & STATUS_ALTGR) {
 				if (keymapShiftAltgr != NULL) kp.character = keymapShiftAltgr[scancode];
 			} else {
-				if (keymapShift != NULL) kp.character = keymapShift[scancode];
+				if (keymapCaps != NULL and (kbdstatus & STATUS_CAPS))
+					kp.character = keymapCaps[scancode];
+				else if (keymapShift != NULL)
+					kp.character = keymapShift[scancode];
 			}
 		} else {
 			if (kbdstatus & STATUS_ALTGR) {
@@ -152,11 +156,14 @@ void keyRelease(u8int scancode) {
 		if ((kbdstatus & STATUS_ALT) or (kbdstatus & STATUS_CTRL)) {
 			kp.hascmd = true;
 		}
-		if ((kbdstatus & STATUS_SHIFT) xor (kbdstatus & STATUS_CAPS)) {
+		if (((kbdstatus & STATUS_SHIFT) != 0) xor ((kbdstatus & STATUS_CAPS) != 0)) {
 			if (kbdstatus & STATUS_ALTGR) {
 				if (keymapShiftAltgr != NULL) kp.character = keymapShiftAltgr[scancode];
 			} else {
-				if (keymapShift != NULL) kp.character = keymapShift[scancode];
+				if (keymapCaps != NULL and (kbdstatus & STATUS_CAPS))
+					kp.character = keymapCaps[scancode];
+				else if (keymapShift != NULL)
+					kp.character = keymapShift[scancode];
 			}
 		} else {
 			if (kbdstatus & STATUS_ALTGR) {

@@ -3,13 +3,13 @@
 
 #include <Core/common.wtf.h>
 
-struct wchar {
+struct WChar {
 	u32int value;
-	static wchar CP437[];
+	static WChar CP437[];
 
-	wchar();		//Creates a null character
-	wchar(char c);	//From ascii character
-	wchar(char* c);	//From utf8 string
+	WChar();		//Creates a null character
+	WChar(char c);	//From ascii character
+	WChar(char* c);	//From utf8 string
 
 	static u32int utf8len(char* c);	//Returns count of utf8 characters in string
 
@@ -19,21 +19,21 @@ struct wchar {
 	void affectUtf32(char* c);
 	u8int toAscii();
 
-	inline wchar operator+ (u32int other) {
-		wchar r;
+	inline WChar operator+ (u32int other) {
+		WChar r;
 		r.value = value + other;
 		return r;
 	}
-	inline wchar operator- (u32int other) {
-		wchar r;
+	inline WChar operator- (u32int other) {
+		WChar r;
 		r.value = value - other;
 		return r;
 	}
-	inline wchar& operator+= (u32int other) {
+	inline WChar& operator+= (u32int other) {
 		value += other;
 		return *this;
 	}
-	inline wchar& operator-= (u32int other) {
+	inline WChar& operator-= (u32int other) {
 		value -= other;
 		return *this;
 	}

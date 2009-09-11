@@ -29,6 +29,10 @@ struct PageDirectory {
 	void allocFrame(u32int address, bool is_user, bool is_writable);
 	void freeFrame(u32int address);
 	void switchTo();
+
+	private:
+	PageDirectory(const PageDirectory& other);
+	void operator=(const PageDirectory& other);
 };
 
 

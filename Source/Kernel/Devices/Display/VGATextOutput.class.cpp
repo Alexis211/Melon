@@ -21,7 +21,7 @@ u16int VGATextOutput::textRows() {
 	return 25;
 }
 
-void VGATextOutput::putChar(u16int line, u16int col, wchar c, u8int color) {
+void VGATextOutput::putChar(u16int line, u16int col, WChar c, u8int color) {
 	u16int* where = (u16int*)RAM_ADDR;
 	where[(80 * line) + col] = (color << 8) | c.toAscii();
 }

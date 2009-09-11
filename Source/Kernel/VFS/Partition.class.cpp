@@ -1,5 +1,7 @@
 #include "Partition.class.h"
 
+using namespace CMem;	//For memcpy
+
 Partition::Partition(BlockDevice* dev, u8int partnumber, u64int startblock, u64int blockcount) {
 	m_device = dev;
 	m_partnumber = partnumber;
@@ -49,7 +51,7 @@ bool Partition::write(u64int start, u32int length, u8int *data) {
 		if (!readBlocks(startBlock, 1, buff)) return false;
 	}
 	if (lastBlock != startBlock and (length + offset) % blksz != 0) {
-		if (!readBlocks(lastBlock, 1, buff + ((blocks - 1) * blksize))) return false;
+		if (!readBlocks(lastBlock, 1, buff + ((blocks - 1) * blksz))) return false;
 	}
 	memcpy(buff + offset, data, length);
 	if (!writeBlocks(startBlock, blocks, buff)) return false;

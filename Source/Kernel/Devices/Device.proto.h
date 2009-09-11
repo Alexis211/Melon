@@ -7,6 +7,7 @@
 
 class Device {
 	public:
+	virtual ~Device() {};
 	virtual String getClass() = 0;	
 	virtual String getName() = 0;	
 

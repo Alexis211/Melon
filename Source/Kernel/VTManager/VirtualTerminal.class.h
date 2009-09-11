@@ -9,7 +9,7 @@
 
 struct chr {
 	u8int color;
-	wchar c;
+	WChar c;
 	};
 
 class VirtualTerminal {
@@ -31,7 +31,7 @@ class VirtualTerminal {
 	~VirtualTerminal();
 
 	void setColor(u8int fgcolor, u8int bgcolor = 0xFF);
-	void putChar(u32int row, u32int col, wchar c);
+	void putChar(u32int row, u32int col, WChar c);
 	void clear();
 
 	void map(s32int row = -1, s32int col = -1);
@@ -45,7 +45,7 @@ class VirtualTerminal {
 	void setCursorCol(u32int col);
 
 	//Display functions
-	void put(wchar c, bool updatecsr = true);
+	void put(WChar c, bool updatecsr = true);
 	void write(String s, bool updatecsr = true);
 	void writeDec(s32int i, bool updatecsr = true);
 	void writeHex(u32int i, bool updatecsr = true);
@@ -53,7 +53,7 @@ class VirtualTerminal {
 	void hexDump(u8int* ptr, u32int sz);
 	
 	inline VirtualTerminal& operator<<(String s) { write(s); return *this; }
-	//inline VirtualTerminal& operator<<(wchar c) { put(c); return *this; }
+	//inline VirtualTerminal& operator<<(WChar c) { put(c); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 
