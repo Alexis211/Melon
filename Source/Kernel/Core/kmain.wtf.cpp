@@ -80,16 +80,16 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	u32int totalRam = ((mbd->mem_upper + 1024) * 1024);
 	PhysMem::initPaging(totalRam); OK(kvt);
 
-	INFO(kvt); *kvt << "Total ram : " << (s32int)(totalRam / 1024) << "k.\n";
-	PROCESSING(kvt, "Initializing GDT and cleaning page directory...");
+	INFO(kvt); *kvt << "Total ram : " << (s32int)(totalRam / 1024) << "k (" << (s32int)(totalRam / (1024 * 1024)) << "M).\n";
+	PROCESSING(kvt, "Initializing real GDT and cleaning page directory...");
 	GDT::init();
 	PhysMem::removeTemporaryPages(); OK(kvt);
 
-	PROCESSING(kvt, "Creating heap...");
+	PROCESSING(kvt, "Creating kernel heap...");
 	Mem::createHeap(); OK(kvt);
 	INFO(kvt); *kvt << "Free frames : " << (s32int)PhysMem::free() << "/" << (s32int)PhysMem::total() << "\n";
 	
-	PROCESSING(kvt, "Registering vgaout...");
+	PROCESSING(kvt, "Registering textual VGA output...");
 	Dev::registerDevice(vgaout); OK(kvt);
 
 	PROCESSING(kvt,"Initializing PIT...");

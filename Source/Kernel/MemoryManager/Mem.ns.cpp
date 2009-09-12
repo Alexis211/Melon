@@ -78,7 +78,7 @@ void removeFromHeapIndex(heap_header_t *e) {
 //***************************************************************************
 void createHeap() {
 	u32int heapIndexSize = PhysMem::total() * 64 + 0x10000;
-	heapStart = placementAddress + 0x10000; //Set initial heap start
+	heapStart = (placementAddress & 0xFFFFF000) + 0x10000; //Set initial heap start
 	heapEnd = heapStart + HEAP_MIN_SIZE + heapIndexSize;							//Set heap end
 
 	//Alocate frames for the heap

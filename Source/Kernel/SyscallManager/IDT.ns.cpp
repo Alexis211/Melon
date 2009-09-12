@@ -64,7 +64,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 	bool doSwitch = (regs.int_no == 32 or regs.int_no >= 65);	//SYSCALLS >= 65 are task-managing-related
 	if (regs.int_no < 32) {
 		if ((u32int)Task::currentThread == 0xFFFFFFFF or Task::currentThread == 0)
-			PANIC("Exception cannot be handled.");
+			PANIC_DUMP("Exception cannot be handled.", &regs);
 		Task::currentThread->handleException(regs, regs.int_no);
 	} else if (regs.int_no < 48) {
 		if (regs.int_no >= 40)
