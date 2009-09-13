@@ -38,6 +38,7 @@ Objects = Core/loader.wtf.o \
 		  Library/WChar.class.o \
 		  VFS/Partition.class.o \
 		  VFS/Part.ns.o \
+		  FileSystems/RamFS/RamFS.class.o \
 		  SyscallManager/IDT.ns.o \
 		  SyscallManager/IDT.wtf.o \
 		  Devices/Display/VGATextOutput.class.o \

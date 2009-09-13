@@ -54,7 +54,7 @@ String::String() {
 	m_length = 0;
 }
 
-String::String(char* string) {
+String::String(const char* string) {
 	m_length = WChar::utf8len(string);
 	if (m_length == 0) {
 		m_string = 0;
@@ -100,7 +100,7 @@ void String::operator= (const String &other) {
 	m_string[m_length] = 0;
 }
 
-void String::operator= (char* string) {
+void String::operator= (const char* string) {
 	m_length = WChar::utf8len(string);
 	if (m_string != 0) delete [] m_string;
 	if (m_length == 0) {
@@ -116,7 +116,7 @@ void String::operator= (char* string) {
 	m_string[m_length] = 0;
 }
 
-bool String::operator== (String &other) {
+bool String::operator== (const String &other) {
 	if (m_length != other.m_length) return false;
 	for (u32int i = 0; i < m_length; i++) {
 		if (m_string[i] != other.m_string[i]) return false;
@@ -124,7 +124,7 @@ bool String::operator== (String &other) {
 	return true;
 }
 
-bool String::operator== (char* string) {
+bool String::operator== (const char* string) {
 	if (m_length != WChar::utf8len(string)) return false;
 	int i = 0, l = strlen(string), c = 0;
 	WChar tmp;
@@ -151,7 +151,7 @@ String& String::operator+= (String &other) {
 	return *this;
 }
 
-String& String::operator+= (char* other) {
+String& String::operator+= (const char* other) {
 	WChar* newdata = new WChar[m_length + WChar::utf8len(other) + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
@@ -186,7 +186,7 @@ String& String::operator+ (String &other) {	//Can be optimized
 	return (ret += other);
 }
 
-String& String::operator+ (char* other) { //Can be optimized
+String& String::operator+ (const char* other) { //Can be optimized
 	String ret(*this);
 	return (ret += other);
 }

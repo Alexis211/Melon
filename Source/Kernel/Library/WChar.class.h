@@ -9,14 +9,14 @@ struct WChar {
 
 	WChar();		//Creates a null character
 	WChar(char c);	//From ascii character
-	WChar(char* c);	//From utf8 string
+	WChar(const char* c);	//From utf8 string
 
-	static u32int utf8len(char* c);	//Returns count of utf8 characters in string
+	static u32int utf8len(const char* c);	//Returns count of utf8 characters in string
 
 	void affectAscii(char c);
-	u32int affectUtf8(char* c);
-	void affectUtf16(char* c);
-	void affectUtf32(char* c);
+	u32int affectUtf8(const char* c);
+	void affectUtf16(const char* c);
+	void affectUtf32(const char* c);
 	u8int toAscii();
 
 	inline WChar operator+ (u32int other) {

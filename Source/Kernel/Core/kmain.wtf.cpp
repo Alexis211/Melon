@@ -19,6 +19,9 @@
 #include <SyscallManager/IDT.ns.h>
 #include <Library/String.class.h>
 #include <VFS/Part.ns.h>
+#include <FileSystems/RamFS/RamFS.class.h>
+#include <VFS/FileNode.class.h>
+#include <VFS/DirectoryNode.class.h>
 
 #include <Ressources/logo.cd>
 #include <Ressources/keymap-fr.wtf.c>
@@ -109,6 +112,13 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	asm volatile("sti");
 
+	FileSystem* fs = new RamFS(1024 * 1024);
+	DirectoryNode* rd;
+	rd = fs->getRootNode();
+	FileNode* f;
+	f = rd->createFile(String("test"));
+	f->write(0, 4, (u8int*)"plop");
+
 	while(1) {
 		kvt->setColor(0);
 		*kvt << "> ";
@@ -123,6 +133,22 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
 			*kvt << "  - uptime        shows seconds since boot\n";
 			*kvt << "  - part          shows all detected block devices and partitions\n";
+		} else if (tmp == "ls") {
+			for (u32int i = 0; i < rd->getLength(); i++) {
+				FSNode* n = rd->getChild(i);
+				if (n->type() == NT_FILE) {
+					FileNode* f = (FileNode*)n;
+					*kvt << "Found file " << f->getName() << ", length " << (s32int)f->getLength() << " :\n";
+					u8int* d = (u8int*)Mem::kalloc(f->getLength() + 1);
+					f->read(0, f->getLength(), d);
+					d[f->getLength()] = 0;
+					*kvt << String((const char*)d);
+					Mem::kfree(d);
+					*kvt << "\n";
+				} else if (n->type() == NT_DIRECTORY) {
+					*kvt << "Found directory " << n->getName() << " :\n";
+				}
+			}
 		} else if (tmp == "reboot") {
 			Sys::reboot();
 		} else if (tmp == "devices") {

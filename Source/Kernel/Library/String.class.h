@@ -15,21 +15,21 @@ class String {
 	static String hex(u32int number);
 	static String number(s32int number);
 
-	String(char* string);
+	String(const char* string);
 	String();
 	String(const String &other);
 	~String();
 
 	void operator= (const String &other);
-	void operator= (char* string);
+	void operator= (const char* string);
 
-	bool operator== (String &other);
-	bool operator== (char* string);
+	bool operator== (const String &other);
+	bool operator== (const char* string);
 	String &operator+= (String &other);
-	String &operator+= (char* other);
+	String &operator+= (const char* other);
 	String &operator+= (WChar other);
 	String &operator+ (String &other);
-	String &operator+ (char* other);
+	String &operator+ (const char* other);
 	String &operator+ (WChar other);
 	s32int toInt();
 	u32int toInt16();	//From HEX
