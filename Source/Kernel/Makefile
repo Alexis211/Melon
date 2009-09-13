@@ -38,6 +38,8 @@ Objects = Core/loader.wtf.o \
 		  Library/WChar.class.o \
 		  VFS/Partition.class.o \
 		  VFS/Part.ns.o \
+		  VFS/VFS.ns.o \
+		  VFS/DirectoryNode.class.o \
 		  FileSystems/RamFS/RamFS.class.o \
 		  SyscallManager/IDT.ns.o \
 		  SyscallManager/IDT.wtf.o \

@@ -139,3 +139,5 @@ DirectoryNode* RamFS::createDirectory(DirectoryNode* parent, String name) {
 
 	return d;
 }
+
+bool RamFS::remove(DirectoryNode* parent, FSNode* node) { return true; }

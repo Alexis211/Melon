@@ -37,6 +37,7 @@ class RamFS : public FileSystem {
 	bool loadContents(DirectoryNode* dir);
 	FileNode* createFile(DirectoryNode* parent, String name);
 	DirectoryNode* createDirectory(DirectoryNode* parent, String name);
+	bool remove(DirectoryNode* parent, FSNode* node);
 };
 
 #endif

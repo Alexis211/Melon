@@ -116,7 +116,7 @@ void String::operator= (const char* string) {
 	m_string[m_length] = 0;
 }
 
-bool String::operator== (const String &other) {
+bool String::operator== (const String &other) const {
 	if (m_length != other.m_length) return false;
 	for (u32int i = 0; i < m_length; i++) {
 		if (m_string[i] != other.m_string[i]) return false;
@@ -124,7 +124,7 @@ bool String::operator== (const String &other) {
 	return true;
 }
 
-bool String::operator== (const char* string) {
+bool String::operator== (const char* string) const {
 	if (m_length != WChar::utf8len(string)) return false;
 	int i = 0, l = strlen(string), c = 0;
 	WChar tmp;
@@ -181,22 +181,22 @@ String& String::operator+= (WChar other) {
 	return *this;
 }
 
-String& String::operator+ (const String &other) {	//Can be optimized
+String& String::operator+ (const String &other) const {	//Can be optimized
 	String ret(*this);
 	return (ret += other);
 }
 
-String& String::operator+ (const char* other) { //Can be optimized
+String& String::operator+ (const char* other) const { //Can be optimized
 	String ret(*this);
 	return (ret += other);
 }
 
-String& String::operator+ (WChar other) {
+String& String::operator+ (WChar other) const {
 	String ret(*this);
 	return (ret += other);
 }
 
-s32int String::toInt() {
+s32int String::toInt() const {
 	if (m_string == 0) return 0;
 	s32int pos = 0, number = 0;
 	bool negative = false;
@@ -213,7 +213,7 @@ s32int String::toInt() {
 	return number;
 }
 
-u32int String::toInt16() {
+u32int String::toInt16() const {
 	if (m_string == 0) return 0;
 	u32int pos = 0, number = 0;
 	if (m_string[0].value == '0' && m_string[1].value == 'x') pos = 2;
@@ -254,7 +254,7 @@ bool String::empty() const {
 	return (m_length == 0);
 }
 
-Vector<String> String::split(WChar c) {
+Vector<String> String::split(WChar c) const {
 	Vector<String> ret;
 	ret.push(String(""));
 	for (u32int i = 0; i < m_length; i++) {

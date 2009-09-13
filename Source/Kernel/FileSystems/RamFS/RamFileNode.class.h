@@ -11,7 +11,7 @@ class RamFileNode : public FileNode {
 			u32int uid = 0, u32int gid = 0) :
 		FileNode(name, fs, parent, 0, permissions, uid, gid), m_data(0) {}
 
-	u8int *m_data;
+	u8int *m_data;		//We don't take care of allocation/freeing here, RamFS:: does that for us
 
 	void setLength(u32int length) { m_length = length; }
 };

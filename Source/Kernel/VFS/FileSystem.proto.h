@@ -30,6 +30,7 @@ class FileSystem {
 	virtual bool loadContents(DirectoryNode* dir) = 0;
 	virtual FileNode* createFile(DirectoryNode* parent, String name) = 0;
 	virtual DirectoryNode* createDirectory(DirectoryNode* parent, String name) = 0;
+	virtual bool remove(DirectoryNode* parent, FSNode* node) = 0;
 };
 
 #endif

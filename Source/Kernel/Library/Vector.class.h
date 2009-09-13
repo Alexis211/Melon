@@ -12,14 +12,14 @@ class Vector {
 	public:
 	Vector();
 	Vector(u32int size);
-	Vector(u32int size, T value);
+	Vector(u32int size, const T& value);
 	Vector(const Vector<T> &other);
 	Vector<T>& operator= (const Vector<T> &other);
 	~Vector();
 
 	T& operator[] (u32int index);
 	
-	void push(T element);
+	void push(const T& element);
 	//void push(T& element);
 	void pop();
 

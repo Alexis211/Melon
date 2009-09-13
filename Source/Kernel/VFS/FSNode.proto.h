@@ -19,16 +19,17 @@ class FSNode {
 	u32int m_length;
 	u32int m_permissions, m_uid, m_gid;
 	FileSystem *m_fs;
-	FSNode *m_parent;
-
+	FSNode	*m_parent;
+	
+	public:
 	FSNode(String name, FileSystem* fs, FSNode* parent, u32int length = 0, u32int permissions = 0777, 
 			u32int uid = 0, u32int gid = 0) :
 		m_name(name), m_length(length), m_permissions(permissions),
 		m_uid(uid), m_gid(gid), m_fs(fs), m_parent(parent) {}
-	
-	public:
+	virtual ~FSNode() {}
 
 	virtual u8int type() = 0;
+	virtual bool removable() = 0;	//True for files, false for non-empty directories, true otherwise
 	
 	const String& getName() { return m_name; }
 	u32int getLength() { return m_length; }
