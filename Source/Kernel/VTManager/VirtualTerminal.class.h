@@ -10,7 +10,7 @@
 struct chr {
 	u8int color;
 	WChar c;
-	};
+};
 
 class VirtualTerminal {
 	private:
