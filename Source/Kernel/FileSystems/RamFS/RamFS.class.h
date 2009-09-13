@@ -3,6 +3,18 @@
 
 #include <VFS/FileSystem.proto.h>
 
+struct initrd_header {
+	unsigned int magic;
+	unsigned int files;
+};
+
+struct initrd_file_header {
+	unsigned int name_length;
+	unsigned int file_length;
+};
+
+#define INITRD_MAGIC 0x1337BEEF
+
 class RamFS : public FileSystem {
 	private:
 	u32int m_maxSize;

@@ -2,18 +2,22 @@ using namespace CMem;	//strlen and memcpy
 
 template <typename T>
 Vector<T>::Vector() {
+	//DEBUG_HEX((u32int)this); DEBUG(" NEW EMPTY");
+	//DEBUG_HEX(sizeof(T)); DEBUG("  sizeof(T)");
 	m_data = 0;
 	m_size = 0;
 }
 
 template <typename T>
 Vector<T>::Vector(u32int size) {
+	//DEBUG_HEX((u32int)this); DEBUG(" NEW ZERO");
 	m_data = new T[size];
 	m_size = size;
 }
 
 template <typename T>
 Vector<T>::Vector(u32int size, T value) {
+	//DEBUG_HEX((u32int)this); DEBUG(" NEW FILLED");
 	//m_data = (T*)Mem::kalloc(size * sizeof(T));
 	m_data = new T[size](value);
 	m_size = size;
@@ -24,6 +28,7 @@ Vector<T>::Vector(u32int size, T value) {
 
 template <typename T>
 Vector<T>::Vector(const Vector<T> &other) {
+	//DEBUG_HEX((u32int)this); DEBUG(" COPY REF");
 	m_size = other.m_size;
 	m_data = (T*)Mem::kalloc(m_size * sizeof(T));
 	for (u32int i = 0; i < m_size; i++) {
@@ -33,6 +38,7 @@ Vector<T>::Vector(const Vector<T> &other) {
 
 template <typename T>
 Vector<T>& Vector<T>::operator= (const Vector<T> &other) {
+	//DEBUG_HEX((u32int)this); DEBUG(" COPY EQ");
 	if (m_data != 0) delete[] m_data;
 	m_size = other.m_size;
 	m_data = (T*)Mem::kalloc(m_size * sizeof(T));
@@ -43,6 +49,7 @@ Vector<T>& Vector<T>::operator= (const Vector<T> &other) {
 
 template <typename T>
 Vector<T>::~Vector() {
+	//DEBUG_HEX((u32int)this); DEBUG(" DELETE");
 	if (m_data != 0) delete[] m_data;
 }
 
@@ -107,7 +114,7 @@ bool Vector<T>::empty() {
 template <typename T>
 void Vector<T>::clear() {
 	if (empty()) return;
-	Mem::kfree(m_data);
+	delete [] m_data;
 	m_data = 0;
 	m_size = 0;
 }

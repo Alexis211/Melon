@@ -1,4 +1,4 @@
-.PHONY: clean, mrproper, Init.img
+.PHONY: clean, mrproper, Init.rfs
 
 Files = Source/Kernel/Melon.ke Init.rfs
 Floppy = Melon.img
@@ -6,7 +6,7 @@ Floppy = Melon.img
 Projects = Kernel Tools/MakeRamFS
 
 RamFS = Init.rfs
-RamFSFiles = :/System :/System/Applications :/System/Configuration
+RamFSFiles = :/System :/System/Applications Source/Kernel/Ressources/Welcome.txt:/Welcome.txt :/System/Configuration
 
 all:
 	for p in $(Projects); do \

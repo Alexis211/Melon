@@ -9,6 +9,61 @@ RamFS::RamFS(u32int maxSize) {
 	m_rootNode = new DirectoryNode("/", this, NULL);	
 }
 
+RamFS::RamFS(u8int *ptr, u32int maxSize, bool writable) {
+	m_maxSize = maxSize;
+	m_usedSize = 0;
+	m_isWritable = true;
+	m_rootNode = new DirectoryNode("/", this, NULL);
+
+	union {
+		u8int* c;
+		initrd_header* i;
+		initrd_file_header* f;
+	} curr;
+	curr.c = ptr;
+
+	if (curr.i->magic != INITRD_MAGIC) return;
+	u32int files = curr.i->files;
+	curr.i++;	//Increment pointer of size of initrd header
+	DEBUG_HEX(files); DEBUG(" is initrd file count.");
+	for (u32int i = 0; i < files; i++) {
+		initrd_file_header h = *(curr.f);
+		curr.f++;	//Increment pointer of size of file header
+		if (h.name_length != 0 or h.file_length != 0) {
+			String name((const char*)(curr.c));
+			curr.c += h.name_length + 1;	//Increment pointer of length of name
+
+			//Find out a vector conaining parent directories, and set name to the effective file name
+			if (name[0] == WChar("/")) name = name.substr(1, name.size() - 1);
+
+			//Find node for parent directory
+			String mname = "";
+			DirectoryNode* parent = m_rootNode;
+			for (u32int i = 0; i < name.size(); i++) {
+				if (name[i] == WChar("/")) {
+					FSNode* n = parent->getChild(mname);
+					if (n == NULL) break;
+					if (n->type() != NT_DIRECTORY) break;
+					parent = (DirectoryNode*)n;
+					mname.clear();
+				} else {
+					mname += name[i];
+				}
+			}
+			name = mname;
+
+			//Add new node
+			if (h.file_length == 0) {
+				parent->createDirectory(name);
+			} else {
+				FileNode* file = parent->createFile(name);
+				file->write(0, h.file_length, curr.c);
+				curr.c += h.file_length;
+			}
+		}	
+	}
+}
+
 bool RamFS::setName(FSNode* node, String name) { return true; }
 bool RamFS::setPermissions(FSNode* node, u32int permissions) { return true; }
 bool RamFS::setUid(FSNode* node, u32int uid) { return true; }

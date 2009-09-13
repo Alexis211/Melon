@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
 			fhdr.file_length = 0;	//File length of 0 means directory
 			output.write((char*)&fhdr, sizeof(ramfs_file_header));
 			output << name;
+			output << '\0';
 			continue;
 		}
 		
@@ -75,10 +76,14 @@ int main(int argc, char *argv[]) {
 		output.write((char*)&fhdr, sizeof(ramfs_file_header));
 
 		output << name;
+		output << '\0';
 
 		char *c = new char[fhdr.file_length];
-		infile.read(c, fhdr.file_length);
-		output.write(c, fhdr.file_length);
+		for (int i = 0; i < fhdr.file_length; i++) {
+			char ch;
+			infile.read(&ch, 1);
+			output.write(&ch, 1);
+		}
 		delete [] c;
 
 		infile.close();

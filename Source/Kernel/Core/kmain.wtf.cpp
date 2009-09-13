@@ -110,14 +110,14 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	PROCESSING(kvt, "Detecting floppy drives...");
 	FloppyController::detect(); OK(kvt);
 
-	asm volatile("sti");
-
-	FileSystem* fs = new RamFS(1024 * 1024);
+	FileSystem* fs = new RamFS((u8int*)mods[0].mod_start, 1024 * 1024);
 	DirectoryNode* rd;
 	rd = fs->getRootNode();
-	FileNode* f;
+	/*FileNode* f;
 	f = rd->createFile(String("test"));
-	f->write(0, 4, (u8int*)"plop");
+	f->write(0, 4, (u8int*)"plop"); */
+
+	asm volatile("sti");
 
 	while(1) {
 		kvt->setColor(0);
@@ -146,7 +146,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 					Mem::kfree(d);
 					*kvt << "\n";
 				} else if (n->type() == NT_DIRECTORY) {
-					*kvt << "Found directory " << n->getName() << " :\n";
+					*kvt << "Found directory " << n->getName() << ", " << (s32int)n->getLength() << " items.\n";
 				}
 			}
 		} else if (tmp == "reboot") {
