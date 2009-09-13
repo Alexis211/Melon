@@ -1,1 +1,12 @@
-Hi, this is a file located on an InitRD ! éàç...
+EN :
+Welcome on this Melon live-floppy ! For the moment, the project isn't very
+advanced, but if you can read this text, it's already because of a lot of
+great efforts I'v made for developping this.
+
+FR :
+Bienvenue sur cette live-disquette de Melon ! Pour l'instant, le projet 
+n'est pas très avancé, mais si vous pouvez lire ce texte, c'est déjà grâce
+à un grand travail de ma part dans le développement.
+
+ES :
+[I can't speak Spanish properly, sorry]

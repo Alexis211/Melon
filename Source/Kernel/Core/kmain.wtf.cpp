@@ -164,14 +164,19 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 				}
 			}
 		} else if (tokens[0] == "cd") {
-			FSNode* n = VFS::find(tokens[1], cwd);
-			if (n == NULL)
-				*kvt << "No such directory : " << tokens[1] << "\n";
-			else if (n->type() != NT_DIRECTORY)
-				*kvt << "Not a directory : " << tokens[1] << "\n";
-			else
-				cwd = (DirectoryNode*)n;
+			if (tokens.size() == 1) {
+				*kvt << "Where shall I take you, sir ?\n";
+			} else {
+				FSNode* n = VFS::find(tokens[1], cwd);
+				if (n == NULL)
+					*kvt << "No such directory : " << tokens[1] << "\n";
+				else if (n->type() != NT_DIRECTORY)
+					*kvt << "Not a directory : " << tokens[1] << "\n";
+				else
+					cwd = (DirectoryNode*)n;
+			}
 		} else if (tokens[0] == "cat") {
+			if (tokens.size() == 1) *kvt << "Meow.\n";
 			for (u32int i = 1; i < tokens.size(); i++) {
 				FSNode* n = VFS::find(tokens[i], cwd);
 				if (n == NULL) {
@@ -180,8 +185,9 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 					*kvt << "Not a file : " << tokens[1]  << "\n";
 				} else {
 					FileNode* f = (FileNode*) n;
-					u8int *buff = (u8int*)Mem::kalloc(f->getLength());
+					u8int *buff = (u8int*)Mem::kalloc(f->getLength() + 1);
 					f->read(0, f->getLength(), buff);
+					buff[f->getLength()] = 0;
 					*kvt << String((const char*) buff);
 					Mem::kfree(buff);
 				}
