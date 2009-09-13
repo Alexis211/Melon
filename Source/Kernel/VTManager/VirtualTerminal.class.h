@@ -46,13 +46,13 @@ class VirtualTerminal {
 
 	//Display functions
 	void put(WChar c, bool updatecsr = true);
-	void write(String s, bool updatecsr = true);
+	void write(const String& s, bool updatecsr = true);
 	void writeDec(s32int i, bool updatecsr = true);
 	void writeHex(u32int i, bool updatecsr = true);
 
 	void hexDump(u8int* ptr, u32int sz);
 	
-	inline VirtualTerminal& operator<<(String s) { write(s); return *this; }
+	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }
 	//inline VirtualTerminal& operator<<(WChar c) { put(c); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }

@@ -19,11 +19,11 @@ WChar::WChar(char c) {
 	affectAscii(c);
 }
 
-WChar::WChar(char* c) {
+WChar::WChar(const char* c) {
 	affectUtf8(c);
 }
 
-u32int WChar::utf8len(char* c) {
+u32int WChar::utf8len(const char* c) {
 	int i = 0, l = CMem::strlen(c), co = 0;
 	while (i < l) {
 		if ((c[i] & 0x80) == 0) i += 1;
@@ -41,7 +41,7 @@ void WChar::affectAscii(char c) {
 	else value = CP437[c + 128];
 }
 
-u32int WChar::affectUtf8(char* c) {	//Returns the number of bytes for the character
+u32int WChar::affectUtf8(const char* c) {	//Returns the number of bytes for the character
 	/*if ((c[0] & 0xB0) == 0x80) {	//11000000b == 10000000b, means we are IN a sequence
 		value = 0;
 		return 1;

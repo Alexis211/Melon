@@ -19,6 +19,10 @@
 #include <SyscallManager/IDT.ns.h>
 #include <Library/String.class.h>
 #include <VFS/Part.ns.h>
+#include <FileSystems/RamFS/RamFS.class.h>
+#include <VFS/FileNode.class.h>
+#include <VFS/VFS.ns.h>
+#include <VFS/DirectoryNode.class.h>
 
 #include <Ressources/logo.cd>
 #include <Ressources/keymap-fr.wtf.c>
@@ -107,25 +111,84 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	PROCESSING(kvt, "Detecting floppy drives...");
 	FloppyController::detect(); OK(kvt);
 
+	FileSystem* fs = new RamFS((u8int*)mods[0].mod_start, 1024 * 1024);
+	DirectoryNode* cwd;
+	cwd = fs->getRootNode();
+	VFS::setRootNode(cwd);
+
 	asm volatile("sti");
 
 	while(1) {
 		kvt->setColor(0);
-		*kvt << "> ";
+		*kvt << cwd->getName() << " : ";
 		kvt->setColor(8);
-		String tmp = kvt->readLine();
+		Vector<String> tokens = kvt->readLine().split(" ");
 		kvt->setColor(0);
-		if (tmp == "help") {
+		if (tokens[0] == "help") {
 			*kvt << " - Command list for integrated kernel shell:\n";
 			*kvt << "  - help          shows this help screen\n";
 			*kvt << "  - reboot        reboots your computer\n";
+			*kvt << "  - ls [<dir>]    shows contents of a directory\n";
+			*kvt << "  - cd <dir>      goes to directory <dir>\n";
+			*kvt << "  - cat <file>    shows contents of file <file>\n";
+			*kvt << "  - pwd           prints current directory\n";
 			*kvt << "  - devices       shows all detected devices on your computer\n";
 			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
 			*kvt << "  - uptime        shows seconds since boot\n";
 			*kvt << "  - part          shows all detected block devices and partitions\n";
-		} else if (tmp == "reboot") {
+		} else if (tokens[0] == "reboot") {
 			Sys::reboot();
-		} else if (tmp == "devices") {
+		} else if (tokens[0] == "ls") {
+			DirectoryNode* d = cwd;
+			if (tokens.size() == 2) {
+				FSNode* n = VFS::find(tokens[1], cwd);
+				d = NULL;
+				if (n == NULL)
+					*kvt << "No such directory : " << tokens[1] << "\n";
+				else if (n->type() != NT_DIRECTORY)
+					*kvt << "Not a directory : " << tokens[1] << "\n";
+				else
+					d = (DirectoryNode*)n;
+			}	
+			for (u32int i = 0; d != NULL && i < d->getLength(); i++) {
+				FSNode* n = d->getChild(i);
+				if (n->type() == NT_FILE) {
+					FileNode* f = (FileNode*)n;
+					*kvt << " - FILE\t" << f->getName();
+					kvt->setCursorCol(30);
+					*kvt << (s32int)f->getLength() << " bytes.\n";
+				} else if (n->type() == NT_DIRECTORY) {
+					*kvt << " - DIR\t" << n->getName();
+					kvt->setCursorCol(30);
+					*kvt << (s32int)n->getLength() << " items.\n";
+				}
+			}
+		} else if (tokens[0] == "cd") {
+			FSNode* n = VFS::find(tokens[1], cwd);
+			if (n == NULL)
+				*kvt << "No such directory : " << tokens[1] << "\n";
+			else if (n->type() != NT_DIRECTORY)
+				*kvt << "Not a directory : " << tokens[1] << "\n";
+			else
+				cwd = (DirectoryNode*)n;
+		} else if (tokens[0] == "cat") {
+			for (u32int i = 1; i < tokens.size(); i++) {
+				FSNode* n = VFS::find(tokens[i], cwd);
+				if (n == NULL) {
+					*kvt << "No such file : " << tokens[1] << "\n";
+				} else if (n->type() != NT_FILE) {
+					*kvt << "Not a file : " << tokens[1]  << "\n";
+				} else {
+					FileNode* f = (FileNode*) n;
+					u8int *buff = (u8int*)Mem::kalloc(f->getLength());
+					f->read(0, f->getLength(), buff);
+					*kvt << String((const char*) buff);
+					Mem::kfree(buff);
+				}
+			}
+		} else if (tokens[0] == "pwd") {
+			*kvt << "Current location : " << VFS::path(cwd) << "\n";
+		} else if (tokens[0] == "devices") {
 			Vector<Device*> dev = Dev::findDevices();
 			*kvt << " - Detected devices :\n";
 			for (u32int i = 0; i < dev.size(); i++) {
@@ -133,16 +196,16 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 				kvt->setCursorCol(25);
 				*kvt << dev[i]->getName() << "\n";
 			}
-		} else if (tmp == "free") {
+		} else if (tokens[0] == "free") {
 			u32int frames = PhysMem::total(), freef = PhysMem::free();
 			*kvt << " - Free frames : " << (s32int)freef << " (" << (s32int)(freef * 4 / 1024) << "Mo) of "
 			   	<< (s32int)frames << " (" << (s32int)(frames * 4 / 1024) << "Mo).\n";
 			u32int kh = Mem::kheapSize(), freek = Mem::kheapFree;
 			*kvt << " - Kernel heap free : " << (s32int)(freek / 1024 / 1024) << "Mo (" << (s32int)(freek / 1024) <<
 				"Ko) of " << (s32int)(kh / 1024 / 1024) << "Mo (" << (s32int)(kh / 1024) << "Ko).\n";
-		} else if (tmp == "uptime") {
+		} else if (tokens[0] == "uptime") {
 			*kvt << " - Uptime : " << (s32int)(Time::uptime()) << "s.\n";
-		} else if (tmp == "part") {
+		} else if (tokens[0] == "part") {
 			*kvt << " *  ID\tClass                    Name\n";
 			for (u32int i = 0; i < Part::devices.size(); i++) {
 				*kvt << "  - " << (s32int)i << "\t";
@@ -161,8 +224,8 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 					}
 				}
 			}
-		} else if (!tmp.empty()) {
-			*kvt << " - Unrecognized command: " << tmp << "\n";
+		} else if (tokens.size() > 1 or tokens[0] != "") {
+			*kvt << " - Unrecognized command: " << tokens[0] << "\n";
 		}
 	}
 	PANIC("END OF KMAIN");

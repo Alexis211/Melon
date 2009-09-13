@@ -15,31 +15,33 @@ class String {
 	static String hex(u32int number);
 	static String number(s32int number);
 
-	String(char* string);
+	String(const char* string);
 	String();
 	String(const String &other);
 	~String();
 
 	void operator= (const String &other);
-	void operator= (char* string);
+	void operator= (const char* string);
 
-	bool operator== (String &other);
-	bool operator== (char* string);
-	String &operator+= (String &other);
-	String &operator+= (char* other);
+	bool operator== (const String &other) const;
+	bool operator== (const char* string) const;
+	bool operator!= (const String &other) { return !(operator== (other)); }
+	bool operator!= (const char* other) { return !(operator== (other)); }
+	String &operator+= (const String &other);
+	String &operator+= (const char* other);
 	String &operator+= (WChar other);
-	String &operator+ (String &other);
-	String &operator+ (char* other);
-	String &operator+ (WChar other);
-	s32int toInt();
-	u32int toInt16();	//From HEX
-	WChar& operator[] (int index);
+	String &operator+ (const String &other) const;
+	String &operator+ (const char* other) const;
+	String &operator+ (WChar other) const;
+	s32int toInt() const;
+	u32int toInt16() const;	//From HEX
+	WChar& operator[] (int index) const;
 
-	u32int size();
+	u32int size() const;
 	void clear();
-	bool empty();
+	bool empty() const;
 
-	Vector<String> split(WChar c);
+	Vector<String> split(WChar c) const;
 
 	String substr(s32int start, s32int size);
 };

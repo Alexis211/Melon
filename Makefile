@@ -1,10 +1,12 @@
-.PHONY: clean, mrproper, Init.img
+.PHONY: clean, mrproper, Init.rfs
 
-Files = Source/Kernel/Melon.ke
+Files = Source/Kernel/Melon.ke Init.rfs
 Floppy = Melon.img
 
-Projects = Kernel
+Projects = Kernel Tools/MakeRamFS
 
+RamFS = Init.rfs
+RamFSFiles = :/System :/System/Applications Source/Kernel/Ressources/Welcome.txt:/Welcome.txt :/System/Configuration
 
 all:
 	for p in $(Projects); do \
@@ -26,7 +28,10 @@ mproper:
 		make -C Source mrproper -s; \
 	done
 
-floppy:
+$(RamFS):
+	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)
+
+floppy: $(RamFS)
 	sudo mount $(Floppy) Mount -o loop
 	for f in $(Files); do \
 		sudo cp $$f Mount; \
