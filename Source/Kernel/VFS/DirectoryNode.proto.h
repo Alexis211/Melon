@@ -1,0 +1,4 @@
+#ifndef DEF_DIRECTORYNODE_PROTO_H
+#define DEF_DIRECTORYNODE_PROTO_H
+
+#endif
