@@ -72,5 +72,7 @@ bool DirectoryNode::remove(FSNode* child) {
 	m_children[idx] = m_children.back();
 	m_children.pop();
 
+	delete child;
+
 	return true;
 }

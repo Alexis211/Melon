@@ -39,6 +39,7 @@ Objects = Core/loader.wtf.o \
 		  VFS/Partition.class.o \
 		  VFS/Part.ns.o \
 		  VFS/VFS.ns.o \
+		  VFS/File.class.o \
 		  VFS/DirectoryNode.class.o \
 		  FileSystems/RamFS/RamFS.class.o \
 		  SyscallManager/IDT.ns.o \

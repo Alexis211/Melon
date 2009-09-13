@@ -140,4 +140,10 @@ DirectoryNode* RamFS::createDirectory(DirectoryNode* parent, String name) {
 	return d;
 }
 
-bool RamFS::remove(DirectoryNode* parent, FSNode* node) { return true; }
+bool RamFS::remove(DirectoryNode* parent, FSNode* node) { 
+	if (node->type() == NT_FILE) {
+		u8int *d = ((RamFileNode*)node)->m_data;
+		if (d != 0) Mem::kfree(d);
+	}
+	return true;
+}

@@ -1,6 +1,7 @@
 #include "Process.class.h"
 #include <TaskManager/Task.ns.h>
 #include <MemoryManager/PhysMem.ns.h>
+#include <VFS/File.class.h>
 
 Process::Process() {	//Private constructor, does nothing
 }
@@ -40,7 +41,7 @@ Process::Process(String cmdline, u32int uid) {
 	m_stacksstart = 0xC0000000;
 }
 
-Process::~Process() {	//TODO : clean up process
+Process::~Process() {
 	exit();	//Kill all threads
 	delete m_pagedir;
 }
@@ -59,6 +60,11 @@ void Process::exit() {
 		delete m_threads.back();
 		m_threads.pop();
 	}
+	for (u32int i = 0; i < m_fileDescriptors.size(); i++) {
+		m_fileDescriptors[i]->close(false);
+		delete m_fileDescriptors[i];
+	}
+	m_fileDescriptors.clear();
 	m_state = P_FINISHED;
 }
 
@@ -78,6 +84,20 @@ void Process::threadFinishes(Thread* thread, u32int retval) {
 				m_threads[i] = m_threads.back();
 				m_threads.pop();
 			}
+		}
+	}
+}
+
+void Process::registerFileDescriptor(File* fd) {
+	m_fileDescriptors.push(fd);
+}
+
+void Process::unregisterFileDescriptor(File* fd) {
+	for (u32int i = 0; i < m_fileDescriptors.size(); i++) {
+		if (m_fileDescriptors[i] == fd) {
+			m_fileDescriptors[i] = m_fileDescriptors.back();
+			m_fileDescriptors.pop();
+			break;
 		}
 	}
 }

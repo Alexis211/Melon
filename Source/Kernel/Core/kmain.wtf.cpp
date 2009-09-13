@@ -120,7 +120,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	while(1) {
 		kvt->setColor(0);
-		*kvt << cwd->getName() << " : ";
+		*kvt << "[" << cwd->getName() << "]# ";
 		kvt->setColor(8);
 		Vector<String> tokens = kvt->readLine().split(" ");
 		kvt->setColor(0);
@@ -150,6 +150,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 				else
 					d = (DirectoryNode*)n;
 			}	
+			if (d != NULL) *kvt << "Contents of directory " << VFS::path(d) << " :\n";
 			for (u32int i = 0; d != NULL && i < d->getLength(); i++) {
 				FSNode* n = d->getChild(i);
 				if (n->type() == NT_FILE) {

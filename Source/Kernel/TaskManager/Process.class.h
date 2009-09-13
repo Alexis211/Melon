@@ -17,6 +17,7 @@
 #define STACKSIZE 4096	//Can change
 
 class Thread;
+class File;
 
 class Process {
 	friend class Thread;
@@ -34,6 +35,7 @@ class Process {
 	VirtualTerminal *m_vt;
 
 	Vector<Thread*> m_threads;
+	Vector<File*> m_fileDescriptors;
 	
 	public:
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
@@ -44,6 +46,9 @@ class Process {
 	void exit();	//Exits properly process by killing all threads
 	void registerThread(Thread* t);	//Called when a thread starts
 	void threadFinishes(Thread* thread, u32int retval); //Called when a thread finishes
+
+	void registerFileDescriptor(File* fd);
+	void unregisterFileDescriptor(File* fd);
 
 	PageDirectory* getPagedir();
 
