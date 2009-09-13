@@ -25,19 +25,19 @@ class String {
 
 	bool operator== (const String &other);
 	bool operator== (const char* string);
-	String &operator+= (String &other);
+	String &operator+= (const String &other);
 	String &operator+= (const char* other);
 	String &operator+= (WChar other);
-	String &operator+ (String &other);
+	String &operator+ (const String &other);
 	String &operator+ (const char* other);
 	String &operator+ (WChar other);
 	s32int toInt();
 	u32int toInt16();	//From HEX
-	WChar& operator[] (int index);
+	WChar& operator[] (int index) const;
 
-	u32int size();
+	u32int size() const;
 	void clear();
-	bool empty();
+	bool empty() const;
 
 	Vector<String> split(WChar c);
 

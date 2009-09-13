@@ -10,7 +10,7 @@ class RamFS : public FileSystem {
 
 	public:
 	RamFS(u32int maxSize);	//Creates an empty RAM file system
-	RamFS(u8int* ptr, u32int maxSize);	//Creates a RAM file system from data loaded in memory. format to be defined
+	RamFS(u8int* ptr, u32int maxSize, bool writable = true);	//Creates a RAM file system from data loaded in memory. format to be defined
 
 	bool setName(FSNode* node, String name);
 	bool setPermissions(FSNode* node, u32int permissions);

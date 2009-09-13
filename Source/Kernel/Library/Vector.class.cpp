@@ -32,6 +32,16 @@ Vector<T>::Vector(const Vector<T> &other) {
 }
 
 template <typename T>
+Vector<T>& Vector<T>::operator= (const Vector<T> &other) {
+	if (m_data != 0) delete[] m_data;
+	m_size = other.m_size;
+	m_data = (T*)Mem::kalloc(m_size * sizeof(T));
+	for (u32int i = 0; i < m_size; i++) {
+		new(&m_data[i]) T(other.m_data[i]);
+	}
+}
+
+template <typename T>
 Vector<T>::~Vector() {
 	if (m_data != 0) delete[] m_data;
 }

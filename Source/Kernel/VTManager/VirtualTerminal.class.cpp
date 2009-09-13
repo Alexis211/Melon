@@ -129,7 +129,7 @@ void VirtualTerminal::put(WChar c, bool updatecsr) {
 	if (updatecsr) updateCursor();
 }
 
-void VirtualTerminal::write(String s, bool updatecsr) {
+void VirtualTerminal::write(const String& s, bool updatecsr) {
 	for (u32int i = 0; i < s.size(); i++) {
 		put(s[i], false);
 	}

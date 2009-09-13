@@ -136,7 +136,7 @@ bool String::operator== (const char* string) {
 	return true;
 }
 
-String& String::operator+= (String &other) {
+String& String::operator+= (const String &other) {
 	WChar* newdata = new WChar[m_length + other.m_length + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
@@ -181,7 +181,7 @@ String& String::operator+= (WChar other) {
 	return *this;
 }
 
-String& String::operator+ (String &other) {	//Can be optimized
+String& String::operator+ (const String &other) {	//Can be optimized
 	String ret(*this);
 	return (ret += other);
 }
@@ -236,11 +236,11 @@ u32int String::toInt16() {
 	return number;
 }
 
-WChar& String::operator[] (int index) {
+WChar& String::operator[] (int index) const {
 	return m_string[index];
 }
 
-u32int String::size() {
+u32int String::size() const {
 	return m_length;
 }
 
@@ -250,7 +250,7 @@ void String::clear() {
 	m_string = 0;
 }
 
-bool String::empty() {
+bool String::empty() const {
 	return (m_length == 0);
 }
 

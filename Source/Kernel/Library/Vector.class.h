@@ -14,6 +14,7 @@ class Vector {
 	Vector(u32int size);
 	Vector(u32int size, T value);
 	Vector(const Vector<T> &other);
+	Vector<T>& operator= (const Vector<T> &other);
 	~Vector();
 
 	T& operator[] (u32int index);
