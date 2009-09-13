@@ -22,15 +22,16 @@ class FSNode {
 	FSNode *m_parent;
 	u32int m_inode;
 
-	public:
 	FSNode(String name, FileSystem* fs, FSNode* parent, u32int inode, u32int length = 0, u32int permissions = 0777, 
 			u32int uid = 0, u32int gid = 0) :
 		m_name(name), m_fs(fs), m_parent(parent), m_inode(inode), m_length(length), m_premissions(permissions),
 		m_uid(uid), m_gid(gid) {}
+	
+	public:
 
 	virtual u8int type() = 0;
 	
-	String getName() { return m_name; }
+	const String& getName() { return m_name; }
 	u32int getLength() { return m_length; }
 	u32int getPermissions() { return m_permissions; }
 	u32int getUid() { return m_uid; }
@@ -39,6 +40,7 @@ class FSNode {
 	FSNode* getParent() { return m_parent; }
 	u32int getInode() { return m_inode; }
 
+	protected:
 	//Must be implemented by *FSNode
 	virtual bool FSSetName(String name) = 0;
 	virtual bool FSTruncate() = 0;
@@ -47,6 +49,7 @@ class FSNode {
 	virtual bool FSSetGid(u32int gid) = 0;
 	virtual bool FSSetParent(FSNode* parent) = 0;
 
+	public:
 	bool setName(String name) { 
 		bool b = FSSetName(name);
 		if (b) m_name = name;
