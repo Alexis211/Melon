@@ -111,31 +111,29 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	PROCESSING(kvt, "Detecting floppy drives...");
 	FloppyController::detect(); OK(kvt);
 
+	PROCESSING(kvt, "Mounting first module as ramfs on root directory...");
 	FileSystem* fs = new RamFS((u8int*)mods[0].mod_start, 1024 * 1024);
 	DirectoryNode* cwd;
 	cwd = fs->getRootNode();
-	VFS::setRootNode(cwd);
+	VFS::setRootNode(cwd); OK(kvt);
 
 	asm volatile("sti");
 
 	while(1) {
-		kvt->setColor(0);
-		*kvt << "[" << cwd->getName() << "]# ";
 		kvt->setColor(8);
+		*kvt << "[" << cwd->getName() << "]# ";
+		kvt->setColor(1);
 		Vector<String> tokens = kvt->readLine().split(" ");
 		kvt->setColor(0);
 		if (tokens[0] == "help") {
 			*kvt << " - Command list for integrated kernel shell:\n";
 			*kvt << "  - help          shows this help screen\n";
 			*kvt << "  - reboot        reboots your computer\n";
-			*kvt << "  - ls [<dir>]    shows contents of a directory\n";
-			*kvt << "  - cd <dir>      goes to directory <dir>\n";
-			*kvt << "  - cat <file>    shows contents of file <file>\n";
-			*kvt << "  - pwd           prints current directory\n";
 			*kvt << "  - devices       shows all detected devices on your computer\n";
 			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
 			*kvt << "  - uptime        shows seconds since boot\n";
 			*kvt << "  - part          shows all detected block devices and partitions\n";
+			*kvt << " - Commands you should know how to use : ls, cd, cat, pwd, rm, mkdir, wf\n";
 		} else if (tokens[0] == "reboot") {
 			Sys::reboot();
 		} else if (tokens[0] == "ls") {
@@ -159,7 +157,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 					kvt->setCursorCol(30);
 					*kvt << (s32int)f->getLength() << " bytes.\n";
 				} else if (n->type() == NT_DIRECTORY) {
-					*kvt << " - DIR\t" << n->getName();
+					*kvt << " - DIR\t" << n->getName() << "/";
 					kvt->setCursorCol(30);
 					*kvt << (s32int)n->getLength() << " items.\n";
 				}
@@ -181,9 +179,9 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			for (u32int i = 1; i < tokens.size(); i++) {
 				FSNode* n = VFS::find(tokens[i], cwd);
 				if (n == NULL) {
-					*kvt << "No such file : " << tokens[1] << "\n";
+					*kvt << "No such file : " << tokens[i] << "\n";
 				} else if (n->type() != NT_FILE) {
-					*kvt << "Not a file : " << tokens[1]  << "\n";
+					*kvt << "Not a file : " << tokens[i]  << "\n";
 				} else {
 					FileNode* f = (FileNode*) n;
 					u8int *buff = (u8int*)Mem::kalloc(f->getLength() + 1);
@@ -195,6 +193,24 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			}
 		} else if (tokens[0] == "pwd") {
 			*kvt << "Current location : " << VFS::path(cwd) << "\n";
+		} else if (tokens[0] == "rm") {
+			if (tokens.size() == 1) *kvt << "No argument specified. I suppose that means I'll have to erase everything.\n";
+			for (u32int i = 1; i < tokens.size(); i++) {
+				if (!VFS::remove(tokens[i], cwd)) {
+						*kvt << "Error while removing file " << tokens[i] << "\n";
+					}
+			}
+		} else if (tokens[0] == "mkdir") {
+			if (tokens.size() > 1) {
+				for (u32int i = 1; i < tokens.size(); i++) {
+					if (VFS::createDirectory(tokens[i], cwd) == NULL)
+						*kvt << "Error while creating directory" << tokens[i] << "\n";
+				}
+			} else {
+				*kvt << "No argument specified. WTF???\n";
+			}
+		} else if (tokens[0] == "wf") {
+			*kvt << "Sorry, this command isn't implemented yet.\n";
 		} else if (tokens[0] == "devices") {
 			Vector<Device*> dev = Dev::findDevices();
 			*kvt << " - Detected devices :\n";

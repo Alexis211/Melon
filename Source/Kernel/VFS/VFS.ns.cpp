@@ -40,6 +40,7 @@ FSNode* find(const String& path, FSNode* start) {
 }
 
 FSNode* createFile(const String& path, FSNode* start) {
+	if (find(path, start) != NULL) return NULL;	//Something already has that name.
 	if (start == 0) start = rootNode;
 
 	Vector<String> p = path.split("/");
@@ -71,6 +72,7 @@ FSNode* createFile(const String& path, FSNode* start) {
 }
 
 FSNode* createDirectory(const String& path, FSNode* start) {
+	if (find(path, start) != NULL) return NULL;	//Something already has that name.
 	if (start == 0) start = rootNode;
 
 	Vector<String> p = path.split("/");
@@ -102,7 +104,7 @@ FSNode* createDirectory(const String& path, FSNode* start) {
 }
 
 bool remove(const String& path, FSNode* start) {
-	FSNode* node =find(path, start);
+	FSNode* node = find(path, start);
 	if (node == NULL) return false;
 	FSNode* parent = node->getParent();
 	if (parent == NULL) return false;
