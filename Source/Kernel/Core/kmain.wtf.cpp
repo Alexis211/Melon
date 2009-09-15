@@ -164,7 +164,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			}
 		} else if (tokens[0] == "cd") {
 			if (tokens.size() == 1) {
-				*kvt << "Where shall I take you, sir ?\n";
+				*kvt << "Error : no argument given.\n";
 			} else {
 				FSNode* n = VFS::find(tokens[1], cwd);
 				if (n == NULL)
@@ -194,7 +194,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 		} else if (tokens[0] == "pwd") {
 			*kvt << "Current location : " << VFS::path(cwd) << "\n";
 		} else if (tokens[0] == "rm") {
-			if (tokens.size() == 1) *kvt << "No argument specified. I suppose that means I'll have to erase everything.\n";
+			if (tokens.size() == 1) *kvt << "Error : no argument specified.\n";
 			for (u32int i = 1; i < tokens.size(); i++) {
 				if (!VFS::remove(tokens[i], cwd)) {
 						*kvt << "Error while removing file " << tokens[i] << "\n";
@@ -204,10 +204,10 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			if (tokens.size() > 1) {
 				for (u32int i = 1; i < tokens.size(); i++) {
 					if (VFS::createDirectory(tokens[i], cwd) == NULL)
-						*kvt << "Error while creating directory" << tokens[i] << "\n";
+						*kvt << "Error while creating directory " << tokens[i] << "\n";
 				}
 			} else {
-				*kvt << "No argument specified. WTF???\n";
+				*kvt << "No argument specified.\n";
 			}
 		} else if (tokens[0] == "wf") {
 			*kvt << "Sorry, this command isn't implemented yet.\n";
