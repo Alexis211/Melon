@@ -33,7 +33,8 @@ class File {
 	u32int read(u32int max_length, u8int *data);
 	bool write(u32int length, u8int *data);
 	bool seek(u64int count, u8int mode);
-	u64int getPosition() { return m_position; }
+	u64int position() { return m_position; }
+	u64int length() { return m_file->getLength(); }
 	void close(bool unregisterFD = true);	//unregisterFD = whether or not we must unregister the file descriptor from process
 
 	bool valid() { return m_valid; }

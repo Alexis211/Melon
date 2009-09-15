@@ -23,6 +23,7 @@
 #include <VFS/FileNode.class.h>
 #include <VFS/VFS.ns.h>
 #include <VFS/DirectoryNode.class.h>
+#include <VFS/File.class.h>
 
 #include <Ressources/logo.cd>
 #include <Ressources/keymap-fr.wtf.c>
@@ -81,7 +82,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	IDT::init(); OK(kvt);
 
 	PROCESSING(kvt, "Initializing paging...");
-	u32int totalRam = ((mbd->mem_upper + 1024) * 1024);
+	u32int totalRam = ((mbd->mem_upper + mbd->mem_lower) * 1024);
 	PhysMem::initPaging(totalRam); OK(kvt);
 
 	INFO(kvt); *kvt << "Total ram : " << (s32int)(totalRam / 1024) << "k (" << (s32int)(totalRam / (1024 * 1024)) << "M).\n";
@@ -177,18 +178,15 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 		} else if (tokens[0] == "cat") {
 			if (tokens.size() == 1) *kvt << "Meow.\n";
 			for (u32int i = 1; i < tokens.size(); i++) {
-				FSNode* n = VFS::find(tokens[i], cwd);
-				if (n == NULL) {
-					*kvt << "No such file : " << tokens[i] << "\n";
-				} else if (n->type() != NT_FILE) {
-					*kvt << "Not a file : " << tokens[i]  << "\n";
-				} else {
-					FileNode* f = (FileNode*) n;
-					u8int *buff = (u8int*)Mem::kalloc(f->getLength() + 1);
-					f->read(0, f->getLength(), buff);
-					buff[f->getLength()] = 0;
+				File f(tokens[i], FM_READ, cwd);
+				if (f.valid()) {
+					u8int *buff = (u8int*)Mem::kalloc(f.length() + 1);
+					f.read(f.length(), buff);
+					buff[f.length()] = 0;
 					*kvt << String((const char*) buff);
 					Mem::kfree(buff);
+				} else {
+					*kvt << "Error reading from file " << tokens[i] << "\n";
 				}
 			}
 		} else if (tokens[0] == "pwd") {

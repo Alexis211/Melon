@@ -55,7 +55,7 @@ String::String() {
 }
 
 String::String(const char* string) {
-	m_length = WChar::utf8len(string);
+	m_length = WChar::utfLen(string);
 	if (m_length == 0) {
 		m_string = 0;
 		return;
@@ -101,7 +101,7 @@ void String::operator= (const String &other) {
 }
 
 void String::operator= (const char* string) {
-	m_length = WChar::utf8len(string);
+	m_length = WChar::utfLen(string);
 	if (m_string != 0) delete [] m_string;
 	if (m_length == 0) {
 		m_string = 0;
@@ -125,7 +125,7 @@ bool String::operator== (const String &other) const {
 }
 
 bool String::operator== (const char* string) const {
-	if (m_length != WChar::utf8len(string)) return false;
+	if (m_length != WChar::utfLen(string)) return false;
 	int i = 0, l = strlen(string), c = 0;
 	WChar tmp;
 	while (i < l) {
@@ -152,7 +152,7 @@ String& String::operator+= (const String &other) {
 }
 
 String& String::operator+= (const char* other) {
-	WChar* newdata = new WChar[m_length + WChar::utf8len(other) + 1];
+	WChar* newdata = new WChar[m_length + WChar::utfLen(other) + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
 	}

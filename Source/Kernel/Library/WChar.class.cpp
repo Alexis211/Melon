@@ -19,11 +19,11 @@ WChar::WChar(char c) {
 	affectAscii(c);
 }
 
-WChar::WChar(const char* c) {
+WChar::WChar(const char* c, u8int encoding) {	//TODO : take encoding into account
 	affectUtf8(c);
 }
 
-u32int WChar::utf8len(const char* c) {
+u32int WChar::utfLen(const char* c, u8int encoding) {
 	int i = 0, l = CMem::strlen(c), co = 0;
 	while (i < l) {
 		if ((c[i] & 0x80) == 0) i += 1;
@@ -42,10 +42,6 @@ void WChar::affectAscii(char c) {
 }
 
 u32int WChar::affectUtf8(const char* c) {	//Returns the number of bytes for the character
-	/*if ((c[0] & 0xB0) == 0x80) {	//11000000b == 10000000b, means we are IN a sequence
-		value = 0;
-		return 1;
-	}*/
 	if ((c[0] & 0x80) == 0) {
 		value = c[0];		//0x80 = 10000000b
 		return 1;
