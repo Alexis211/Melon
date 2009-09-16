@@ -130,6 +130,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << " - Command list for integrated kernel shell:\n";
 			*kvt << "  - help          shows this help screen\n";
 			*kvt << "  - reboot        reboots your computer\n";
+			*kvt << "  - panic         causes a kernel panic\n";
 			*kvt << "  - devices       shows all detected devices on your computer\n";
 			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
 			*kvt << "  - uptime        shows seconds since boot\n";
@@ -137,6 +138,8 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << " - Commands you should know how to use : ls, cd, cat, pwd, rm, mkdir, wf\n";
 		} else if (tokens[0] == "reboot") {
 			Sys::reboot();
+		} else if (tokens[0] == "panic") {
+			PANIC("This is what happens when you say 'panic'.");
 		} else if (tokens[0] == "ls") {
 			DirectoryNode* d = cwd;
 			if (tokens.size() == 2) {

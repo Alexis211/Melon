@@ -26,10 +26,22 @@ struct WChar {
 
 	void affectAscii(char c);
 	u32int affectUtf8(const char* c);
-	void affectUtf16(const char* c);
-	void affectUtf32(const char* c);
+	u32int affectUtf16(const char* c);
+	u32int affectUtf32(const char* c);
+
+	u32int affect(const char* c, u8int encoding = UE_UTF8) {
+		if (encoding == UE_UTF8) return affectUtf8(c);
+		if (encoding == UE_UTF16) return affectUtf16(c);
+		if (encoding == UE_UTF32) return affectUtf32(c);
+		affectAscii(c[0]);	//Default case :/
+		return 1;
+	}
 
 	u8int toAscii();
+
+	uchar_repr_t toUtf8();
+	uchar_repr_t toUtf16();
+	uchar_repr_t toUtf32();
 
 	inline WChar operator+ (u32int other) {
 		WChar r;

@@ -51,7 +51,7 @@ static_ctors_loop:			; construct global objects
  
    call  kmain                       ; call kernel proper
 
-   cli		; disable interuptions
+   cli		; disable interupts
 
 static_dtors_loop:					 ; useless, kernel should never return
    mov ebx, start_dtors				; destruct global objects
@@ -69,11 +69,11 @@ hang:
 
 [section .setup]	; this is included in the .setup section, so that it thinks it is at 0x00100000
 
-trickgdt:		; our false GDT
+trickgdt:		; our false GDT (this is equivalent to the gdt_ptr_t structure defined in GDT.ns.h)
    dw gdt_end - gdt - 1		; gdt limit
    dd gdt					; gdt base
 
-gdt:
+gdt:			; each of these is equivalent to one gdt_entry_t structure, defined in GDT.ns.h
    dd 0, 0					; null GDT entry
    db 0xFF, 0xFF, 0, 0, 0, 10011010b, 11001111b, 0x40	; kernel code segment
    db 0xFF, 0xFF, 0, 0, 0, 10010010b, 11001111b, 0x40	; kernel data segment

@@ -19,19 +19,28 @@ WChar::WChar(char c) {
 	affectAscii(c);
 }
 
-WChar::WChar(const char* c, u8int encoding) {	//TODO : take encoding into account
-	affectUtf8(c);
+WChar::WChar(const char* c, u8int encoding) {
+	if (encoding == UE_UTF8) 	affectUtf8(c);
+	if (encoding == UE_UTF16)	affectUtf16(c);
+	if (encoding == UE_UTF32)	affectUtf32(c);
 }
 
 u32int WChar::utfLen(const char* c, u8int encoding) {
 	int i = 0, l = CMem::strlen(c), co = 0;
 	while (i < l) {
-		if ((c[i] & 0x80) == 0) i += 1;
-		else if ((c[i] & 0xE0) == 0xC0) i += 2;
-		else if ((c[i] & 0xF0) == 0xE0) i += 3;
-		else if ((c[i] & 0xF8) == 0xF0) i += 4;
-		else i += 1;
-		co++;
+		if (encoding == UE_UTF8) {
+			if ((c[i] & 0x80) == 0) i += 1;
+			else if ((c[i] & 0xE0) == 0xC0) i += 2;
+			else if ((c[i] & 0xF0) == 0xE0) i += 3;
+			else if ((c[i] & 0xF8) == 0xF0) i += 4;
+			else i += 1;
+			co++;
+		} else if (encoding == UE_UTF16) {
+			if ((c[i] & 0xFC) == 0xD8 and (c[i + 2] & 0xFC) == 0xDC) i += 4;
+			else i += 2;
+		} else if (encoding == UE_UTF32) {
+			i += 4;
+		}
 	}
 	return co;
 }
@@ -67,10 +76,67 @@ u32int WChar::affectUtf8(const char* c) {	//Returns the number of bytes for the 
 	return 1;
 }
 
+u32int WChar::affectUtf16(const char* c) {
+	if ((c[0] & 0xFC) == 0xD8 and		// 11111100b, 11011000b
+		(c[2] & 0xFC) == 0xDC) {		// 11111100b, 11011100b
+		u32int w = ((c[0] & 0x03) << 2) | ((c[1] & 0xC0) >> 6);
+		u32int x = (c[1] & 0x3F);
+		u32int y = ((c[2] & 0x03) << 8) | (c[2]);
+		value = ((w + 1) << 16) | (x << 10) | y;
+		if (value >= 0xD800 and value <= 0xDFFF) value = 0;	//These values are unallowed
+		if (value >= 0xFFFE and value <= 0xFFFF) value = 0;	
+		return 4;
+	} else {
+		value = (c[0] << 8) | (c[1]);
+		if (value >= 0xD800 and value <= 0xDFFF) value = 0;	//These values are unallowed
+		if (value >= 0xFFFE and value <= 0xFFFF) value = 0;	
+		return 2;
+	}
+}
+
+u32int WChar::affectUtf32(const char* c) {
+	value = (c[0] << 24) | (c[1] << 16) | (c[2] << 8) | c[3];
+	if (value >= 0xD800 and value <= 0xDFFF) value = 0;	//These values are unallowed
+	if (value >= 0xFFFE and value <= 0xFFFF) value = 0;	
+	return 4;
+}
+
 u8int WChar::toAscii() {
 	if (value < 128) return (char)value;
 	for (int i = 0; i < 128; i++) {
 		if (CP437[i] == value) return (i + 128);
 	}
 	return '?';
+}
+
+uchar_repr_t WChar::toUtf8() {
+	uchar_repr_t r;
+	r.i = 0;
+	if (value < 128) {
+		r.c[0] = value;
+	} else if (value < 4096) {
+		r.c[0] = 0xC0 | ((value & 0x07C0) >> 6);
+		r.c[1] = 0x80 | (value & 0x3F);
+	} else if (value < 65536) {
+		r.c[0] = 0xE0 | ((value & 0xF000) >> 12);
+		r.c[1] = 0x80 | ((value & 0x0FC0) >> 6);
+		r.c[2] = 0x80 | (value & 0x003F);
+	} else {
+		r.c[0] = 0xF0 | ((value & 0x1C0000) >> 18);
+		r.c[1] = 0x80 | ((value & 0x3F000) >> 12);
+		r.c[2] = 0x80 | ((value & 0x0FC0) >> 6);
+		r.c[3] = 0x80 | (value & 0x003F);
+	}
+	return r;
+}
+
+//TODO : code WChar::toUtf16
+
+uchar_repr_t WChar::toUtf32() {
+	uchar_repr_t r;
+	r.c[0] = (value >> 24) & 0xFF;
+	r.c[1] = (value >> 16) & 0xFF;
+	r.c[2] = (value >> 8) & 0xFF;
+	r.c[3] = value & 0xFF;
+	return r;
 }

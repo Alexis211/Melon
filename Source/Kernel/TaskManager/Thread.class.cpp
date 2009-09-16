@@ -18,7 +18,7 @@ Thread::Thread(u32int (*entry_point)(), bool iskernel) {
 		u32int tmp;
 		m_kernelStackFrame = (u32int)PageAlloc::alloc(&tmp);
 		m_process = Task::getKernelProcess();
-		setup(entry_point, m_kernelStackFrame + STACKSIZE);
+		setup(entry_point, m_kernelStackFrame + 0x1000);	//A kernel stack always is 1 frame, meaning 0x1000 bytes
 	} else {
 		m_isKernel = false;
 		m_process = Task::currentProcess;

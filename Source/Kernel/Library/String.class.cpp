@@ -54,8 +54,8 @@ String::String() {
 	m_length = 0;
 }
 
-String::String(const char* string) {
-	m_length = WChar::utfLen(string);
+String::String(const char* string, u8int encoding) {
+	m_length = WChar::utfLen(string, encoding);
 	if (m_length == 0) {
 		m_string = 0;
 		return;
@@ -63,7 +63,7 @@ String::String(const char* string) {
 	m_string = new WChar[m_length + 1];
 	int i = 0, l = strlen(string), c = 0;
 	while (i < l) {
-		i += m_string[c].affectUtf8(string + i);
+		i += m_string[c].affect(string + i, encoding);
 		c++;
 	}
 	m_string[m_length] = 0;
@@ -86,7 +86,7 @@ String::~String() {
 	if (m_string != 0) delete [] m_string;
 }
 
-void String::operator= (const String &other) {
+void String::affect (const String &other) {
 	m_length = other.m_length;
 	if (m_string != 0) delete [] m_string;
 	if (m_length == 0) {
@@ -100,8 +100,8 @@ void String::operator= (const String &other) {
 	m_string[m_length] = 0;
 }
 
-void String::operator= (const char* string) {
-	m_length = WChar::utfLen(string);
+void String::affect (const char* string, u8int encoding) {
+	m_length = WChar::utfLen(string, encoding);
 	if (m_string != 0) delete [] m_string;
 	if (m_length == 0) {
 		m_string = 0;
@@ -110,13 +110,13 @@ void String::operator= (const char* string) {
 	m_string = new WChar[m_length + 1];
 	int i = 0, l = strlen(string), c = 0;
 	while (i < l) {
-		i += m_string[c].affectUtf8(string + i);
+		i += m_string[c].affect(string + i, encoding);
 		c++;
 	}
 	m_string[m_length] = 0;
 }
 
-bool String::operator== (const String &other) const {
+bool String::compare (const String &other) const {
 	if (m_length != other.m_length) return false;
 	for (u32int i = 0; i < m_length; i++) {
 		if (m_string[i] != other.m_string[i]) return false;
@@ -124,19 +124,19 @@ bool String::operator== (const String &other) const {
 	return true;
 }
 
-bool String::operator== (const char* string) const {
-	if (m_length != WChar::utfLen(string)) return false;
+bool String::compare (const char* string, u8int encoding) const {
+	if (m_length != WChar::utfLen(string, encoding)) return false;
 	int i = 0, l = strlen(string), c = 0;
 	WChar tmp;
 	while (i < l) {
-		i += tmp.affectUtf8(string + i);
+		i += tmp.affect(string + i, encoding);
 		if (m_string[c] != tmp) return false;
 		c++;
 	}
 	return true;
 }
 
-String& String::operator+= (const String &other) {
+String& String::append (const String &other) {
 	WChar* newdata = new WChar[m_length + other.m_length + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
@@ -151,14 +151,14 @@ String& String::operator+= (const String &other) {
 	return *this;
 }
 
-String& String::operator+= (const char* other) {
-	WChar* newdata = new WChar[m_length + WChar::utfLen(other) + 1];
+String& String::append (const char* other, u8int encoding) {
+	WChar* newdata = new WChar[m_length + WChar::utfLen(other, encoding) + 1];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
 	}
 	int i = 0, l = strlen(other), c = 0;
 	while (i < l) {
-		i += newdata[c + m_length].affectUtf8(other + i);
+		i += newdata[c + m_length].affect(other + i, encoding);
 		c++;
 	}
 	if (m_string != 0) delete [] m_string;
@@ -168,7 +168,7 @@ String& String::operator+= (const char* other) {
 	return *this;
 }
 
-String& String::operator+= (WChar other) {
+String& String::append (WChar other) {
 	WChar* newdata = new WChar[m_length + 2];
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
@@ -181,17 +181,17 @@ String& String::operator+= (WChar other) {
 	return *this;
 }
 
-String& String::operator+ (const String &other) const {	//Can be optimized
+String String::concat (const String &other) const {	//Can be optimized
 	String ret(*this);
 	return (ret += other);
 }
 
-String& String::operator+ (const char* other) const { //Can be optimized
+String String::concat (const char* other, u8int encoding) const { //Can be optimized
 	String ret(*this);
-	return (ret += other);
+	return (ret.append(other, encoding));
 }
 
-String& String::operator+ (WChar other) const {
+String String::concat (WChar other) const {
 	String ret(*this);
 	return (ret += other);
 }

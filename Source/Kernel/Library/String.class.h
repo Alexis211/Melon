@@ -15,26 +15,40 @@ class String {
 	static String hex(u32int number);
 	static String number(s32int number);
 
-	String(const char* string);
+	String(const char* string, u8int encoding = UE_UTF8);
 	String();
 	String(const String &other);
 	~String();
 
-	void operator= (const String &other);
-	void operator= (const char* string);
+	void affect(const String &other);
+	void affect(const char* string, u8int encoding = UE_UTF8);
+	void operator= (const String &other) { affect(other); }
+	void operator= (const char* other) { affect(other); }
 
-	bool operator== (const String &other) const;
-	bool operator== (const char* string) const;
-	bool operator!= (const String &other) { return !(operator== (other)); }
-	bool operator!= (const char* other) { return !(operator== (other)); }
-	String &operator+= (const String &other);
-	String &operator+= (const char* other);
-	String &operator+= (WChar other);
-	String &operator+ (const String &other) const;
-	String &operator+ (const char* other) const;
-	String &operator+ (WChar other) const;
-	s32int toInt() const;
-	u32int toInt16() const;	//From HEX
+	bool compare(const String &other) const;
+	bool compare(const char* string, u8int encoding = UE_UTF8) const;
+	bool operator== (const String &other) const { return compare(other); }
+	bool operator== (const char* other) const { return compare(other); }
+	bool operator!= (const String &other) { return !compare(other); }
+	bool operator!= (const char* other) { return !compare(other); }
+
+	String& append(const String &other);
+	String& append(const char* other, u8int encoding = UE_UTF8);
+	String& append(WChar other);
+	String &operator+= (const String &other) { return append(other); }
+	String &operator+= (const char* other) { return append(other); }
+	String &operator+= (WChar other) { return append(other); }
+
+	String concat(const String &other) const;
+	String concat(const char* other, u8int encoding = UE_UTF8) const;
+	String concat(WChar other) const;
+	String operator+ (const String &other) const { return concat(other); }
+	String operator+ (const char* other) const { return concat(other); }
+	String operator+ (WChar other) const { return concat(other); }
+
+	s32int toInt() const; 	//Convert from DEC
+	u32int toInt16() const;	//Convert from HEX
+
 	WChar& operator[] (int index) const;
 
 	u32int size() const;
