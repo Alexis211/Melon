@@ -32,10 +32,10 @@ extern u32int end;	//Placement address
 
 extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
 
-#define INFO(vt) vt->setColor(0); *vt << " - "; vt->setColor(8);
-#define PROCESSING(vt, m) vt->setColor(6); *vt << " > "; vt->setColor(0); *vt << m; \
-	vt->setCursorCol(60); vt->setColor(8); *vt << ": ";
-#define OK(vt) vt->setColor(0); *vt << "[ "; vt->setColor(1); *vt << "OK"; vt->setColor(0); *vt << " ]\n";
+#define INFO(vt) vt->setColor(KVT_FGCOLOR); *vt << " - "; vt->setColor(KVT_LIGHTCOLOR);
+#define PROCESSING(vt, m) vt->setColor(KVT_BLECOLOR); *vt << " > "; vt->setColor(KVT_FGCOLOR); *vt << m; \
+	vt->setCursorCol(60); vt->setColor(KVT_LIGHTCOLOR); *vt << ": ";
+#define OK(vt) vt->setColor(KVT_FGCOLOR); *vt << "[ "; vt->setColor(KVT_OKCOLOR); *vt << "OK"; vt->setColor(KVT_FGCOLOR); *vt << " ]\n";
 
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
@@ -63,7 +63,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Disp::setDisplay(vgaout);
 
 	//Create a VT for handling the Melon bootup logo
-	VirtualTerminal *melonLogoVT = new VirtualTerminal(melonLogoLines, melonLogoCols, 9, 0);
+	VirtualTerminal *melonLogoVT = new VirtualTerminal(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
 	for (int i = 0; i < melonLogoLines; i++) {
 		for (int j = 0; j < melonLogoCols; j++) {
 			melonLogoVT->putChar(i, j, melonLogo[i][j]);
@@ -72,7 +72,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	melonLogoVT->map(1);
 
 	//Create a VT for logging what kernel does
-	VirtualTerminal *kvt = new VirtualTerminal(15, 76, 0, 7);
+	VirtualTerminal *kvt = new VirtualTerminal(15, 76, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(melonLogoLines + 2);
 
 	INFO(kvt); *kvt << "Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
@@ -121,11 +121,11 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	asm volatile("sti");
 
 	while(1) {
-		kvt->setColor(8);
+		kvt->setColor(KVT_LIGHTCOLOR);
 		*kvt << "[" << cwd->getName() << "]# ";
-		kvt->setColor(1);
+		kvt->setColor(KVT_ENTRYCOLOR);
 		Vector<String> tokens = kvt->readLine().split(" ");
-		kvt->setColor(0);
+		kvt->setColor(KVT_FGCOLOR);
 		if (tokens[0] == "help") {
 			*kvt << " - Command list for integrated kernel shell:\n";
 			*kvt << "  - help          shows this help screen\n";

@@ -25,7 +25,6 @@ RamFS::RamFS(u8int *ptr, u32int maxSize, bool writable) {
 	if (curr.i->magic != INITRD_MAGIC) return;
 	u32int files = curr.i->files;
 	curr.i++;	//Increment pointer of size of initrd header
-	DEBUG_HEX(files); DEBUG(" is initrd file count.");
 	for (u32int i = 0; i < files; i++) {
 		initrd_file_header h = *(curr.f);
 		curr.f++;	//Increment pointer of size of file header

@@ -1,7 +1,7 @@
 EN :
 Welcome to this Melon live-floppy ! For the moment, the project isn't very
 advanced, but if you can read this text, it's already because of a lot of
-great efforts I'v made in Melon's developpment.
+great efforts I've made in Melon's developpment.
 
 FR :
 Bienvenue sur cette live-disquette de Melon ! Pour l'instant, le projet 

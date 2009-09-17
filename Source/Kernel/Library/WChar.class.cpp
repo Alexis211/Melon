@@ -1,6 +1,6 @@
 #include "WChar.class.h"
 
-WChar WChar::CP437[] = {	//These are the UTF8 equivalents for the 128 extra characters of code page 850
+WChar WChar::CP437[] = {	//These are the UTF8 equivalents for the 128 extra characters of code page 437
 	"Ç", "ü", "é", "â", "ä", "à", "å", "ç", "ê", "ë", "è", "ï", "î", "ì", "Ä", "Å",
 	"É", "æ", "Æ", "ô", "ö", "ò", "û", "ù", "ÿ", "Ö", "Ü", "¢", "£", "¥", "₧", "ƒ",
 	"á", "í", "ó", "ú", "ñ", "Ñ", "ª", "º", "¿", "⌐", "¬", "½", "¼", "¡", "«", "»",
@@ -34,13 +34,13 @@ u32int WChar::utfLen(const char* c, u8int encoding) {
 			else if ((c[i] & 0xF0) == 0xE0) i += 3;
 			else if ((c[i] & 0xF8) == 0xF0) i += 4;
 			else i += 1;
-			co++;
 		} else if (encoding == UE_UTF16) {
 			if ((c[i] & 0xFC) == 0xD8 and (c[i + 2] & 0xFC) == 0xDC) i += 4;
 			else i += 2;
 		} else if (encoding == UE_UTF32) {
 			i += 4;
 		}
+		co++;
 	}
 	return co;
 }
