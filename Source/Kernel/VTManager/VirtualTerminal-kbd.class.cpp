@@ -4,6 +4,7 @@
 using namespace Kbd;
 
 void VirtualTerminal::keyPress(keypress_t kp) {
+	m_kbdbuffMutex.waitLock();
 	m_kbdbuff.push(kp);
 	if (!m_kbdMutex.locked()) {
 		if (kp.haschar && !kp.hascmd) {
@@ -16,6 +17,7 @@ void VirtualTerminal::keyPress(keypress_t kp) {
 			put("\b");
 		}
 	}
+	m_kbdbuffMutex.unlock();
 }
 
 keypress_t VirtualTerminal::getKeypress(bool show, bool block) {
@@ -29,12 +31,14 @@ keypress_t VirtualTerminal::getKeypress(bool show, bool block) {
 	while (m_kbdbuff.empty())
 		Task::currentThread->sleep(10);
 
+	m_kbdbuffMutex.waitLock();
 	keypress_t ret = m_kbdbuff[0];
 
 	for (u32int i = 1; i < m_kbdbuff.size(); i++) {
 		m_kbdbuff[i - 1] = m_kbdbuff[i];
 	}
 	m_kbdbuff.pop();
+	m_kbdbuffMutex.unlock();
 
 	if (show) {
 		if (ret.haschar && !ret.hascmd) {

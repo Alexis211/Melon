@@ -136,12 +136,13 @@ void VirtualTerminal::write(const String& s, bool updatecsr) {
 	if (updatecsr) updateCursor();
 }
 
-void VirtualTerminal::writeDec(s32int i, bool updatecsr) {
+void VirtualTerminal::writeDec(s64int num, bool updatecsr) {
+	u64int i = num;
 	if (i == 0) {
 		put('0', false);
-	} else if (i < 0) {
+	} else if (num < 0) {
 		put('-', false);
-		i = 0 - i;
+		i = 0 - num;
 	}
 	char c[32];
 	int n = 0;

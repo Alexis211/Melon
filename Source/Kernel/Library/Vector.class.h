@@ -17,17 +17,17 @@ class Vector {
 	Vector<T>& operator= (const Vector<T> &other);
 	~Vector();
 
-	T& operator[] (u32int index);
+	T& operator[] (u32int index) const;
 	
 	void push(const T& element);
 	//void push(T& element);
 	void pop();
 
-	T& back();
-	T& front();
+	T& back() const;
+	T& front() const;
 
-	u32int size();
-	bool empty();
+	u32int size() const;
+	bool empty() const;
 	void clear();
 };
 

@@ -196,9 +196,10 @@ String String::concat (WChar other) const {
 	return (ret += other);
 }
 
-s32int String::toInt() const {
+s64int String::toInt() const {
 	if (m_string == 0) return 0;
-	s32int pos = 0, number = 0;
+	s32int pos = 0;
+	s64int number = 0;
 	bool negative = false;
 	if (m_string[0].value == '-') {
 		negative = true;
@@ -213,9 +214,10 @@ s32int String::toInt() const {
 	return number;
 }
 
-u32int String::toInt16() const {
+u64int String::toInt16() const {
 	if (m_string == 0) return 0;
-	u32int pos = 0, number = 0;
+	u32int pos = 0;
+	u64int number = 0;
 	if (m_string[0].value == '0' && m_string[1].value == 'x') pos = 2;
 	while (1) {
 		char c = m_string[pos];

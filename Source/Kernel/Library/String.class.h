@@ -46,8 +46,8 @@ class String {
 	String operator+ (const char* other) const { return concat(other); }
 	String operator+ (WChar other) const { return concat(other); }
 
-	s32int toInt() const; 	//Convert from DEC
-	u32int toInt16() const;	//Convert from HEX
+	s64int toInt() const; 	//Convert from DEC
+	u64int toInt16() const;	//Convert from HEX
 
 	WChar& operator[] (int index) const;
 

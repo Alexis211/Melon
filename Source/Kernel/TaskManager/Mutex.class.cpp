@@ -1,24 +1,24 @@
 #include "Mutex.class.h"
 #include <TaskManager/Task.ns.h>
 
-Mutex::Mutex(bool locked) {
+extern "C" u32int atomic_exchange(u32int* ptr, u32int newval);
+
+Mutex::Mutex(u32int locked) {
 	m_locked = locked;
 }
 
 bool Mutex::lock() {
-	if (m_locked) return false;
-	m_locked = true;
-	return m_locked;
+	if (atomic_exchange(&m_locked, MUTEX_TRUE) == MUTEX_TRUE) return false;	//The lock was already locked
+	return true;
 }
 
 void Mutex::waitLock() {
-	while (m_locked)
+	while (atomic_exchange(&m_locked, MUTEX_TRUE) == MUTEX_TRUE)
 		Task::currentThread->sleep(10);	//Wait 10ms
-	m_locked = true;
 }
 
 void Mutex::unlock() {
-	m_locked = false;
+	m_locked = MUTEX_FALSE;
 }
 
 bool Mutex::locked() {

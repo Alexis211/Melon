@@ -6,7 +6,7 @@ Floppy = Melon.img
 Projects = Kernel Tools/MakeRamFS
 
 RamFS = Init.rfs
-RamFSFiles = :/System :/System/Applications Source/Kernel/Ressources/Welcome.txt:/Welcome.txt :/System/Configuration :/Useless Source/Kernel/Ressources/Info.txt:/Useless/Info.txt Source/Kernel/Ressources/logo.cd:/Useless/Melon-logo 
+RamFSFiles = :/System :/System/Applications Source/Kernel/Ressources/Welcome.txt:/Welcome.txt :/System/Configuration :/Useless Source/Kernel/Ressources/Info.txt:/Useless/Info.txt Source/Kernel/Ressources/logo.cxd:/Useless/Melon-logo 
 
 all:
 	for p in $(Projects); do \

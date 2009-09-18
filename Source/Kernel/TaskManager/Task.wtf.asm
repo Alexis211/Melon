@@ -9,6 +9,13 @@ idle_task:
 	hlt
 	jmp idle_task
 
+[GLOBAL atomic_exchange]
+atomic_exchange:
+   mov ecx, [esp+4]		; Get lock address
+   mov eax, [esp+8]		; Get new value
+   xchg eax, [ecx]		; Old value goes in eax
+   ret
+
 [GLOBAL copy_page_physical]
 copy_page_physical:
    push ebx              ; According to __cdecl, we must preserve the contents of EBX.

@@ -23,7 +23,7 @@ class VirtualTerminal {
 	
 	u32int m_csrlin, m_csrcol;
 
-	Mutex m_kbdMutex;
+	Mutex m_kbdMutex, m_kbdbuffMutex;
 	Vector<Kbd::keypress_t> m_kbdbuff;	//Key press events buffer
 
 	public:
@@ -47,7 +47,7 @@ class VirtualTerminal {
 	//Display functions
 	void put(WChar c, bool updatecsr = true);
 	void write(const String& s, bool updatecsr = true);
-	void writeDec(s32int i, bool updatecsr = true);
+	void writeDec(s64int num, bool updatecsr = true);
 	void writeHex(u32int i, bool updatecsr = true);
 
 	void hexDump(u8int* ptr, u32int sz);
@@ -55,6 +55,7 @@ class VirtualTerminal {
 	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }
 	//inline VirtualTerminal& operator<<(WChar c) { put(c); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
+	inline VirtualTerminal& operator<<(s64int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 
 	//Keyboard functions

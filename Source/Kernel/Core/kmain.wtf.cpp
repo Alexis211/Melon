@@ -25,8 +25,8 @@
 #include <VFS/DirectoryNode.class.h>
 #include <VFS/File.class.h>
 
-#include <Ressources/logo.cd>
-#include <Ressources/keymap-fr.wtf.c>
+#include <Ressources/logo.cxd>
+#include <Ressources/keymap-fr.wtf.cxd>
 
 extern u32int end;	//Placement address
 

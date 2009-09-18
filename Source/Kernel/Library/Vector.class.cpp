@@ -66,7 +66,7 @@ Vector<T>::~Vector() {
 }
 
 template <typename T>
-T& Vector<T>::operator[] (u32int index) {
+T& Vector<T>::operator[] (u32int index) const {
 	return m_data[index];
 }
 
@@ -106,23 +106,23 @@ void Vector<T>::pop() {
 }
 
 template <typename T>
-T& Vector<T>::back() {
+T& Vector<T>::back() const {
 	return m_data[m_size - 1];
 }
 
 template <typename T>
-T& Vector<T>::front() {
+T& Vector<T>::front() const {
 	return m_data[0];
 }
 
 
 template <typename T>
-u32int Vector<T>::size() {
+u32int Vector<T>::size() const {
 	return m_size;
 }
 
 template <typename T>
-bool Vector<T>::empty() {
+bool Vector<T>::empty() const {
 	return m_size == 0;
 }
 
