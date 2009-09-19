@@ -24,7 +24,8 @@
 #include <VFS/FileNode.class.h>
 #include <VFS/VFS.ns.h>
 #include <VFS/DirectoryNode.class.h>
-#include <VFS/File.class.h>
+#include <VFS/TextFile.class.h>
+#include <Core/Log.ns.h>
 
 #include <Ressources/logo.cxd>
 #include <Ressources/keymap-fr.wtf.cxd>
@@ -95,29 +96,32 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Mem::createHeap(); OK(kvt);
 	INFO(kvt); *kvt << "Free frames : " << (s32int)PhysMem::free() << "/" << (s32int)PhysMem::total() << "\n";
 	
-	PROCESSING(kvt, "Registering textual VGA output...");
-	Dev::registerDevice(vgaout); OK(kvt);
-
 	PROCESSING(kvt,"Initializing PIT...");
 	Dev::registerDevice(new Timer()); OK(kvt);
 
 	PROCESSING(kvt, "Initializing multitasking...");
 	Task::initialize(String((char*)mbd->cmdline), kvt); OK(kvt);
 
-	PROCESSING(kvt, "Setting up keyboard...");
-	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
-	Kbd::setKeymap(keymapFR_normal, keymapFR_shift, keymapFR_caps, keymapFR_altgr, keymapFR_shiftaltgr);	//Load keymap
-	Kbd::setFocus(kvt);	//Set focus to virtual terminal
-	OK(kvt);
-
-	PROCESSING(kvt, "Detecting floppy drives...");
-	FloppyController::detect(); OK(kvt);
-
 	PROCESSING(kvt, "Mounting first module as ramfs on root directory...");
 	FileSystem* fs = new RamFS((u8int*)mods[0].mod_start, 1024 * 1024);
 	DirectoryNode* cwd;
 	cwd = fs->getRootNode();
 	VFS::setRootNode(cwd); OK(kvt);
+
+	PROCESSING(kvt, "Setting up logs...");
+	Log::init(KL_STATUS); OK(kvt);
+	INFO(kvt); *kvt << "Logs are now going to files in /System/Logs/\n";
+
+	Dev::registerDevice(vgaout);
+	Log::log(KL_STATUS, "kmain : Registered textual VGA output");
+
+	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
+	Kbd::setKeymap(keymapFR_normal, keymapFR_shift, keymapFR_caps, keymapFR_altgr, keymapFR_shiftaltgr);	//Load keymap
+	Kbd::setFocus(kvt);	//Set focus to virtual terminal
+	Log::log(KL_STATUS, "kmain : Keyboard set up");
+
+	FloppyController::detect();
+	Log::log(KL_STATUS, "kmain : Floppy drives detected");
 
 	asm volatile("sti");
 
@@ -212,7 +216,6 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 				*kvt << "No argument specified.\n";
 			}
 		} else if (tokens[0] == "wf") {
-			//*kvt << "Sorry, this command isn't implemented yet.\n";
 			if (tokens.size() == 1) {
 				*kvt << "No file to write !\n";
 			} else {

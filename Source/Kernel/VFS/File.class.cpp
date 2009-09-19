@@ -121,6 +121,10 @@ bool File::seek(u64int count, u8int mode) {
 	return false;
 }
 
+bool File::eof() {
+	return m_position == m_file->getLength();
+}
+
 void File::close(bool unregisterFD) {
 	if (!m_valid) return;
 	if (m_writable)

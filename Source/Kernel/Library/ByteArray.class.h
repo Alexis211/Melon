@@ -7,6 +7,12 @@
 class ByteArray : public BasicString<u8int> {
 	public:
 	ByteArray() : BasicString<u8int>() {}
+	ByteArray(const BasicString<u8int> &bs) : BasicString<u8int>() {
+		m_length = bs.size();
+		m_string = new u8int[m_length];
+		for (u32int i = 0; i < m_length; i++)
+			m_string[i] = bs[i];
+	}
 	ByteArray(const ByteArray& other) : BasicString<u8int>(other) {}
 	ByteArray(const char* c);
 	ByteArray(u32int size) : BasicString<u8int>((u8int)0, size) {}
@@ -17,7 +23,7 @@ class ByteArray : public BasicString<u8int> {
 
 	void dump(VirtualTerminal *vt);
 
-	operator String ();
+	String toString(u8int encoding = UE_UTF8);
 	operator u8int* () { return m_string; }
 };
 

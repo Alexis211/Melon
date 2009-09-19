@@ -2,6 +2,7 @@
 #include "FloppyController.class.h"
 #include <TaskManager/Task.ns.h>
 #include <DeviceManager/Time.ns.h>
+#include <Core/Log.ns.h>
 
 using namespace Sys;
 
@@ -228,19 +229,29 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 		int error = 0;
 	
 		if (st0 & 0xC0) error = 1;
-		if (st1 & 0x80) error = 1;	//End of cylinder
-		if (st0 & 0x08) error = 1;	//Drive not ready
-		if (st1 & 0x20)	error = 1;	//CRC error
-		if (st1 & 0x10) error = 1;	//Controller timeout
-		if (st1 & 0x04) error = 1;	//No data found
-		if ((st2|st1) & 0x01) error=1;	//No address mark found
-		if (st2 & 0x40) error = 1;	//Deleted address mark
-		if (st2 & 0x20) error = 1;	//CRC error in data
-		if (st2 & 0x10) error = 1;	//Wrong cylinder
-		if (st2 & 0x04) error = 1;	//uPD765 sector not found
-		if (st2 & 0x02) error = 1;	//Bad cylinder
-		if (bps != 0x2) error = 1;	//Wanted 512 bytes/sector, got (1<<(bps+7))
-		if (st1 & 0x02) error = 2;	//Not writable
+		if (st1 & 0x80) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : end of cyilnder."); error = 1; }
+		if (st0 & 0x08) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : drive not ready."); error = 1; }
+		if (st1 & 0x20)	{ Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : CRC error."); error = 1; }
+		if (st1 & 0x10) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : controller timeout."); error = 1; }
+		if (st1 & 0x04) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : no data found."); error = 1; }
+		if ((st2|st1) & 0x01) { 
+			Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : no address mark found.");
+			error=1;
+		}
+		if (st2 & 0x40) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : deleted address mark."); error = 1; }
+		if (st2 & 0x20) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : CRC error in data."); error = 1; }
+		if (st2 & 0x10) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : wrong cylinder."); error = 1; }
+		if (st2 & 0x04) {
+			Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : uPD765 sector not found.");
+			error = 1;
+		}
+		if (st2 & 0x02) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : bad cylinder."); error = 1; }
+		if (bps != 0x2) {
+			Log::log(KL_ERROR, String("FloppyDrive.class : error while I/O : wanted 512 bytes/sector, got ")
+					+= String::number(1 << (bps + 7)));
+			error = 1;
+		}
+		if (st1 & 0x02) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : not writable."); error = 2; }
 
 		if (!error) CMem::memcpy(m_buffer, FloppyController::dmabuff, FLOPPY_DMALEN);	//Copy data to internal buffer
 		FloppyController::dmaRelease();

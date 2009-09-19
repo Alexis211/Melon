@@ -53,11 +53,11 @@ void ByteArray::dump(VirtualTerminal *vt) {
 	vt->hexDump(m_string, m_length);
 }
 
-ByteArray::operator String () {
+String ByteArray::toString (u8int encoding) {
 	char* c = new char[m_length + 1];
 	memcpy((u8int*)c, m_string, m_length);
 	c[m_length] = 0;	//Add NULL terminator
-	String r(c);
+	String r(c, encoding);
 	delete c;
 	return r;
 }

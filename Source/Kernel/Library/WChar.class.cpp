@@ -25,21 +25,26 @@ WChar::WChar(const char* c, u8int encoding) {
 	if (encoding == UE_UTF32)	affectUtf32(c);
 }
 
+u32int WChar::ucharLen(const char* c, u8int encoding) {
+	if (encoding == UE_UTF8) {
+		if ((c[0] & 0x80) == 0) return 1;
+		else if ((c[0] & 0xE0) == 0xC0) return 2;
+		else if ((c[0] & 0xF0) == 0xE0) return 3;
+		else if ((c[0] & 0xF8) == 0xF0) return 4;
+		else return 1;
+	} else if (encoding == UE_UTF16) {
+		if ((c[0] & 0xFC) == 0xD8 and (c[2] & 0xFC) == 0xDC) return 4;
+		else return 2;
+	} else if (encoding == UE_UTF32) {
+		return 4;
+	}
+	return 1;
+}
+
 u32int WChar::utfLen(const char* c, u8int encoding) {
 	int i = 0, l = CMem::strlen(c), co = 0;
 	while (i < l) {
-		if (encoding == UE_UTF8) {
-			if ((c[i] & 0x80) == 0) i += 1;
-			else if ((c[i] & 0xE0) == 0xC0) i += 2;
-			else if ((c[i] & 0xF0) == 0xE0) i += 3;
-			else if ((c[i] & 0xF8) == 0xF0) i += 4;
-			else i += 1;
-		} else if (encoding == UE_UTF16) {
-			if ((c[i] & 0xFC) == 0xD8 and (c[i + 2] & 0xFC) == 0xDC) i += 4;
-			else i += 2;
-		} else if (encoding == UE_UTF32) {
-			i += 4;
-		}
+		i += ucharLen(c + i, encoding);
 		co++;
 	}
 	return co;

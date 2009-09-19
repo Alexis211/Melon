@@ -22,6 +22,7 @@ struct WChar {
 	WChar(char c);	//From ascii character
 	WChar(const char* c, u8int encoding = UE_UTF8);	//From utf8 string
 
+	static u32int ucharLen(const char* c, u8int encoding = UE_UTF8);	//Returns count of bytes in one unicode character
 	static u32int utfLen(const char* c, u8int encoding = UE_UTF8);	//Returns count of utf8 characters in string
 
 	void affectAscii(char c);

@@ -15,6 +15,7 @@ Objects = Core/loader.wtf.o \
 		  Core/cppsupport.wtf.o \
 		  Core/Sys.ns.o \
 		  Core/CMem.ns.o \
+		  Core/Log.ns.o \
 		  MemoryManager/Mem.ns.o \
 		  MemoryManager/PhysMem.ns.o \
 		  MemoryManager/GDT.wtf.o \
@@ -41,6 +42,7 @@ Objects = Core/loader.wtf.o \
 		  VFS/Part.ns.o \
 		  VFS/VFS.ns.o \
 		  VFS/File.class.o \
+		  VFS/TextFile.class.o \
 		  VFS/DirectoryNode.class.o \
 		  FileSystems/RamFS/RamFS.class.o \
 		  SyscallManager/IDT.ns.o \

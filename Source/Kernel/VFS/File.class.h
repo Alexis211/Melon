@@ -19,7 +19,7 @@ enum {
 };
 
 class File {
-	private:
+	protected:
 	FileNode* m_file;
 	bool m_valid;		//Is a file opened and valid ?
 	bool m_writable;	//Is file opened for write ?
@@ -28,19 +28,20 @@ class File {
 	public:
 	File();
 	File(String filename, u8int mode = FM_READ, FSNode* start = 0);
-	~File();
+	virtual ~File();
 
 	bool open(String filename, u8int mode = FM_READ, FSNode* start = 0);
 	void close(bool unregisterFD = true);	//unregisterFD = whether or not we must unregister the file descriptor from process
 
 	u32int read(u32int max_length, u8int *data);
 	bool write(u32int length, u8int *data);
-	u32int read(ByteArray &data);	//Fills ByteArray at its current length or shrinks it if necessary
+	u32int read(ByteArray &data);	//Fills ByteArray at its current length or shrinks it if we can't read enough
 	bool write(ByteArray &data);
 
 	bool seek(u64int count, u8int mode);
 	u64int position() { return m_position; }
 	u64int length() { return m_file->getLength(); }
+	bool eof();
 
 	bool valid() { return m_valid; }
 };
