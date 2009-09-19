@@ -11,9 +11,8 @@ class String : public BasicString<WChar> {
 	static String number(s32int number);
 
 	String(const char* string, u8int encoding = UE_UTF8);
-	String();
-	String(const String &other);
-	virtual ~String();
+	String() : BasicString<WChar>() {}
+	String(const String &other) : BasicString<WChar> (other) {}
 
 	void affect(const char* string, u8int encoding = UE_UTF8);
 	void operator= (const char* other) { affect(other); }

@@ -31,8 +31,8 @@ class BasicString {
 	BasicString<T>& append(const BasicString<T> &other);
 	BasicString<T>& append(const T* string, u32int length);
 	BasicString<T>& append(const T other);
-	String& operator+= (const BasicString<T> &other) { return append(other); }
-	String& operator+= (const T other) { return append(other); }
+	BasicString<T>& operator+= (const BasicString<T> &other) { return append(other); }
+	BasicString<T>& operator+= (const T other) { return append(other); }
 	
 	BasicString<T> concat(const BasicString<T> &other) const;
 	BasicString<T> concat(const T* string, u32int length) const;

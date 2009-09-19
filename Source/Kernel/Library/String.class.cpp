@@ -49,28 +49,10 @@ String String::number(s32int number) {
 	return ret;
 }
 
-String::String() : BasicString<WChar> () {
-}
-
 String::String(const char* string, u8int encoding) {
-	m_length = WChar::utfLen(string, encoding);
-	if (m_length == 0) {
-		m_string = 0;
-		return;
-	}
-	m_string = new WChar[m_length + 1];
-	int i = 0, l = strlen(string), c = 0;
-	while (i < l) {
-		i += m_string[c].affect(string + i, encoding);
-		c++;
-	}
-	m_string[m_length] = 0;
-}
-
-String::String(const String &other) : BasicString<WChar> (other) {
-}
-
-String::~String() {
+	m_string = 0;
+	m_length = 0;
+	affect(string, encoding);
 }
 
 void String::affect (const char* string, u8int encoding) {
@@ -117,6 +99,7 @@ String& String::append (const char* other, u8int encoding) {
 	m_string[m_length] = 0;
 	return *this;
 }
+
 String String::concat (const String &other) const {	//Can be optimized
 	String ret(*this);
 	return (ret += other);
