@@ -18,6 +18,7 @@
 #include <TaskManager/Task.ns.h>
 #include <SyscallManager/IDT.ns.h>
 #include <Library/String.class.h>
+#include <Library/ByteArray.class.h>
 #include <VFS/Part.ns.h>
 #include <FileSystems/RamFS/RamFS.class.h>
 #include <VFS/FileNode.class.h>
@@ -211,7 +212,23 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 				*kvt << "No argument specified.\n";
 			}
 		} else if (tokens[0] == "wf") {
-			*kvt << "Sorry, this command isn't implemented yet.\n";
+			//*kvt << "Sorry, this command isn't implemented yet.\n";
+			if (tokens.size() == 1) {
+				*kvt << "No file to write !\n";
+			} else {
+				File f(tokens[1], FM_TRUNCATE, cwd);
+				if (f.valid()) {
+					String t = kvt->readLine();
+					while (t != ".") {
+						t += "\n";
+						ByteArray temp(t);
+						f.write(temp);
+						t = kvt->readLine();
+					}
+				} else {
+					*kvt << "Error openning file.\n";
+				}
+			}
 		} else if (tokens[0] == "devices") {
 			Vector<Device*> dev = Dev::findDevices();
 			*kvt << " - Detected devices :\n";

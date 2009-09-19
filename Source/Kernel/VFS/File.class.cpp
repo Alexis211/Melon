@@ -18,7 +18,11 @@ bool File::open(String filename, u8int mode, FSNode* start) {
 	if (m_valid) return false;
 
 	FSNode* node = VFS::find(filename, start);
-	if (node == NULL) return false;
+	if (node == NULL){
+	   	if (mode == FM_READ) return false;
+		node = VFS::createFile(filename, start);
+		if (node == 0) return false;
+	}
 	if (node->type() != NT_FILE) return false;
 
 	m_file = (FileNode*) node;
@@ -57,6 +61,27 @@ bool File::write(u32int length, u8int *data) {
 	if (!m_writable) return false;
 	if (m_file->write(m_position, length, data)) {
 		m_position += length;
+		return true;
+	}
+	return false;
+}
+
+u32int File::read(ByteArray &data) {
+	if (!m_valid) {
+		data.clear();
+		return 0;
+	}
+	u32int l = m_file->read(m_position, data.size(), (u8int*)data);
+	m_position += l;
+	if (l != data.size()) data.resize(l);
+	return l;	
+}
+
+bool File::write(ByteArray &data) {
+	if (!m_valid) return false;
+	if (!m_writable) return false;
+	if (m_file->write(m_position, data.size(), (u8int*)data)) {
+		m_position += data.size();
 		return true;
 	}
 	return false;

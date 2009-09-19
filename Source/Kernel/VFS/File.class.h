@@ -2,6 +2,7 @@
 #define DEF_FILE_CLASS_H
 
 #include <VFS/FileNode.class.h>
+#include <Library/ByteArray.class.h>
 
 enum {
 	FM_READ = 0,		//Open for read, put cursor at beginning
@@ -30,12 +31,16 @@ class File {
 	~File();
 
 	bool open(String filename, u8int mode = FM_READ, FSNode* start = 0);
+	void close(bool unregisterFD = true);	//unregisterFD = whether or not we must unregister the file descriptor from process
+
 	u32int read(u32int max_length, u8int *data);
 	bool write(u32int length, u8int *data);
+	u32int read(ByteArray &data);	//Fills ByteArray at its current length or shrinks it if necessary
+	bool write(ByteArray &data);
+
 	bool seek(u64int count, u8int mode);
 	u64int position() { return m_position; }
 	u64int length() { return m_file->getLength(); }
-	void close(bool unregisterFD = true);	//unregisterFD = whether or not we must unregister the file descriptor from process
 
 	bool valid() { return m_valid; }
 };

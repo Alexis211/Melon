@@ -43,6 +43,15 @@ struct WChar {
 	uchar_repr_t toUtf16();
 	uchar_repr_t toUtf32();
 
+	uchar_repr_t encode(u8int encoding = UE_UTF8) {
+		if (encoding == UE_UTF8) return toUtf8();
+		//if (encoding == UE_UTF16) return toUtf16();
+		if (encoding == UE_UTF32) return toUtf32();
+		uchar_repr_t x;
+		x.c[0] = toAscii();
+		return x;
+	}
+
 	inline WChar operator+ (u32int other) {
 		WChar r;
 		r.value = value + other;
