@@ -49,9 +49,7 @@ String String::number(s32int number) {
 	return ret;
 }
 
-String::String() {
-	m_string = 0;
-	m_length = 0;
+String::String() : BasicString<WChar> () {
 }
 
 String::String(const char* string, u8int encoding) {
@@ -69,35 +67,10 @@ String::String(const char* string, u8int encoding) {
 	m_string[m_length] = 0;
 }
 
-String::String(const String &other) {
-	m_length = other.m_length;
-	if (m_length == 0) {
-		m_string = 0;
-		return;
-	}
-	m_string = new WChar[m_length + 1];
-	for (u32int i = 0; i < m_length; i++) {
-		m_string[i] = other.m_string[i];
-	}
-	m_string[m_length] = 0;
+String::String(const String &other) : BasicString<WChar> (other) {
 }
 
 String::~String() {
-	if (m_string != 0) delete [] m_string;
-}
-
-void String::affect (const String &other) {
-	m_length = other.m_length;
-	if (m_string != 0) delete [] m_string;
-	if (m_length == 0) {
-		m_string = 0;
-		return;
-	}
-	m_string = new WChar[m_length + 1];
-	for (u32int i = 0; i < m_length; i++) {
-		m_string[i] = other.m_string[i];
-	}
-	m_string[m_length] = 0;
 }
 
 void String::affect (const char* string, u8int encoding) {
@@ -116,14 +89,6 @@ void String::affect (const char* string, u8int encoding) {
 	m_string[m_length] = 0;
 }
 
-bool String::compare (const String &other) const {
-	if (m_length != other.m_length) return false;
-	for (u32int i = 0; i < m_length; i++) {
-		if (m_string[i] != other.m_string[i]) return false;
-	}
-	return true;
-}
-
 bool String::compare (const char* string, u8int encoding) const {
 	if (m_length != WChar::utfLen(string, encoding)) return false;
 	int i = 0, l = strlen(string), c = 0;
@@ -134,21 +99,6 @@ bool String::compare (const char* string, u8int encoding) const {
 		c++;
 	}
 	return true;
-}
-
-String& String::append (const String &other) {
-	WChar* newdata = new WChar[m_length + other.m_length + 1];
-	for (u32int i = 0; i < m_length; i++) {
-		newdata[i] = m_string[i];
-	}
-	for (u32int i = 0; i < other.m_length; i++) {
-		newdata[i + m_length] = other.m_string[i];
-	}
-	if (m_string != 0) delete [] m_string;
-	m_string = newdata;
-	m_length += other.m_length;
-	m_string[m_length] = 0;
-	return *this;
 }
 
 String& String::append (const char* other, u8int encoding) {
@@ -165,19 +115,6 @@ String& String::append (const char* other, u8int encoding) {
 	m_string = newdata;
 	m_length += strlen(other);
 	m_string[m_length] = 0;
-	return *this;
-}
-
-String& String::append (WChar other) {
-	WChar* newdata = new WChar[m_length + 2];
-	for (u32int i = 0; i < m_length; i++) {
-		newdata[i] = m_string[i];
-	}
-	if (m_string != 0) delete[] m_string;
-	m_string = newdata;
-	m_string[m_length] = other;
-	m_length++;
-	m_string[m_length].value = 0;
 	return *this;
 }
 
@@ -269,12 +206,8 @@ Vector<String> String::split(WChar c) const {
 	return ret;
 }
 
-String String::substr(s32int start, s32int size) {
+String String::substr(s32int start, u32int size) {
 	if (start < 0) start = m_length - start;
-	if (size < 0) { //this fucks
-		start = start + size;
-		size = 0 - size;
-	}
 	String ret;
 	ret.m_string = new WChar[size + 1];
 	ret.m_length = size;
