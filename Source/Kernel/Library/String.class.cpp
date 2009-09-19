@@ -117,7 +117,6 @@ String& String::append (const char* other, u8int encoding) {
 	m_string[m_length] = 0;
 	return *this;
 }
-
 String String::concat (const String &other) const {	//Can be optimized
 	String ret(*this);
 	return (ret += other);
@@ -173,24 +172,6 @@ u64int String::toInt16() const {
 		break;
 	}
 	return number;
-}
-
-WChar& String::operator[] (int index) const {
-	return m_string[index];
-}
-
-u32int String::size() const {
-	return m_length;
-}
-
-void String::clear() {
-	delete [] m_string;
-	m_length = 0;
-	m_string = 0;
-}
-
-bool String::empty() const {
-	return (m_length == 0);
 }
 
 Vector<String> String::split(WChar c) const {
