@@ -5,7 +5,7 @@
 #define BUFCHR(l, c) m_buff[((l) * m_cols) + (c)]
 
 VirtualTerminal::VirtualTerminal(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) : m_kbdMutex(false) {
-	m_buff = new chr[rows * cols];
+	m_buff = new vtchr[rows * cols];
 	m_rows = rows;
 	m_cols = cols;
 	m_mapped = false;
@@ -31,7 +31,7 @@ void VirtualTerminal::setColor(u8int fgcolor, u8int bgcolor) {
 
 void VirtualTerminal::putChar(u32int row, u32int col, WChar c) {
 	if (row >= m_rows or col >= m_cols) return;
-	chr* ch = &BUFCHR(row, col);
+	vtchr* ch = &BUFCHR(row, col);
 	ch->c = c;
 	ch->color = m_color;
 	if (m_mapped) 

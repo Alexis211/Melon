@@ -7,14 +7,14 @@
 #include <DeviceManager/Kbd.ns.h>
 #include <Library/Vector.class.h>
 
-struct chr {
+struct vtchr {
 	u8int color;
 	WChar c;
 };
 
 class VirtualTerminal {
 	private:
-	chr* m_buff;
+	vtchr* m_buff;
 	u32int m_rows, m_cols;
 	u8int m_color;
 
@@ -53,7 +53,6 @@ class VirtualTerminal {
 	void hexDump(u8int* ptr, u32int sz);
 	
 	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }
-	//inline VirtualTerminal& operator<<(WChar c) { put(c); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(s64int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
