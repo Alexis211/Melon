@@ -115,7 +115,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Log::log(KL_STATUS, "kmain : Registered textual VGA output");
 
 	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
-	Kbd::loadKeymap("fr");
+	if (!Kbd::loadKeymap("fr")) Log::log(KL_ERROR, "kmain : could not load french keymap.");
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
 	Log::log(KL_STATUS, "kmain : Keyboard set up");
 

@@ -124,7 +124,7 @@ void reboot() {
 void halt() {
 	asm volatile("cli");
 	Log::close();
-	String message("MELON SEZ : KTHXBYE, IOU CAN NAOW TURNZ OFF UR COMPUTER.");
+	String message("MELON SEZ : KTHXBYE, U CAN NAOW TURNZ OFF UR COMPUTER.");
 	SimpleVT vt(3, message.size() + 16, 6, 0);
 	vt.map();
 	vt << "\n\t" << message;
