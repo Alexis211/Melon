@@ -28,7 +28,6 @@
 #include <Core/Log.ns.h>
 
 #include <Ressources/Graphics/logo.text.cxd>
-#include <Ressources/Keymaps/fr.cxd>
 
 extern u32int end;	//Placement address
 
@@ -116,7 +115,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Log::log(KL_STATUS, "kmain : Registered textual VGA output");
 
 	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
-	Kbd::setKeymap(keymap_normal, keymap_shift, keymap_caps, keymap_altgr, keymap_shiftaltgr);	//Load keymap
+	Kbd::loadKeymap("fr");
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
 	Log::log(KL_STATUS, "kmain : Keyboard set up");
 
@@ -138,6 +137,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << "  - halt          shuts down your computer\n";
 			*kvt << "  - panic         causes a kernel panic\n";
 			*kvt << "  - devices       shows all detected devices on your computer\n";
+			*kvt << "  - loadkeys      loads specified kekymap\n";
 			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
 			*kvt << "  - uptime        shows seconds since boot\n";
 			*kvt << "  - part          shows all detected block devices and partitions\n";
@@ -242,6 +242,14 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 				*kvt << "  - " << dev[i]->getClass();
 				kvt->setCursorCol(25);
 				*kvt << dev[i]->getName() << "\n";
+			}
+		} else if (tokens[0] == "loadkeys") {
+			if (tokens.size() == 1) {
+				*kvt << "Error : no argument specified.\n";
+			} else {
+				if (!Kbd::loadKeymap(tokens[1])) {
+					*kvt << "Error while loading keymap " << tokens[1] << ".\n";
+				}
 			}
 		} else if (tokens[0] == "free") {
 			u32int frames = PhysMem::total(), freef = PhysMem::free();

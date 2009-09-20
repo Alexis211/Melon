@@ -6,7 +6,8 @@ Floppy = Melon.img
 Projects = Kernel Tools/MakeRamFS
 
 RamFS = Init.rfs
-RamFSFiles = :/System :/System/Applications :/System/Configuration \
+RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
+	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
 	:/Useless \
 	Source/Kernel/Ressources/Texts/Info.txt:/Useless/Info.txt \

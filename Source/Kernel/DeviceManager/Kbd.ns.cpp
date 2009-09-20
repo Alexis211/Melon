@@ -3,6 +3,9 @@
 #include <Library/Vector.class.h>
 #include <Devices/Keyboard/Keyboard.proto.h>
 #include <VTManager/VirtualTerminal.proto.h>
+#include <Ressources/Keymaps/Keymap.h>
+#include <VFS/File.class.h>
+#include <Core/Log.ns.h>
 
 namespace Kbd {
 
@@ -26,6 +29,7 @@ u8int ctrlkeys[] = {
 /* 0xF0 */	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
+melon_keymap_t km;
 WChar *keymapNormal = NULL, *keymapShift = NULL, *keymapCaps = NULL, *keymapAltgr = NULL, *keymapShiftAltgr = NULL;
 u8int kbdstatus = 0;
 VirtualTerminal *focusedVT = NULL;	//This is the VT that must receive the character
@@ -58,12 +62,23 @@ void setFocus(VirtualTerminal* vt) {
 	focusedVT = vt;
 }
 
-void setKeymap(WChar* kmNormal, WChar* kmShift, WChar* kmCaps, WChar* kmAltgr, WChar* kmShiftAltgr) {
-	keymapNormal = kmNormal;
-	keymapShift = kmShift;
-	keymapCaps = kmCaps;
-	keymapAltgr = kmAltgr;
-	keymapShiftAltgr = kmShiftAltgr;
+bool loadKeymap(String lang) {
+	String file = "/System/Keymaps/";
+	file += lang;
+	file += ".mkm";
+	File f(file, FM_READ);
+	if (!f.valid()) return false;
+
+	f.read(sizeof(melon_keymap_t), (u8int*)&km);
+
+	keymapNormal = km.normal;
+	if (km.shift[0x10] != 0) keymapShift = km.shift; else keymapShift = keymapNormal;
+	if (km.caps[0x10] != 0) keymapCaps = km.caps; else keymapShift = keymapShift;
+	if (km.altgr[0x10] != 0) keymapAltgr = km.altgr; else keymapShift = keymapNormal;
+	if (km.shiftaltgr[0x10] != 0) keymapShiftAltgr = km.shiftaltgr; else keymapShift = keymapAltgr;
+
+	Log::log(KL_STATUS, String("Kbd.ns : loaded keymap : ") += file);
+	return true;
 }
 
 void updateLeds() {

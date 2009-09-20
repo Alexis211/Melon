@@ -1,5 +1,9 @@
 #include "WChar.class.h"
 
+#ifdef THIS_IS_MELON
+using namespace CMem;
+#endif
+
 WChar WChar::CP437[] = {	//These are the UTF8 equivalents for the 128 extra characters of code page 437
 	"Ç", "ü", "é", "â", "ä", "à", "å", "ç", "ê", "ë", "è", "ï", "î", "ì", "Ä", "Å",
 	"É", "æ", "Æ", "ô", "ö", "ò", "û", "ù", "ÿ", "Ö", "Ü", "¢", "£", "¥", "₧", "ƒ",
@@ -42,7 +46,7 @@ u32int WChar::ucharLen(const char* c, u8int encoding) {
 }
 
 u32int WChar::utfLen(const char* c, u8int encoding) {
-	int i = 0, l = CMem::strlen(c), co = 0;
+	int i = 0, l = strlen(c), co = 0;
 	while (i < l) {
 		i += ucharLen(c + i, encoding);
 		co++;

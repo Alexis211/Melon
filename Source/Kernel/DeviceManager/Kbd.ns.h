@@ -92,7 +92,7 @@ namespace Kbd {
 	};
 
 	void setFocus(VirtualTerminal* vt);
-	void setKeymap(WChar* kmNormal, WChar* kmShift, WChar* kmCaps, WChar* kmAltgr, WChar* kmShiftAltgr = NULL);
+	bool loadKeymap(String lang);
 	void updateLeds();
 	void keyPress(u8int scancode);
 	void keyRelease(u8int scancode);

@@ -1,3 +1,5 @@
+#define LANG "fr"
+
 //This file is precious !!! Very precious !!
 
 WChar keymap_normal[128] = {
