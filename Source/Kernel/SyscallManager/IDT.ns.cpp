@@ -1,5 +1,5 @@
 #include "IDT.ns.h"
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/SimpleVT.class.h>
 #include <DeviceManager/Dev.ns.h>
 #include <TaskManager/Task.ns.h>
 

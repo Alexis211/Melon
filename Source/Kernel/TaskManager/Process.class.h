@@ -4,7 +4,7 @@
 #include <Library/String.class.h>
 #include <Library/Vector.class.h>
 #include <MemoryManager/PageDirectory.class.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/VirtualTerminal.proto.h>
 
 #define P_ZOMBIE 0
 #define P_RUNNING 1

@@ -1,9 +1,10 @@
 //This automatically includes Sys.ns.h
 #include <Core/common.wtf.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <Core/Log.ns.h>
+#include <VTManager/SimpleVT.class.h>
 #include <SyscallManager/IDT.ns.h>
 
-#define DEBUGVT(x) VirtualTerminal *x = new VirtualTerminal(4, 56, 0, 15); x->map(); x->put('\n');
+#define DEBUGVT(x) SimpleVT *x = new SimpleVT(4, 56, 0, 15); x->map(); x->put('\n');
 
 using namespace CMem;
 
@@ -81,7 +82,7 @@ void panic(char *message, char *file, u32int line) {
 void panic(char *message, registers_t *regs, char *file, u32int line) {
 	asm volatile("cli");
 
-	VirtualTerminal vt(20, 70, 7, 1);
+	SimpleVT vt(20, 70, 7, 1);
 	vt.map();
 
 	vt << "PANIC : " << message << "\n => in " << file << " at " << (s32int)line << "\n\n";
@@ -115,7 +116,19 @@ void panic_assert(char *file, u32int line, char *desc) {
 }
 
 void reboot() {
+	asm volatile("cli");
+	Log::close();
 	outb(0x64, 0xFE);
+}
+
+void halt() {
+	asm volatile("cli");
+	Log::close();
+	String message("MELON SEZ : KTHXBYE, IOU CAN NAOW TURNZ OFF UR COMPUTER.");
+	SimpleVT vt(3, message.size() + 16, 6, 0);
+	vt.map();
+	vt << "\n\t" << message;
+	while (1) asm volatile("cli");
 }
 
 }

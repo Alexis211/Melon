@@ -1,7 +1,11 @@
 #ifndef DEF_UCHAR_CLASS_H
 #define DEF_UCHAR_CLASS_H
 
+#include <Core/types.wtf.h>
+
+#ifndef THIS_IS_NOT_MELON
 #include <Core/common.wtf.h>
+#endif
 
 enum {
 	UE_UTF8,

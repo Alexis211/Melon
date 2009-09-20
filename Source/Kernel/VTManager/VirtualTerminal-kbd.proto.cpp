@@ -1,4 +1,4 @@
-#include "VirtualTerminal.class.h"
+#include "VirtualTerminal.proto.h"
 #include <TaskManager/Task.ns.h>
 
 using namespace Kbd;

@@ -1,6 +1,6 @@
 #include "PhysMem.ns.h"
 #include <Library/Bitset.class.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/VirtualTerminal.proto.h>
 
 PageDirectory* kernelPageDirectory;
 

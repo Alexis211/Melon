@@ -31,8 +31,10 @@ Objects = Core/loader.wtf.o \
 		  TaskManager/Task.ns.o \
 		  TaskManager/Task.wtf.o \
 		  TaskManager/Mutex.class.o \
-		  VTManager/VirtualTerminal.class.o \
-		  VTManager/VirtualTerminal-kbd.class.o \
+		  VTManager/VirtualTerminal.proto.o \
+		  VTManager/SimpleVT.class.o \
+		  VTManager/ScrollableVT.class.o \
+		  VTManager/VirtualTerminal-kbd.proto.o \
 		  VTManager/VT.ns.o \
 		  Library/Bitset.class.o \
 		  Library/String.class.o \
