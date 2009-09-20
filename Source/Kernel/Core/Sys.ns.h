@@ -31,6 +31,7 @@ namespace Sys {
 	void bochs_output(String message, char *file, u32int line);
 	void bochs_output_hex(u32int i);
 	void reboot();
+	void halt();
 }
 
 #endif

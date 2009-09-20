@@ -2,12 +2,12 @@
 #define DEF_VT_NS_H
 
 #include <Core/common.wtf.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/SimpleVT.class.h>
 
 namespace VT {
 	//These should be called only from inside class VirtualTerminal
-	void map(VirtualTerminal* vt);
-	void unmap(VirtualTerminal* vt);
+	void map(SimpleVT* vt);
+	void unmap(SimpleVT* vt);
 	void redrawScreen();
 }
 

@@ -2,7 +2,7 @@
 #include <DeviceManager/Dev.ns.h>
 #include <Library/Vector.class.h>
 #include <Devices/Keyboard/Keyboard.proto.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/VirtualTerminal.proto.h>
 
 namespace Kbd {
 

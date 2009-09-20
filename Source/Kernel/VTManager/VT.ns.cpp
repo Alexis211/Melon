@@ -4,14 +4,14 @@
 
 namespace VT {
 
-Vector<VirtualTerminal*> mappedVTs;
+Vector<SimpleVT*> mappedVTs;
 
-void map(VirtualTerminal* vt) {
+void map(SimpleVT* vt) {
 	unmap(vt);	//Bad things might happen
 	mappedVTs.push(vt);
 }
 
-void unmap(VirtualTerminal* vt) {
+void unmap(SimpleVT* vt) {
 	for (u32int i = 0; i < mappedVTs.size(); i++) {
 		if (mappedVTs[i] == vt) {
 			mappedVTs[i] = mappedVTs.back();

@@ -11,7 +11,7 @@
 #include <DeviceManager/Dev.ns.h>
 #include <DeviceManager/Kbd.ns.h>
 #include <DeviceManager/Time.ns.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/ScrollableVT.class.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
 #include <MemoryManager/GDT.ns.h>
@@ -27,8 +27,8 @@
 #include <VFS/TextFile.class.h>
 #include <Core/Log.ns.h>
 
-#include <Ressources/logo.cxd>
-#include <Ressources/keymap-fr.wtf.cxd>
+#include <Ressources/Graphics/logo.text.cxd>
+#include <Ressources/Keymaps/fr.cxd>
 
 extern u32int end;	//Placement address
 
@@ -65,7 +65,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Disp::setDisplay(vgaout);
 
 	//Create a VT for handling the Melon bootup logo
-	VirtualTerminal *melonLogoVT = new VirtualTerminal(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
+	SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
 	for (int i = 0; i < melonLogoLines; i++) {
 		for (int j = 0; j < melonLogoCols; j++) {
 			melonLogoVT->putChar(i, j, melonLogo[i][j]);
@@ -74,7 +74,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	melonLogoVT->map(1);
 
 	//Create a VT for logging what kernel does
-	VirtualTerminal *kvt = new VirtualTerminal(15, 76, KVT_FGCOLOR, KVT_BGCOLOR);
+	SimpleVT *kvt = new ScrollableVT(15, 76, 100, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(melonLogoLines + 2);
 
 	INFO(kvt); *kvt << "Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
@@ -116,7 +116,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Log::log(KL_STATUS, "kmain : Registered textual VGA output");
 
 	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
-	Kbd::setKeymap(keymapFR_normal, keymapFR_shift, keymapFR_caps, keymapFR_altgr, keymapFR_shiftaltgr);	//Load keymap
+	Kbd::setKeymap(keymap_normal, keymap_shift, keymap_caps, keymap_altgr, keymap_shiftaltgr);	//Load keymap
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
 	Log::log(KL_STATUS, "kmain : Keyboard set up");
 
@@ -135,6 +135,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << " - Command list for integrated kernel shell:\n";
 			*kvt << "  - help          shows this help screen\n";
 			*kvt << "  - reboot        reboots your computer\n";
+			*kvt << "  - halt          shuts down your computer\n";
 			*kvt << "  - panic         causes a kernel panic\n";
 			*kvt << "  - devices       shows all detected devices on your computer\n";
 			*kvt << "  - free          shows memory usage (physical frames and kernel heap)\n";
@@ -143,6 +144,8 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			*kvt << " - Commands you should know how to use : ls, cd, cat, pwd, rm, mkdir, wf\n";
 		} else if (tokens[0] == "reboot") {
 			Sys::reboot();
+		} else if (tokens[0] == "halt") {
+			Sys::halt();
 		} else if (tokens[0] == "panic") {
 			PANIC("This is what happens when you say 'panic'.");
 		} else if (tokens[0] == "ls") {

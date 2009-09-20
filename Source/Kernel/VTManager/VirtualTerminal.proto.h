@@ -13,44 +13,29 @@ struct vtchr {
 };
 
 class VirtualTerminal {
-	private:
-	vtchr* m_buff;
-	u32int m_rows, m_cols;
-	u8int m_color;
-
-	u32int m_maprow, m_mapcol;
-	bool m_mapped;
-	
-	u32int m_csrlin, m_csrcol;
-
+	protected:
 	Mutex m_kbdMutex, m_kbdbuffMutex;
 	Vector<Kbd::keypress_t> m_kbdbuff;	//Key press events buffer
 
 	public:
-	VirtualTerminal(u32int rows, u32int cols, u8int fgcolor = 7, u8int bgcolor = 0);
-	~VirtualTerminal();
+	VirtualTerminal();
+	virtual ~VirtualTerminal();
 
-	void setColor(u8int fgcolor, u8int bgcolor = 0xFF);
-	void putChar(u32int row, u32int col, WChar c);
-	void clear();
+	virtual void setColor(u8int fgcolor, u8int bgcolor = 0xFF) {}	//For a pipe/file VT, this will do nothing.
+	virtual bool isBoxed() = 0;
 
-	void map(s32int row = -1, s32int col = -1);
-	void unmap();
-	void redraw();
-	void scroll();	//Scrolls 1 line
-
-	void updateCursor();
-	void moveCursor(u32int row, u32int col);
-	void setCursorLine(u32int line);
-	void setCursorCol(u32int col);
+	virtual void updateCursor() {}
+	virtual void moveCursor(u32int row, u32int col) {}	//These are not implemented for pipe/file VTs
+	virtual void setCursorLine(u32int line) {}
+	virtual void setCursorCol(u32int col) {}	//This one could be, and should be. It's used a lot for tabulating, etc.
 
 	//Display functions
-	void put(WChar c, bool updatecsr = true);
+	virtual void put(WChar c, bool updatecsr = true) = 0;
 	void write(const String& s, bool updatecsr = true);
 	void writeDec(s64int num, bool updatecsr = true);
 	void writeHex(u32int i, bool updatecsr = true);
 
-	void hexDump(u8int* ptr, u32int sz);
+	virtual void hexDump(u8int* ptr, u32int sz, bool addnl = true);	//Always ignore parameter addnl
 	
 	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
@@ -58,7 +43,7 @@ class VirtualTerminal {
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 
 	//Keyboard functions
-	void keyPress(Kbd::keypress_t kp);	//Called by Kbd:: when a key is pressed
+	virtual void keyPress(Kbd::keypress_t kp);	//Called by Kbd:: when a key is pressed, overloaded by ScrollableVT
 	Kbd::keypress_t getKeypress(bool show = true, bool block = true);	//Block : must we wait for a key to be pressed ?
 	String readLine(bool show = true);
 };

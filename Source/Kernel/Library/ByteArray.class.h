@@ -2,7 +2,7 @@
 #define DEF_BYTEARRAY_CLASS_H
 
 #include <Library/String.class.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/VirtualTerminal.proto.h>
 
 class ByteArray : public BasicString<u8int> {
 	public:

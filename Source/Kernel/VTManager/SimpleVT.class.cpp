@@ -1,10 +1,10 @@
-#include "VirtualTerminal.class.h"
-#include <DeviceManager/Disp.ns.h>
+#include "SimpleVT.class.h"
 #include <VTManager/VT.ns.h>
+#include <DeviceManager/Disp.ns.h>
 
 #define BUFCHR(l, c) m_buff[((l) * m_cols) + (c)]
 
-VirtualTerminal::VirtualTerminal(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) : m_kbdMutex(false) {
+SimpleVT::SimpleVT(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) : VirtualTerminal() {
 	m_buff = new vtchr[rows * cols];
 	m_rows = rows;
 	m_cols = cols;
@@ -16,12 +16,12 @@ VirtualTerminal::VirtualTerminal(u32int rows, u32int cols, u8int fgcolor, u8int 
 	m_csrlin = 0;
 }
 
-VirtualTerminal::~VirtualTerminal() {
+SimpleVT::~SimpleVT() {
 	if (m_mapped) VT::unmap(this);
 	delete [] m_buff;
 }
 
-void VirtualTerminal::setColor(u8int fgcolor, u8int bgcolor) {
+void SimpleVT::setColor(u8int fgcolor, u8int bgcolor) {
 	if (bgcolor == 0xFF) {
 		m_color = (m_color & 0xF0) | fgcolor;
 	} else {
@@ -29,7 +29,7 @@ void VirtualTerminal::setColor(u8int fgcolor, u8int bgcolor) {
 	}
 }
 
-void VirtualTerminal::putChar(u32int row, u32int col, WChar c) {
+void SimpleVT::putChar(u32int row, u32int col, WChar c) {
 	if (row >= m_rows or col >= m_cols) return;
 	vtchr* ch = &BUFCHR(row, col);
 	ch->c = c;
@@ -38,7 +38,7 @@ void VirtualTerminal::putChar(u32int row, u32int col, WChar c) {
 		Disp::putChar(row + m_maprow, col + m_mapcol, BUFCHR(row, col).c, m_color);
 }
 
-void VirtualTerminal::clear() {
+void SimpleVT::clear() {
 	for (u32int i = 0; i < m_rows * m_cols; i++) {
 		m_buff[i].c = ' ';
 		m_buff[i].color = m_color;
@@ -46,7 +46,7 @@ void VirtualTerminal::clear() {
 	if (m_mapped) redraw();
 }
 
-void VirtualTerminal::map(s32int row, s32int col) {
+void SimpleVT::map(s32int row, s32int col) {
 	m_maprow = (row == -1 ? (Disp::textRows() / 2) - (m_rows / 2) : row);
 	m_mapcol = (col == -1 ? (Disp::textCols() / 2) - (m_cols / 2) : col);
 	m_mapped = true;
@@ -54,12 +54,12 @@ void VirtualTerminal::map(s32int row, s32int col) {
 	VT::map(this);
 }
 
-void VirtualTerminal::unmap() {
+void SimpleVT::unmap() {
 	m_mapped = false;
 	VT::unmap(this);
 }
 
-void VirtualTerminal::redraw() {
+void SimpleVT::redraw() {
 	if (!m_mapped) return;
 	for (u32int r = 0; r < m_rows; r++) {
 		for (u32int c = 0; c < m_cols; c++) {
@@ -68,7 +68,7 @@ void VirtualTerminal::redraw() {
 	}
 }
 
-void VirtualTerminal::scroll() {
+void SimpleVT::scroll() {
 	for (u32int l = 0; l < m_rows - 1; l++) {
 		for (u32int c = 0; c < m_cols; c++) {
 			BUFCHR(l, c) = BUFCHR(l + 1, c);
@@ -81,29 +81,29 @@ void VirtualTerminal::scroll() {
 	if (m_mapped) redraw();
 }
 
-void VirtualTerminal::updateCursor() {
+void SimpleVT::updateCursor() {
 	Disp::moveCursor(m_csrlin + m_maprow, m_csrcol + m_mapcol);
 }
 
-void VirtualTerminal::moveCursor(u32int row, u32int col) {
+void SimpleVT::moveCursor(u32int row, u32int col) {
 	m_csrlin = row;
 	m_csrcol = col;
 	updateCursor();
 }
 
-void VirtualTerminal::setCursorLine(u32int line) {
+void SimpleVT::setCursorLine(u32int line) {
 	m_csrlin = line;
 	updateCursor();
 }
 
-void VirtualTerminal::setCursorCol(u32int col) {
+void SimpleVT::setCursorCol(u32int col) {
 	m_csrcol = col;
 	updateCursor();
 }
 
 
 // Display functionn
-void VirtualTerminal::put(WChar c, bool updatecsr) {
+void SimpleVT::put(WChar c, bool updatecsr) {
 	if (c.value == '\b') {
 		if (m_csrcol > 0) m_csrcol--;
 		putChar(m_csrlin, m_csrcol, ' ');
@@ -129,68 +129,7 @@ void VirtualTerminal::put(WChar c, bool updatecsr) {
 	if (updatecsr) updateCursor();
 }
 
-void VirtualTerminal::write(const String& s, bool updatecsr) {
-	for (u32int i = 0; i < s.size(); i++) {
-		put(s[i], false);
-	}
-	if (updatecsr) updateCursor();
-}
-
-void VirtualTerminal::writeDec(s64int num, bool updatecsr) {
-	u64int i = num;
-	if (i == 0) {
-		put('0', false);
-	} else if (num < 0) {
-		put('-', false);
-		i = 0 - num;
-	}
-	char c[32];
-	int n = 0;
-	while (i > 0) {
-		c[n] = '0' + (i % 10);
-		i /= 10;
-		n++;
-	}
-	while (n > 0) {
-		n--;
-		put(c[n], false);
-	}
-	if (updatecsr) updateCursor();
-}
-
-void VirtualTerminal::writeHex(u32int i, bool updatecsr) {
-	write("0x", false);
-	char hexdigits[] = "0123456789ABCDEF";
-	for (u32int j = 0; j < 8; j++) {
-		put(hexdigits[(i & 0xF0000000) >> 28], false);
-		i = i << 4;
-	}
-	if (updatecsr) updateCursor();
-}
-
-void VirtualTerminal::hexDump(u8int *ptr, u32int sz) {
+void SimpleVT::hexDump(u8int *ptr, u32int sz, bool addnl) {
 	if (m_cols < 76) return;	//Not enough space
-	write("HEX Dump, from "); writeHex((u32int)ptr); write("\n");
-	char hexdigits[] = "0123456789ABCDEF";
-	for (u32int i = 0; i < sz; i += 16) {
-		writeHex(i);
-		write(" ");
-		for (u32int j = 0; j < 16; j++) {
-			u8int b = ptr[i + j];
-			if (j > 7) put(" ");
-			put(hexdigits[b >> 4]);
-			put(hexdigits[b & 0xF]);
-			if (j < 8) put(" ");
-		}
-		write(" ");
-		for (u32int j = 0; j < 16; j++) {
-			u8int b = ptr[i + j];
-			if (b >= 0x20 && b < 128) {
-				put(WChar(b));
-			} else {
-				put(".");
-			}
-		}
-		if (m_cols > 76) write("\n");
-	}
+	VirtualTerminal::hexDump(ptr, sz, (m_cols == 76));
 }

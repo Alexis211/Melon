@@ -2,7 +2,7 @@
 #define DEF_TASK_NS_H
 
 #include <TaskManager/Thread.class.h>
-#include <VTManager/VirtualTerminal.class.h>
+#include <VTManager/VirtualTerminal.proto.h>
 
 namespace Task {
 	extern Thread* currentThread;
