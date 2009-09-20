@@ -44,7 +44,7 @@ class VirtualTerminal {
 
 	//Keyboard functions
 	virtual void keyPress(Kbd::keypress_t kp);	//Called by Kbd:: when a key is pressed, overloaded by ScrollableVT
-	Kbd::keypress_t getKeypress(bool show = true, bool block = true);	//Block : must we wait for a key to be pressed ?
+	virtual Kbd::keypress_t getKeypress(bool show = true, bool block = true);	//Block : must we wait for a key to be pressed ?
 	String readLine(bool show = true);
 };
 

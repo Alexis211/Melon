@@ -12,6 +12,7 @@
 #include <DeviceManager/Kbd.ns.h>
 #include <DeviceManager/Time.ns.h>
 #include <VTManager/ScrollableVT.class.h>
+#include <VTManager/PipeVT.class.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
 #include <MemoryManager/GDT.ns.h>

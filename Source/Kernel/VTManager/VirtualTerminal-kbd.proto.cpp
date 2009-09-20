@@ -63,6 +63,8 @@ String VirtualTerminal::readLine(bool show) {
 		if (tmp.hascmd && !tmp.haschar && tmp.command == KBDC_BACKSPACE) {
 			if (!ret.empty()) ret = ret.substr(0, ret.size() - 1);
 			else put(" ");	//Put a space so that cursor stays at same place
+		} else if (tmp.hascmd && !tmp.haschar && tmp.command == KBDC_TAB) {
+			ret += "\t";
 		} else if (tmp.haschar && !tmp.hascmd) {
 			ret += tmp.character;
 		}
