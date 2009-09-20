@@ -6,7 +6,7 @@ PipeVT::PipeVT() {
 
 void PipeVT::setCursorCol(u32int col) {
 	while (col > m_col) {
-		put(' ');
+		put(" ");
 	}
 }
 

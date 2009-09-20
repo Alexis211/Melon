@@ -35,6 +35,7 @@ Objects = Core/loader.wtf.o \
 		  VTManager/SimpleVT.class.o \
 		  VTManager/ScrollableVT.class.o \
 		  VTManager/PipeVT.class.o \
+		  VTManager/FileVT.class.o \
 		  VTManager/VirtualTerminal-kbd.proto.o \
 		  VTManager/VT.ns.o \
 		  Library/Bitset.class.o \
