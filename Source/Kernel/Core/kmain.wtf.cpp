@@ -74,7 +74,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	melonLogoVT->map(1);
 
 	//Create a VT for logging what kernel does
-	SimpleVT *kvt = new ScrollableVT(15, 76, 100, KVT_FGCOLOR, KVT_BGCOLOR);
+	SimpleVT *kvt = new ScrollableVT(15, 76, 200, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(melonLogoLines + 2);
 
 	INFO(kvt); *kvt << "Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
@@ -103,7 +103,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Task::initialize(String((char*)mbd->cmdline), kvt); OK(kvt);
 
 	PROCESSING(kvt, "Mounting first module as ramfs on root directory...");
-	FileSystem* fs = new RamFS((u8int*)mods[0].mod_start, 1024 * 1024);
+	FileSystem* fs = RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
 	DirectoryNode* cwd;
 	cwd = fs->getRootNode();
 	VFS::setRootNode(cwd); OK(kvt);

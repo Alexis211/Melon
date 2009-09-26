@@ -38,6 +38,13 @@ class File {
 	u32int read(ByteArray &data);	//Fills ByteArray at its current length or shrinks it if we can't read enough
 	bool write(ByteArray &data);
 
+	template <typename T> bool read(T* elem) {
+		return (read(sizeof(T), (u8int*)elem) == sizeof(T));
+	}
+	template <typename T> bool write(T* elem) {
+		return write(sizeof(T), (u8int*)elem);
+	}
+
 	bool seek(u64int count, u8int mode);
 	u64int position() { return m_position; }
 	u64int length() { return m_file->getLength(); }

@@ -17,12 +17,17 @@ struct initrd_file_header {
 
 class RamFS : public FileSystem {
 	private:
+	~RamFS();
+	RamFS(const RamFS& other);
+	RamFS();
+	bool unmount();	//TO BE USED ONLY BY VFS::UNMOUNT (when will exist...)
+
 	u32int m_maxSize;
 	u32int m_usedSize;
 
 	public:
-	RamFS(u32int maxSize);	//Creates an empty RAM file system
-	RamFS(u8int* ptr, u32int maxSize, bool writable = true);	//Creates a RAM file system from data loaded in memory. format to be defined
+	static RamFS* mount(u32int maxSize, DirectoryNode* mountpoint);	//Creates an empty RAM file system
+	static RamFS* mount(u8int* ptr, u32int maxSize, DirectoryNode* mountpoint, bool writable = true);	//Creates a RAM file system from data loaded in memory. format to be defined
 
 	bool setName(FSNode* node, String name);
 	bool setPermissions(FSNode* node, u32int permissions);

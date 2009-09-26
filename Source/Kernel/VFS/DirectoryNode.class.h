@@ -13,12 +13,19 @@ class DirectoryNode : public FSNode {
 	DirectoryNode(String name, FileSystem* fs, FSNode* parent, u32int permissions = 0777,
 			u32int uid = 0, u32int gid = 0) : 
 			FSNode(name, fs, parent, 0, permissions, uid, gid), m_children(), m_contentLoaded(false) {}
-	virtual ~DirectoryNode() {}
+	virtual ~DirectoryNode() {
+		if (m_contentLoaded) {
+			for (u32int i = 0; i < m_children.size(); i++) {
+				delete m_children[i];
+			}
+		}
+	}
 
 	Vector<FSNode*> &getChildren() { return m_children; }	//MUST BE USED ONLY BY FILESYSTEMS
 
 	u8int type() { return NT_DIRECTORY; }
 	bool removable();
+	bool unmountable();
 
 	bool loadContent();
 	FSNode* getChild(u32int index);

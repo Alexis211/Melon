@@ -21,7 +21,6 @@ class FileNode : public FSNode {
 	bool used() { return (m_readers != 0 or m_writers != 0); }
 	bool writable() { return m_fs->isWritable(); }
 
-	//protected:
 	u32int read(u64int position, u32int max_length, u8int *data) {
 		return m_fs->read(this, position, max_length, data);
 	}

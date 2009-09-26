@@ -7,6 +7,18 @@ bool DirectoryNode::removable() {
 	return m_children.empty();
 }
 
+bool DirectoryNode::unmountable() {
+	if (!m_contentLoaded) return true;
+	for (u32int i = 0; i < m_children.size(); i++) {
+		if (m_children[i]->type() == NT_DIRECTORY) {
+			if (!((DirectoryNode*)m_children[i])->unmountable()) return false;
+		} else {
+			if (!m_children[i]->removable()) return false;
+		}
+	}
+	return true;
+}
+
 bool DirectoryNode::loadContent() {
 	if (m_contentLoaded) return true;
 	bool b = m_fs->loadContents(this);

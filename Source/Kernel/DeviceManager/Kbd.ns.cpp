@@ -69,7 +69,9 @@ bool loadKeymap(String lang) {
 	File f(file, FM_READ);
 	if (!f.valid()) return false;
 
-	f.read(sizeof(melon_keymap_t), (u8int*)&km);
+	if (!f.read<melon_keymap_t> (&km)) {
+		Log::log(KL_WARNING, String("Kbd.ns : keymap badly loaded : ") += file);
+	}
 
 	keymapNormal = km.normal;
 	if (km.shift[0x10] != 0) keymapShift = km.shift; else keymapShift = keymapNormal;

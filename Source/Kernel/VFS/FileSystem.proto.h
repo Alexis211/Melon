@@ -13,6 +13,8 @@ class FileSystem {
 	DirectoryNode* m_rootNode;
 
 	public:
+	bool unmount();
+
 	bool isWritable() { return m_isWritable; }
 	DirectoryNode* getRootNode() { return m_rootNode; }
 

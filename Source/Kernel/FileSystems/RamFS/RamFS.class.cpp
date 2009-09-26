@@ -2,18 +2,29 @@
 #include <VFS/DirectoryNode.class.h>
 #include "RamFileNode.class.h"
 
-RamFS::RamFS(u32int maxSize) {
-	m_maxSize = maxSize;
-	m_usedSize = 0;
-	m_isWritable = true;
-	m_rootNode = new DirectoryNode("/", this, NULL);	
+RamFS::RamFS() {
 }
 
-RamFS::RamFS(u8int *ptr, u32int maxSize, bool writable) {
-	m_maxSize = maxSize;
-	m_usedSize = 0;
-	m_isWritable = true;
-	m_rootNode = new DirectoryNode("/", this, NULL);
+RamFS::~RamFS() {
+	delete m_rootNode;
+}
+
+RamFS* RamFS::mount(u32int maxSize, DirectoryNode* mountpoint) {
+	RamFS* rfs = new RamFS();
+	rfs->m_maxSize = maxSize;
+	rfs->m_usedSize = 0;
+	rfs->m_isWritable = true;
+	rfs->m_rootNode = new DirectoryNode("/", rfs, mountpoint);	
+	return rfs;
+}
+
+RamFS* RamFS::mount(u8int *ptr, u32int maxSize, DirectoryNode* mountpoint, bool writable) {
+	RamFS* rfs = new RamFS();
+
+	rfs->m_maxSize = maxSize;
+	rfs->m_usedSize = 0;
+	rfs->m_isWritable = true;
+	rfs->m_rootNode = new DirectoryNode("/", rfs, mountpoint);
 
 	union {
 		u8int* c;
@@ -22,7 +33,11 @@ RamFS::RamFS(u8int *ptr, u32int maxSize, bool writable) {
 	} curr;
 	curr.c = ptr;
 
-	if (curr.i->magic != INITRD_MAGIC) return;
+	if (curr.i->magic != INITRD_MAGIC) {
+		delete rfs;
+		return NULL;
+	}
+
 	u32int files = curr.i->files;
 	curr.i++;	//Increment pointer of size of initrd header
 	for (u32int i = 0; i < files; i++) {
@@ -32,12 +47,12 @@ RamFS::RamFS(u8int *ptr, u32int maxSize, bool writable) {
 			String name((const char*)(curr.c));
 			curr.c += h.name_length + 1;	//Increment pointer of length of name
 
-			//Find out a vector conaining parent directories, and set name to the effective file name
+			//Find out a vector containing parent directories, and set name to the effective file name
 			if (name[0] == WChar("/")) name = name.substr(1, name.size() - 1);
 
 			//Find node for parent directory
 			String mname = "";
-			DirectoryNode* parent = m_rootNode;
+			DirectoryNode* parent = rfs->m_rootNode;
 			for (u32int i = 0; i < name.size(); i++) {
 				if (name[i] == WChar("/")) {
 					FSNode* n = parent->getChild(mname);
@@ -61,6 +76,12 @@ RamFS::RamFS(u8int *ptr, u32int maxSize, bool writable) {
 			}
 		}	
 	}
+
+	return rfs;
+}
+
+bool RamFS::unmount() {
+	return m_rootNode->unmountable();
 }
 
 bool RamFS::setName(FSNode* node, String name) { return true; }

@@ -13,6 +13,7 @@ namespace Dev {
 	bool requestIRQ(Device* dev, int irq);
 
 	Vector<Device*> findDevices(String _class = "");
+	Device* findDevice(String _class = "", u32int idx = 0);
 }
 
 #endif
