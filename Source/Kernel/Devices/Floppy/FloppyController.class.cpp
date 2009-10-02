@@ -73,7 +73,7 @@ void FloppyController::dmaRelease() {
 //*********************************************************
 //				FOR THE CONTROLLER
 //*********************************************************
-u32int floppyMotorTimer() {	//This will be an independant thread
+u32int floppyMotorTimer(void* plop) {	//This will be an independant thread
 	while(1) {
 		Task::currentThread->sleep(1000);	//Check only every second
 		Vector<Device*> floppys = Dev::findDevices("block.floppy");
@@ -118,7 +118,7 @@ void FloppyController::detect() {	//TODO : do this better
 		Part::registerDevice((BlockDevice*)fdds[i]);
 	}
 
-	new Thread(floppyMotorTimer, true);
+	new Thread(floppyMotorTimer, 0, true);
 }
 
 String FloppyController::getClass() {

@@ -7,7 +7,7 @@
 
 class FloppyDrive : public BlockDevice {
 	friend class FloppyController;
-	friend u32int floppyMotorTimer();
+	friend u32int floppyMotorTimer(void*);
 	private:
 	FloppyDrive(FloppyController *fdc, u8int number, u8int type);	//Private constructor, called by FloppyController()
 

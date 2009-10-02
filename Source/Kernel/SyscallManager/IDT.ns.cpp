@@ -76,7 +76,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 	if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
 		Task::currentThread->finish(regs.eax);
 	}
-	if (doSwitch) Task::doSwitch();
+	if (doSwitch) Task::doSwitch();	//DO NEVER COUNT ON COMMING BACK FROM HERE
 }
 
 namespace IDT {

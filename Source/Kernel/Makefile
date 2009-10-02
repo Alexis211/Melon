@@ -38,6 +38,9 @@ Objects = Core/loader.wtf.o \
 		  VTManager/FileVT.class.o \
 		  VTManager/VirtualTerminal-kbd.proto.o \
 		  VTManager/VT.ns.o \
+		  Shell/KernelShell.class.o \
+		  Shell/KernelShell-fs.class.o \
+		  Shell/KernelShell-sys.class.o \
 		  Library/Bitset.class.o \
 		  Library/String.class.o \
 		  Library/ByteArray.class.o \

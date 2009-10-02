@@ -9,6 +9,8 @@
 #define T_SLEEPING 2
 #define T_IRQWAIT 3		//This can only happen if process->uid == 0 (root)
 
+typedef u32int(*thread_entry_t)(void*);
+
 class Thread {
 	friend class Process;	//This might be useful
 
@@ -27,11 +29,11 @@ class Thread {
 	bool m_isKernel;	//Says if stack is in kernel pagedir, and if thread should run in ring 0
 	u32int m_kernelStackFrame;	//Used for allocating and freeing a frame used as a stack
 
-	void setup(u32int (*entry_point)(), u32int esp);	//Sets up stack, called by both constructors
+	void setup(thread_entry_t entry_point, void* data, u32int esp);	//Sets up stack, called by both constructors
 
 	public:
-	Thread(u32int (*entry_point)(), bool iskernel = false);	//Assumes process is current process, or is kprocess if isk
-	Thread(Process* process, u32int (*entry_point)());
+	Thread(thread_entry_t entry_point, void* data, bool iskernel = false);	//Assumes process is current process, or is kprocess if isk
+	Thread(Process* process, thread_entry_t entry_point, void* data);
 	~Thread();
 	void finish(u32int errcode);	//Called by run() when thread returns, and by exception handler. Can also be called by the thread itself
 	void handleException(registers_t regs, int no);

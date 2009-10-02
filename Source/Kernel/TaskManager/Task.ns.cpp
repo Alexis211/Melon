@@ -3,7 +3,7 @@
 
 //From Task.wtf.asm
 extern "C" u32int read_eip();
-extern "C" u32int idle_task();
+extern "C" u32int idle_task(void*);
 
 namespace Task {
 
@@ -22,7 +22,7 @@ void initialize(String cmdline, VirtualTerminal *vt) {
 	threads.clear();
 	processes.clear();
 	currentProcess = Process::createKernel(cmdline, vt);
-	idleThread = new Thread(idle_task, true);
+	idleThread = new Thread(idle_task, 0, true);
 	currentThread = threads[0];
 	currentThreadId = 0;
 	asm volatile ("sti");

@@ -3,33 +3,33 @@
 #include <MemoryManager/PageAlloc.ns.h>
 #include <DeviceManager/Time.ns.h>
 
-void runThread(Thread* thread, u32int (*entry_point)()) {
+void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
 	asm volatile("sti");
-	u32int ret = entry_point();	//Run !
+	u32int ret = entry_point(data);	//Run !
 	asm volatile("mov %0, %%eax; int $66;" : : "r"(ret));	//Syscall for thread ending
 }
 
 Thread::Thread() {	//Private constructor, does nothing
 }
 
-Thread::Thread(u32int (*entry_point)(), bool iskernel) {
+Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
 	if (iskernel) {
 		m_isKernel = true;
 		u32int tmp;
 		m_kernelStackFrame = (u32int)PageAlloc::alloc(&tmp);
 		m_process = Task::getKernelProcess();
-		setup(entry_point, m_kernelStackFrame + 0x1000);	//A kernel stack always is 1 frame, meaning 0x1000 bytes
+		setup(entry_point, data, m_kernelStackFrame + 0x1000);	//A kernel stack always is 1 frame, meaning 0x1000 bytes
 	} else {
 		m_isKernel = false;
 		m_process = Task::currentProcess;
-		setup(entry_point, m_process->stackAlloc() + STACKSIZE);
+		setup(entry_point,  data, m_process->stackAlloc() + STACKSIZE);
 	}
 }
 
-Thread::Thread(Process* process, u32int (*entry_point)()) {
+Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
 	m_isKernel = false;
 	m_process = process;
-	setup(entry_point, m_process->stackAlloc() + STACKSIZE);
+	setup(entry_point, data, m_process->stackAlloc() + STACKSIZE);
 }
 
 Thread::~Thread() {
@@ -40,11 +40,13 @@ Thread::~Thread() {
 	//Don't unregister thread in process, it has probably already been done
 }
 
-void Thread::setup(u32int (*entry_point)(), u32int esp) {
+void Thread::setup(thread_entry_t entry_point, void* data, u32int esp) {
 	//Pass function parameters for runThread()
 	u32int *stack = (u32int*)esp;
 	stack--;
 	*stack = (u32int)entry_point;	//Push entry point (function parameter)
+	stack--;
+	*stack = (u32int)data;	//Push data
 	stack--;
 	*stack = (u32int)this;	//Push object pointer
 	stack--;
