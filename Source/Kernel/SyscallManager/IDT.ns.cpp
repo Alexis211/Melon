@@ -74,7 +74,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
 	if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
-		Task::currentThread->finish(regs.eax);
+		Task::currentThreadExits(regs.eax);
 	}
 	if (doSwitch) Task::doSwitch();	//DO NEVER COUNT ON COMMING BACK FROM HERE
 }

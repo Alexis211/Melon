@@ -56,10 +56,10 @@ u32int Process::stackAlloc() {
 }
 
 void Process::exit() {
-	while (!m_threads.empty()) {
-		delete m_threads.back();
-		m_threads.pop();
+	for (u32int i = 0; i < m_threads.size(); i++) {
+		delete m_threads[i];
 	}
+	m_threads.clear();
 	for (u32int i = 0; i < m_fileDescriptors.size(); i++) {
 		m_fileDescriptors[i]->close(false);
 		delete m_fileDescriptors[i];
@@ -74,7 +74,6 @@ void Process::registerThread(Thread* t) {
 }
 
 void Process::threadFinishes(Thread* thread, u32int retval) {
-	delete thread;
 	// If it is the main thread of the process, or if it pagefaulted
 	if (thread == m_threads[0] or retval == E_PAGEFAULT) {
 		exit();
@@ -84,8 +83,10 @@ void Process::threadFinishes(Thread* thread, u32int retval) {
 			if (m_threads[i] == thread) {
 				m_threads[i] = m_threads.back();
 				m_threads.pop();
+				break;
 			}
 		}
+		delete thread;
 	}
 }
 

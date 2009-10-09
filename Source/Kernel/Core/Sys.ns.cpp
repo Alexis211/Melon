@@ -125,7 +125,7 @@ void halt() {
 	asm volatile("cli");
 	Log::close();
 	String message("MELON SEZ : KTHXBYE, U CAN NAOW TURNZ OFF UR COMPUTER.");
-	SimpleVT vt(3, message.size() + 16, 6, 0);
+	SimpleVT vt(3, message.size() + 16, 7, 6);
 	vt.map();
 	vt << "\n\t" << message;
 	while (1) asm volatile("cli");

@@ -10,6 +10,12 @@ namespace Task {
 Vector <Process*> processes;	//TODO : use a linked list instead
 Vector <Thread*> threads;
 
+struct finished_thread_t {	//Forms a linked list
+	Thread* thread;
+	u32int errcode;
+	finished_thread_t *next;
+} *firstFinishedThread = 0;
+
 Thread* currentThread = NULL;
 Process* currentProcess = NULL;
 Thread* idleThread = NULL;
@@ -29,11 +35,28 @@ void initialize(String cmdline, VirtualTerminal *vt) {
 }
 
 Thread* nextThread() {
+	//Clean up finished threads
+	while (firstFinishedThread != 0) {
+		DEBUG_HEX((u32int)firstFinishedThread);
+		if (firstFinishedThread->thread == currentThread) break;
+		firstFinishedThread->thread->finish(firstFinishedThread->errcode);
+		finished_thread_t* t = firstFinishedThread;
+		firstFinishedThread = t->next;
+		delete t;
+	}
+	for (u32int i = 0; i < threads.size(); i++) {
+		if (threads[i] == currentThread) {
+			currentThreadId = i;
+		}
+	}
+	
+	//Find next thread
 	u32int nid = currentThreadId;
 	while (1) {
 		nid++;
 		if (nid >= threads.size()) nid = 0;
 		if (threads[nid]->runnable() and threads[nid] != idleThread) {
+			if (firstFinishedThread != 0 and firstFinishedThread->thread == threads[nid]) return idleThread;
 			currentThreadId = nid;
 			return threads[nid];
 		}
@@ -102,6 +125,14 @@ void allocKernelPageTable(u32int id, page_table_t *table, u32int tablePhys) {
 
 Process* getKernelProcess() {
 	return processes[0];
+}
+
+void currentThreadExits(u32int errcode) {
+	finished_thread_t *t = new finished_thread_t;
+	t->thread = currentThread;
+	t->errcode = errcode;
+	t->next = firstFinishedThread;
+	firstFinishedThread = t;
 }
 
 void registerThread(Thread* t) {

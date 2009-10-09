@@ -75,8 +75,8 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	melonLogoVT->map(1);
 
 	//Create a VT for logging what kernel does
-	SimpleVT *kvt = new ScrollableVT(5, 69, 10, KVT_FGCOLOR, KVT_BGCOLOR);
-	kvt->map(20);
+	SimpleVT *kvt = new ScrollableVT(3, 69, 10, KVT_FGCOLOR, KVT_BGCOLOR);
+	kvt->map(22);
 
 	INFO(kvt); *kvt << "Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
 	INFO(kvt); *kvt << "Placement address : " << (u32int)Mem::placementAddress << "\n";
@@ -131,7 +131,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Log::log(KL_STATUS, "kmain : Kernel shell launched");
 
 	while (KernelShell::getInstances() > 0) {
-		Task::currentThread->sleep(10);
+		Task::currentThread->sleep(100);
 	}
 
 	Log::log(KL_STATUS, "kmain : All kernel shells finished. Halting.");

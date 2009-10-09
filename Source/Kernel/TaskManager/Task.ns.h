@@ -17,6 +17,8 @@ namespace Task {
 	void allocKernelPageTable(u32int id, page_table_t *table, u32int tablePhys);
 	Process* getKernelProcess();	//Returns first registered process
 
+	void currentThreadExits(u32int errcode); 	//Syscall called when a thread finishes
+
 	//These are used by the constructors/destructors of Thread and Process
 	void registerThread(Thread* t);
 	void unregisterThread(Thread* t);

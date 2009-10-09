@@ -14,7 +14,7 @@ u32int shellRun(void* ks) {
 }
 
 KernelShell::KernelShell(DirectoryNode* cwd) {
-	m_vt = new ScrollableVT(10, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+	m_vt = new ScrollableVT(12, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
 	((ScrollableVT*)m_vt)->map(9);
 	Kbd::setFocus(m_vt);
 	m_cwd = cwd;
@@ -76,6 +76,9 @@ u32int KernelShell::run() {
 			Sys::halt();
 		} else if (tokens[0] == "panic") {
 			PANIC("This is what happens when you say 'panic'.");
+		} else if (tokens[0] == "exit") {
+			if (tokens.size() == 1) return 0;
+			return tokens[1].toInt();
 		} else if (tokens[0] != "" or tokens.size() != 1) {
 			u32int i = 0;
 			bool found = false;

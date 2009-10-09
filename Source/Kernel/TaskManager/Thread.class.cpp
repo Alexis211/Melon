@@ -33,10 +33,9 @@ Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
 }
 
 Thread::~Thread() {
-	if (Task::currentThread == this) Task::currentThread = (Thread*)0xFFFFFFFF;	//Signal that current thread is invalid
+	Task::unregisterThread(this);
 	if (m_isKernel)
 		PageAlloc::free((void*)m_kernelStackFrame);
-	Task::unregisterThread(this);
 	//Don't unregister thread in process, it has probably already been done
 }
 

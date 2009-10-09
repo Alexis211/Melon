@@ -52,7 +52,7 @@ void* alloc(u32int* phys) {
 		if (p == 0) {	//THIS SHOULD NEVER HAPPEN
 			PANIC("Cached free page does not exist.");
 		} else if (p->frame == 0) {
-			PANIC("Cached free page is not mapped to a frame.");
+			PhysMem::allocFrame(p, true, false);
 		} else {
 			*phys = (p->frame * 0x1000);
 		}
