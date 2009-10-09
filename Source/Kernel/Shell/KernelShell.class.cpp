@@ -14,7 +14,7 @@ u32int shellRun(void* ks) {
 }
 
 KernelShell::KernelShell(DirectoryNode* cwd) {
-	m_vt = new ScrollableVT(12, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+	m_vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
 	((ScrollableVT*)m_vt)->map(9);
 	Kbd::setFocus(m_vt);
 	m_cwd = cwd;

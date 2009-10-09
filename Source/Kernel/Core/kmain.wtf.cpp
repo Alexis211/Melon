@@ -76,7 +76,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	//Create a VT for logging what kernel does
 	SimpleVT *kvt = new ScrollableVT(3, 69, 10, KVT_FGCOLOR, KVT_BGCOLOR);
-	kvt->map(22);
+	kvt->map(15);
 
 	INFO(kvt); *kvt << "Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
 	INFO(kvt); *kvt << "Placement address : " << (u32int)Mem::placementAddress << "\n";
@@ -129,6 +129,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	new KernelShell(cwd);	//No need to save that in a var, it is automatically destroyed anyways
 	Log::log(KL_STATUS, "kmain : Kernel shell launched");
+	kvt->unmap();
 
 	while (KernelShell::getInstances() > 0) {
 		Task::currentThread->sleep(100);
