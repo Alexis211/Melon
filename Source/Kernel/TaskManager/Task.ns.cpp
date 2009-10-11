@@ -1,5 +1,6 @@
 #include "Task.ns.h"
 #include <Library/Vector.class.h>
+#include <Library/SimpleList.class.h>
 
 //From Task.wtf.asm
 extern "C" u32int read_eip();
@@ -13,8 +14,9 @@ Vector <Thread*> threads;
 struct finished_thread_t {	//Forms a linked list
 	Thread* thread;
 	u32int errcode;
-	finished_thread_t *next;
-} *firstFinishedThread = 0;
+};
+
+SimpleList<finished_thread_t> *firstFinishedThread = 0;
 
 Thread* currentThread = NULL;
 Process* currentProcess = NULL;
@@ -38,11 +40,9 @@ Thread* nextThread() {
 	//Clean up finished threads
 	while (firstFinishedThread != 0) {
 		DEBUG_HEX((u32int)firstFinishedThread);
-		if (firstFinishedThread->thread == currentThread) break;
-		firstFinishedThread->thread->finish(firstFinishedThread->errcode);
-		finished_thread_t* t = firstFinishedThread;
-		firstFinishedThread = t->next;
-		delete t;
+		if (firstFinishedThread->v().thread == currentThread) break;
+		firstFinishedThread->v().thread->finish(firstFinishedThread->v().errcode);
+		firstFinishedThread = firstFinishedThread->delThis();
 	}
 	for (u32int i = 0; i < threads.size(); i++) {
 		if (threads[i] == currentThread) {
@@ -56,7 +56,7 @@ Thread* nextThread() {
 		nid++;
 		if (nid >= threads.size()) nid = 0;
 		if (threads[nid]->runnable() and threads[nid] != idleThread) {
-			if (firstFinishedThread != 0 and firstFinishedThread->thread == threads[nid]) return idleThread;
+			if (firstFinishedThread != 0 and firstFinishedThread->v().thread == threads[nid]) return idleThread;
 			currentThreadId = nid;
 			return threads[nid];
 		}
@@ -128,11 +128,8 @@ Process* getKernelProcess() {
 }
 
 void currentThreadExits(u32int errcode) {
-	finished_thread_t *t = new finished_thread_t;
-	t->thread = currentThread;
-	t->errcode = errcode;
-	t->next = firstFinishedThread;
-	firstFinishedThread = t;
+	finished_thread_t tmp = {currentThread, errcode};
+	firstFinishedThread = firstFinishedThread->cons(tmp);
 }
 
 void registerThread(Thread* t) {

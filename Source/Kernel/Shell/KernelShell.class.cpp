@@ -2,6 +2,7 @@
 #include <VTManager/ScrollableVT.class.h>
 #include <DeviceManager/Kbd.ns.h>
 #include <Library/Rand.ns.h>
+#include <Library/SimpleList.class.h>
 
 u32int KernelShell::m_instances = 0;
 
@@ -30,7 +31,6 @@ KernelShell::~KernelShell() {
 }
 
 u32int KernelShell::run() {
-
 	struct {
 		const char* name;
 		void (KernelShell::*cmd)(Vector<String>&);
