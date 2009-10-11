@@ -29,7 +29,7 @@ keypress_t VirtualTerminal::getKeypress(bool show, bool block) {
 	}
 
 	while (m_kbdbuff.empty())
-		Task::currentThread->sleep(10);
+		Task::currThread()->sleep(10);
 
 	m_kbdbuffMutex.waitLock();
 	keypress_t ret = m_kbdbuff[0];

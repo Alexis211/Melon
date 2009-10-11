@@ -27,6 +27,11 @@ class SimpleList {
 		return m_next;
 	}
 
+	SimpleList<T>* last() {
+		if (m_next == 0) return this;
+		return m_next->last();
+	}
+
 	SimpleList<T>* delThis() {
 		SimpleList<T>* ret = m_next;
 		Mem::kfree(this);

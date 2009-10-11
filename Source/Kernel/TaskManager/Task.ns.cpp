@@ -1,6 +1,5 @@
 #include "Task.ns.h"
 #include <Library/Vector.class.h>
-#include <Library/SimpleList.class.h>
 
 //From Task.wtf.asm
 extern "C" u32int read_eip();
@@ -8,8 +7,8 @@ extern "C" u32int idle_task(void*);
 
 namespace Task {
 
-Vector <Process*> processes;	//TODO : use a linked list instead
-Vector <Thread*> threads;
+SimpleList <Process*> *processes = 0;	//TODO : use a linked list instead
+SimpleList <Thread*> *threads = 0;
 
 struct finished_thread_t {	//Forms a linked list
 	Thread* thread;
@@ -18,49 +17,59 @@ struct finished_thread_t {	//Forms a linked list
 
 SimpleList<finished_thread_t> *firstFinishedThread = 0;
 
-Thread* currentThread = NULL;
-Process* currentProcess = NULL;
-Thread* idleThread = NULL;
-u32int currentThreadId = 0;
+SimpleList <Thread*> *currentThread = 0;
+Process* currentProcess = 0;
+SimpleList<Thread*> *idleThread = 0;
 
 u32int nextpid = 1;
 
+Thread* currThread() {
+	return currentThread->v();
+}
+
+Process* currProcess() {
+	return currentProcess;
+}
+
+Process* getKernelProcess() {
+	if (processes == 0) PANIC("kko");
+	return processes->last()->v();
+}
+
 void initialize(String cmdline, VirtualTerminal *vt) {
 	asm volatile ("cli");
-	threads.clear();
-	processes.clear();
+	threads = 0;
+	processes = 0;
 	currentProcess = Process::createKernel(cmdline, vt);
-	idleThread = new Thread(idle_task, 0, true);
-	currentThread = threads[0];
-	currentThreadId = 0;
+	currentThread = threads;
+	Thread* idle = new Thread(idle_task, 0, true);
+	for (SimpleList<Thread*> *iter = threads; iter != 0; iter = iter->next()) {
+		if (iter->v() == idle) {
+			idleThread = iter;
+			break;
+		}
+	}
 	asm volatile ("sti");
 }
 
-Thread* nextThread() {
+SimpleList<Thread*> *nextThread() {
 	//Clean up finished threads
 	while (firstFinishedThread != 0) {
-		DEBUG_HEX((u32int)firstFinishedThread);
-		if (firstFinishedThread->v().thread == currentThread) break;
+		if (firstFinishedThread->v().thread == currentThread->v()) break;
 		firstFinishedThread->v().thread->finish(firstFinishedThread->v().errcode);
 		firstFinishedThread = firstFinishedThread->delThis();
 	}
-	for (u32int i = 0; i < threads.size(); i++) {
-		if (threads[i] == currentThread) {
-			currentThreadId = i;
-		}
-	}
-	
+
 	//Find next thread
-	u32int nid = currentThreadId;
+	SimpleList<Thread*> *iter = currentThread;
 	while (1) {
-		nid++;
-		if (nid >= threads.size()) nid = 0;
-		if (threads[nid]->runnable() and threads[nid] != idleThread) {
-			if (firstFinishedThread != 0 and firstFinishedThread->v().thread == threads[nid]) return idleThread;
-			currentThreadId = nid;
-			return threads[nid];
+		iter = iter->next();
+		if (iter == 0) iter = threads;
+		if (iter->v()->runnable() and iter->v() != idleThread->v()) {
+			if (firstFinishedThread != 0 and firstFinishedThread->v().thread == iter->v()) return idleThread;
+			return iter;
 		}
-		if (nid == currentThreadId) break;
+		if (iter == currentThread) break;
 	}
 	return idleThread;
 }
@@ -75,17 +84,19 @@ void doSwitch() {
 
 	eip = read_eip();
 
-	if (eip == 0x12345)
+	if (eip == 0x12345) {
 		return;
+	}
 
-	if ((u32int)currentThread != 0xFFFFFFFF) currentThread->setState(esp, ebp, eip);
+	if ((u32int)currentThread->v() != 0xFFFFFFFF) currentThread->v()->setState(esp, ebp, eip);
 
 	currentThread = nextThread();
-	currentProcess = currentThread->getProcess();
+	Thread* t = currentThread->v();
+	currentProcess = t->getProcess();
 
-	esp = currentThread->getEsp();
-	ebp = currentThread->getEbp();
-	eip = currentThread->getEip();
+	esp = t->getEsp();
+	ebp = t->getEbp();
+	eip = t->getEip();
 	cr3 = currentProcess->getPagedir()->physicalAddr;
 
 	asm volatile("			\
@@ -109,39 +120,39 @@ u32int nextPid() {
 
 bool IRQwakeup(u8int irq) {
 	bool r = false;
-	for (u32int i = 0; i < threads.size(); i++) {
-		r = r or threads[i]->irqHappens(irq);
+	for (SimpleList<Thread*> *iter = threads; iter != 0; iter = iter->next()) {
+		r = r or iter->v()->irqHappens(irq);
 	}
 	return r;
 }
 
 void allocKernelPageTable(u32int id, page_table_t *table, u32int tablePhys) {
 	if (id < 768) return;	//this would be a BUG
-	for (u32int i = 1; i < processes.size(); i++) {
-		processes[i]->getPagedir()->tables[id] = table;
-		processes[i]->getPagedir()->tablesPhysical[id] = tablePhys;
+	for (SimpleList<Process*> *iter = processes; iter != 0; iter = iter->next()) {
+		iter->v()->getPagedir()->tables[id] = table;
+		iter->v()->getPagedir()->tablesPhysical[id] = tablePhys;
 	}
 }
 
-Process* getKernelProcess() {
-	return processes[0];
-}
-
 void currentThreadExits(u32int errcode) {
-	finished_thread_t tmp = {currentThread, errcode};
+	finished_thread_t tmp = {currentThread->v(), errcode};
 	firstFinishedThread = firstFinishedThread->cons(tmp);
 }
 
 void registerThread(Thread* t) {
 	unregisterThread(t);	//...//
-	threads.push(t);
+	threads = threads->cons(t);
 }
 
 void unregisterThread(Thread* t) {
-	for (u32int i = 0; i < threads.size(); i++) {
-		if (threads[i] == t) {
-			threads[i] = threads.back();
-			threads.pop();
+	if (threads == 0) return;	//Tasking not yet initialized
+	if (threads->v() == t) {
+		threads = threads->delThis();
+		return;
+	}
+	for (SimpleList<Thread*> *iter = threads; iter->next() != 0; iter = iter->next()) {
+		if (iter->next()->v() == t) {
+			iter->delNext();
 			return;
 		}
 	}
@@ -149,14 +160,18 @@ void unregisterThread(Thread* t) {
 
 void registerProcess(Process* p) {
 	unregisterProcess(p);	//...//
-	processes.push(p);
+	processes = processes->cons(p);
 }
 
 void unregisterProcess(Process* p) {
-	for (u32int i = 0; i < processes.size(); i++) {
-		if (processes[i] == p) {
-			processes[i] = processes.back();
-			processes.pop();
+	if (processes == 0) return; //Tasking not yet initialized
+	if (processes->v() == p) {
+		processes = processes->delThis();
+		return;
+	}
+	for (SimpleList<Process*> *iter = processes; iter->next() != 0; iter = iter->next()) {
+		if (iter->next()->v() == p) {
+			iter->delNext();
 			return;
 		}
 	}

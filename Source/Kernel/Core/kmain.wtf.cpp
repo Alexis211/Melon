@@ -78,7 +78,7 @@ u32int logoAnimation(void* p) {
 				vt.putChar(y, (i + (y%3)), wat[(i + (y%3)) * melonLogoLines + y]);
 			}
 		}
-		Task::currentThread->sleep(20);
+		Task::currThread()->sleep(20);
 	}
 	return 0;
 }
@@ -171,7 +171,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	kvt->unmap();
 
 	while (KernelShell::getInstances() > 0) {
-		Task::currentThread->sleep(100);
+		Task::currThread()->sleep(100);
 	}
 
 	Log::log(KL_STATUS, "kmain : All kernel shells finished. Halting.");

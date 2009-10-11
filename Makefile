@@ -50,6 +50,9 @@ bochs:
 qemu:
 	qemu -fda $(Floppy) -m 16
 
+qemu_debug:
+	qemu -fda $(Floppy) -m 16 -s -S & gdb Source/Kernel/Melon.ke -x Qemu-GDB-Debug-CMD 
+
 stats:
 	echo; echo " ** Statistics for project O3S ** "; \
 	echo -n "Lines of code : "; \

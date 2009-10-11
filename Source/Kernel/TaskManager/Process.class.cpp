@@ -37,7 +37,7 @@ Process::Process(String cmdline, u32int uid) {
 	m_state = P_RUNNING;
 	m_pagedir = new PageDirectory(kernelPageDirectory);
 	m_uid = uid;
-	m_vt = Task::currentProcess->getVirtualTerminal();
+	m_vt = Task::currProcess()->getVirtualTerminal();
 	m_stacksstart = 0xC0000000;
 }
 

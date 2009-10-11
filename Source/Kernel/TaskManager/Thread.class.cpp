@@ -21,7 +21,7 @@ Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
 		setup(entry_point, data, m_kernelStackFrame + 0x1000);	//A kernel stack always is 1 frame, meaning 0x1000 bytes
 	} else {
 		m_isKernel = false;
-		m_process = Task::currentProcess;
+		m_process = Task::currProcess();
 		setup(entry_point,  data, m_process->stackAlloc() + STACKSIZE);
 	}
 }

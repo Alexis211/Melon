@@ -44,7 +44,7 @@ bool File::open(String filename, u8int mode, FSNode* start) {
 	else
 		m_file->m_writers++;
 
-	Task::currentProcess->registerFileDescriptor(this);
+	Task::currProcess()->registerFileDescriptor(this);
 	m_valid = true;
 	return true;
 }
@@ -135,5 +135,5 @@ void File::close(bool unregisterFD) {
 	m_file = NULL;
 	m_position = 0;
 	m_writable = false;
-	if (unregisterFD) Task::currentProcess->unregisterFileDescriptor(this);
+	if (unregisterFD) Task::currProcess()->unregisterFileDescriptor(this);
 }

@@ -63,9 +63,9 @@ extern "C" void idt_flush(u32int);
 extern "C" void interrupt_handler(registers_t regs) {
 	bool doSwitch = (regs.int_no == 32 or regs.int_no >= 65);	//SYSCALLS >= 65 are task-managing-related
 	if (regs.int_no < 32) {
-		if ((u32int)Task::currentThread == 0xFFFFFFFF or Task::currentThread == 0)
+		if ((u32int)Task::currThread() == 0xFFFFFFFF or Task::currThread() == 0)
 			PANIC_DUMP("Exception cannot be handled.", &regs);
-		Task::currentThread->handleException(regs, regs.int_no);
+		Task::currThread()->handleException(regs, regs.int_no);
 	} else if (regs.int_no < 48) {
 		if (regs.int_no >= 40)
 			outb(0xA0, 0x20);

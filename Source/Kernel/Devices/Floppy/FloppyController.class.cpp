@@ -75,7 +75,7 @@ void FloppyController::dmaRelease() {
 //*********************************************************
 u32int floppyMotorTimer(void* plop) {	//This will be an independant thread
 	while(1) {
-		Task::currentThread->sleep(1000);	//Check only every second
+		Task::currThread()->sleep(1000);	//Check only every second
 		Vector<Device*> floppys = Dev::findDevices("block.floppy");
 		for (u32int i = 0; i < floppys.size(); i++) {
 			FloppyDrive* f = (FloppyDrive*)floppys[i];
@@ -147,7 +147,7 @@ void FloppyController::setDOR() {
 	asm volatile ("cli");
 	outb(m_base + FR_DOR, dor);
 	if (m_first) {	//First time we set the DOR, controller initialized
-		Task::currentThread->waitIRQ(m_irq);
+		Task::currThread()->waitIRQ(m_irq);
 		int st0, cyl;
 		checkInterrupt(&st0, &cyl);
 		m_first = false;
@@ -172,7 +172,7 @@ bool FloppyController::writeCmd(u8int cmd) {
 			outb(m_base + FR_FIFO, cmd);
 			return true;
 		}
-		Task::currentThread->sleep(10);
+		Task::currThread()->sleep(10);
 	}
 	return false;
 }
@@ -182,7 +182,7 @@ u8int FloppyController::readData() {
 		if (0x80 & inb(m_base + FR_MSR)) {
 			return inb(m_base + FR_FIFO);
 		}
-		Task::currentThread->sleep(10);
+		Task::currThread()->sleep(10);
 	}
 	return 0;
 }

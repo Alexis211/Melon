@@ -3,10 +3,11 @@
 
 #include <TaskManager/Thread.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
+#include <Library/SimpleList.class.h>
 
 namespace Task {
-	extern Thread* currentThread;
-	extern Process* currentProcess;
+	Thread* currThread();
+	Process* currProcess();
 
 	void initialize(String cmdline, VirtualTerminal *vt);	//cmdline should be the bootloader kernel command line, if anybody needs it
 	void doSwitch();

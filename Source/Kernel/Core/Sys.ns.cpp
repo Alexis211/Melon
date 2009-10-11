@@ -82,8 +82,9 @@ void panic(char *message, char *file, u32int line) {
 void panic(char *message, registers_t *regs, char *file, u32int line) {
 	asm volatile("cli");
 
-	SimpleVT vt(20, 70, 7, 1);
+	SimpleVT vt(21, 70, 7, 1);
 	vt.map();
+	vt.write("\n");
 
 	vt << "PANIC : " << message << "\n => in " << file << " at " << (s32int)line << "\n\n";
 	vt << "ds=" << (u32int)regs->ds << ", eip=" << (u32int)regs->eip << ", cs=" << (u32int)regs->cs << "\n";
@@ -93,14 +94,13 @@ void panic(char *message, registers_t *regs, char *file, u32int line) {
 		", edx=" << (u32int)regs->edx << "\n";
 	vt << "int_no=" << (s32int)regs->int_no << ", err_code=" << (u32int)regs->err_code << "\n";
 	vt << "eflags=" << (u32int)regs->eflags << ", useresp=" << (u32int)regs->useresp << ", ss=" << (u32int)regs->ss << "\n\n";
+	while (1) asm volatile("cli; hlt");
 
 	u32int *v = (u32int*)regs->ebp;
 	for (int i = 0; i < 10; i++) {
 		vt << "ebp=" << (u32int)v << ", value=" << (u32int)(v[1]) << "\n";
 		v = (u32int*)(*v);
 	}
-
-	while (1) asm volatile("hlt");
 }
 
 //Used by ASSERT() macro (see common.wtf.h)
