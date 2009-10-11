@@ -45,6 +45,17 @@ class SimpleList {
 		Mem::kfree(temp);
 	}
 
+	SimpleList<T>* removeOnce(const T& value) {
+		if (value == m_value) return delThis();
+		for (SimpleList<T> *iter = this; iter->next() != 0; iter = iter->next()) {
+			if (iter->next()->v() == value) {
+				iter->delNext();
+				break;
+			}
+		}
+		return this;
+	}
+
 	bool isEnd() {
 		return m_next == 0;
 	}

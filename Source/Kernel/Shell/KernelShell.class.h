@@ -34,7 +34,10 @@ class KernelShell {
 	void uptime(Vector<String>& args);
 	void part(Vector<String>& args);
 
+	void setup(DirectoryNode* cwd, VirtualTerminal *vt);
+
 	public:
+	KernelShell(DirectoryNode* cwd, VirtualTerminal *vt);
 	KernelShell(DirectoryNode* cwd);
 	
 	static u32int getInstances() { return m_instances; }

@@ -15,14 +15,22 @@ u32int shellRun(void* ks) {
 	return ret;
 }
 
-KernelShell::KernelShell(DirectoryNode* cwd) {
-	m_vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+void KernelShell::setup(DirectoryNode* cwd, VirtualTerminal *vt) {
+	m_vt = vt;
 	((ScrollableVT*)m_vt)->map(9);
 	Kbd::setFocus(m_vt);
 	m_cwd = cwd;
 	*m_vt << "Welcome to Melon's kernel shell !\n";
 	m_thread = new Thread(shellRun, (void*)this, true);
 	m_instances++;
+}
+
+KernelShell::KernelShell(DirectoryNode* cwd, VirtualTerminal* vt) {
+	setup(cwd, vt);
+}
+
+KernelShell::KernelShell(DirectoryNode* cwd) {
+	setup(cwd, new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR));
 }
 
 KernelShell::~KernelShell() {

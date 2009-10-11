@@ -7,7 +7,7 @@ extern "C" u32int idle_task(void*);
 
 namespace Task {
 
-SimpleList <Process*> *processes = 0;	//TODO : use a linked list instead
+SimpleList <Process*> *processes = 0;
 SimpleList <Thread*> *threads = 0;
 
 SimpleList <Thread*> *currentThread = 0;
@@ -146,16 +146,7 @@ void registerThread(Thread* t) {
 
 void unregisterThread(Thread* t) {
 	if (threads == 0) return;	//Tasking not yet initialized
-	if (threads->v() == t) {
-		threads = threads->delThis();
-		return;
-	}
-	for (SimpleList<Thread*> *iter = threads; iter->next() != 0; iter = iter->next()) {
-		if (iter->next()->v() == t) {
-			iter->delNext();
-			return;
-		}
-	}
+	threads = threads->removeOnce(t);
 }
 
 void registerProcess(Process* p) {
@@ -165,16 +156,7 @@ void registerProcess(Process* p) {
 
 void unregisterProcess(Process* p) {
 	if (processes == 0) return; //Tasking not yet initialized
-	if (processes->v() == p) {
-		processes = processes->delThis();
-		return;
-	}
-	for (SimpleList<Process*> *iter = processes; iter->next() != 0; iter = iter->next()) {
-		if (iter->next()->v() == p) {
-			iter->delNext();
-			return;
-		}
-	}
+	processes = processes->removeOnce(p);
 }
 
 }
