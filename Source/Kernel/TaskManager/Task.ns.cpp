@@ -10,18 +10,18 @@ namespace Task {
 SimpleList <Process*> *processes = 0;	//TODO : use a linked list instead
 SimpleList <Thread*> *threads = 0;
 
-struct finished_thread_t {	//Forms a linked list
-	Thread* thread;
-	u32int errcode;
-};
-
-SimpleList<finished_thread_t> *firstFinishedThread = 0;
-
 SimpleList <Thread*> *currentThread = 0;
 Process* currentProcess = 0;
 SimpleList<Thread*> *idleThread = 0;
 
 u32int nextpid = 1;
+
+struct finished_thread_t {	//Forms a linked list
+	Thread* thread;
+	u32int errcode;
+};
+SimpleList<finished_thread_t> *firstFinishedThread = 0;
+
 
 Thread* currThread() {
 	return currentThread->v();
