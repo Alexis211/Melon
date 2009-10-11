@@ -1,9 +1,6 @@
 #ifndef DEF_MELON_KERNEL_CONFIG
 #define DEF_MELON_KERNEL_CONFIG
 
-#define THIS_IS_MELON
-#undef THIS_IS_NOT_MELON
-
 #define OPT_DEBUG
 
 //Color scheme

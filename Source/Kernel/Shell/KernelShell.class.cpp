@@ -1,6 +1,7 @@
 #include "KernelShell.class.h"
 #include <VTManager/ScrollableVT.class.h>
 #include <DeviceManager/Kbd.ns.h>
+#include <Library/Rand.ns.h>
 
 u32int KernelShell::m_instances = 0;
 

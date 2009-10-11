@@ -5,7 +5,7 @@ CXX = g++
 LD = ld
 LDFLAGS = -T Link.ld -Map Map.txt --oformat=elf32-i386
 CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I .
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -Wall -Werror -Wno-write-strings -funsigned-char
+CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON -D RANDOM_SEED=`date +%N`LL
 ASM = nasm
 ASMFLAGS = -f elf
  
@@ -45,6 +45,7 @@ Objects = Core/loader.wtf.o \
 		Library/String.class.o \
 		Library/ByteArray.class.o \
 		Library/WChar.class.o \
+		Library/Rand.ns.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \
 		VFS/VFS.ns.o \

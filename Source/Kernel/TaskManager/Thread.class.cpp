@@ -88,6 +88,7 @@ void Thread::handleException(registers_t regs, int no) {
 
 	*(m_process->m_vt) << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
 		(u32int)regs.eip << "\n:: " << exceptions[no];
+	if (m_isKernel) PANIC_DUMP("Exception in kernel thread", &regs);
 
 	if (no == 14) {	//Page fault
 		int present = !(regs.err_code & 0x1);

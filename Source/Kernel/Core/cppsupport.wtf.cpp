@@ -9,7 +9,6 @@ extern "C" int __cxa_atexit(void (*f)(void*), void *p, void *d) { return 0; }
 //Functions for quad divisions/modulo. Taken and arranged from klibc include/asm/div64.h
 //These only work with 32-bit divisors and only return 32-bit remainder.
 //TODO : think of some correct quad div/mod algorithms
-extern "C" {
 inline u64int doDiv(u64int dividend, u32int divisor, u32int *remainder) {
 	union {
 		u64int v64;
@@ -28,6 +27,7 @@ inline u64int doDiv(u64int dividend, u32int divisor, u32int *remainder) {
 	return d.v64;
 }
 
+extern "C" {
 u64int __udivdi3(u64int dividend, u64int b) {
 	u32int divisor, remainder;
 	divisor = b;
