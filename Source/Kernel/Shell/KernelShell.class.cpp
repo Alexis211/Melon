@@ -3,6 +3,7 @@
 #include <DeviceManager/Kbd.ns.h>
 #include <Library/Rand.ns.h>
 #include <Library/SimpleList.class.h>
+#include <VFS/VFS.ns.h>
 
 u32int KernelShell::m_instances = 0;
 
@@ -62,7 +63,7 @@ u32int KernelShell::run() {
 	
 	while (1) {
 		m_vt->setColor(SHELL_LIGHTCOLOR);
-		*m_vt << "[" << m_cwd->getName() << "]# ";
+		*m_vt << VFS::path(m_cwd) << " : ";
 		m_vt->setColor(SHELL_ENTRYCOLOR);
 		Vector<String> tokens = m_vt->readLine().split(" ");
 		m_vt->setColor(SHELL_FGCOLOR);
