@@ -17,6 +17,8 @@ Objects = Core/loader.wtf.o \
 		Core/CMem.ns.o \
 		Core/Log.ns.o \
 		MemoryManager/Mem.ns.o \
+		MemoryManager/Heap.class.o \
+		MemoryManager/Heap-index.class.o \
 		MemoryManager/PhysMem.ns.o \
 		MemoryManager/GDT.wtf.o \
 		MemoryManager/GDT.ns.o \
