@@ -80,6 +80,7 @@ u32int logoAnimation(void* p) {
 		}
 		Task::currThread()->sleep(20);
 	}
+	delete wat;
 	return 0;
 }
 
@@ -134,7 +135,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	PROCESSING(kvt, "Creating kernel heap...");
 	Mem::createHeap(); OK(kvt);
 	INFO(kvt); *kvt << "Free frames : " << (s32int)PhysMem::free() << "/" << (s32int)PhysMem::total() << "\n";
-	
+
 	PROCESSING(kvt,"Initializing PIT...");
 	Dev::registerDevice(new Timer()); OK(kvt);
 

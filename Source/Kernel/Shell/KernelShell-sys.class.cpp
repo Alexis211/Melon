@@ -29,7 +29,7 @@ void KernelShell::free(Vector<String>& args) {
 	u32int frames = PhysMem::total(), freef = PhysMem::free();
 	*m_vt << " - Free frames : " << (s32int)freef << " (" << (s32int)(freef * 4 / 1024) << "Mo) of "
 		<< (s32int)frames << " (" << (s32int)(frames * 4 / 1024) << "Mo).\n";
-	u32int kh = Mem::kheapSize(), freek = Mem::kheapFree;
+	u32int kh = Mem::kheapSize(), freek = Mem::kheapFree();
 	*m_vt << " - Kernel heap free : " << (s32int)(freek / 1024 / 1024) << "Mo (" << (s32int)(freek / 1024) <<
 		"Ko) of " << (s32int)(kh / 1024 / 1024) << "Mo (" << (s32int)(kh / 1024) << "Ko).\n";
 }
