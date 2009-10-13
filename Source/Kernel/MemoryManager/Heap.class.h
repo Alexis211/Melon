@@ -2,6 +2,7 @@
 #define DEF_HEAP_CLASS_H
 
 #include <Core/common.wtf.h>
+#include <TaskManager/Mutex.class.h>
 
 //Heap minimum size : 2M
 #define HEAP_MIN_SIZE 0x00200000
@@ -33,6 +34,8 @@ class Heap {
 	heap_index_t m_index;
 	PageDirectory* m_pagedir;
 
+	Mutex m_mutex;
+
 	void insertIntoIndex(heap_header_t *e);
 	u32int findIndexEntry(heap_header_t *e);
 	void removeFromIndex(u32int idx);
@@ -41,20 +44,35 @@ class Heap {
 	void expand(u32int quantity);
 	void contract();	//Quantity is automatically calculated
 	
-
 	public:
 	Heap();
 	~Heap();
-
-	bool usable() { return m_usable; }
 
 	void create(u32int start, u32int size, u32int idxsize, PageDirectory* pagedir, bool user, bool rw);
 
 	void* alloc(u32int sz, bool no_expand = false);
 	void free(void* ptr);
 
-	u32int size() { return m_end - m_start; }
-	u32int free() { return m_free; }
+	bool usable() { 
+		m_mutex.waitLock();
+		bool ret = m_usable;
+		m_mutex.unlock();
+		return ret;
+	}
+
+	u32int size() {
+		m_mutex.waitLock();
+		u32int ret = m_end - m_start;
+		m_mutex.unlock();
+		return ret;
+	}
+
+	u32int free() {
+		m_mutex.waitLock();
+		u32int ret = m_free;
+		m_mutex.unlock();
+	   	return ret;
+	}
 };
 
 

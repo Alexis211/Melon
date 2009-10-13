@@ -1,7 +1,7 @@
 #include "Heap.class.h"
 #include <MemoryManager/PageDirectory.class.h>
 
-Heap::Heap() {
+Heap::Heap() : m_mutex(MUTEX_FALSE) {
 	m_usable = false;
 	m_index.data = 0;
 	m_index.size = 0;
@@ -12,6 +12,8 @@ Heap::~Heap() {
 }
 
 void Heap::create(u32int start, u32int size, u32int idxsize, PageDirectory* pagedir, bool user, bool rw) {
+	if (m_usable) return;
+
 	if (start & 0x0FFF) start = (start & 0xFFFFF000) + 0x1000;
 	if (size & 0x0FFF) size = (size & 0xFFFFF000) + 0x1000;
 	m_start = start + idxsize;	//m_start is start of real data, start is start of index.
@@ -42,6 +44,8 @@ void Heap::create(u32int start, u32int size, u32int idxsize, PageDirectory* page
 
 	m_usable = true;
 	m_free = (m_end - m_start);
+
+	m_mutex.unlock();
 }
 
 void Heap::expand(u32int quantity) {
@@ -113,6 +117,8 @@ void Heap::contract() {	//Automatically work out how much we can contract
 }
 
 void *Heap::alloc(u32int sz, bool no_expand) {
+	m_mutex.waitLock();
+
 	u32int newsize = sz + sizeof(heap_header_t) + sizeof(heap_footer_t);
 	u32int iterator = 0;
 	while (iterator < m_index.size) {
@@ -120,8 +126,12 @@ void *Heap::alloc(u32int sz, bool no_expand) {
 		iterator++;
 	}
 	if (iterator == m_index.size) { //No hole is big enough
-		if (no_expand) return 0;
+		if (no_expand) {
+			m_mutex.unlock();
+			return 0;
+		}
 		expand((sz & 0xFFFFF000) + 0x1000);
+		m_mutex.unlock();
 		return alloc(sz, true);	//Recurse call
 	}
 
@@ -152,6 +162,8 @@ void *Heap::alloc(u32int sz, bool no_expand) {
 	
 	m_free -= loc->size;
 
+	m_mutex.unlock();
+
 	return (void*)((u32int)loc + sizeof(heap_header_t));
 }
 
@@ -161,6 +173,8 @@ void Heap::free(void *ptr) {
 	heap_header_t *header = (heap_header_t*) ((u32int)ptr - sizeof(heap_header_t));
 	heap_footer_t *footer = (heap_footer_t*)((u32int)header + header->size - sizeof(heap_footer_t));
 	if (header->magic != HEAP_MAGIC or footer->magic != HEAP_MAGIC) return;
+
+	m_mutex.waitLock();
 
 	m_free += header->size;
 
@@ -192,4 +206,6 @@ void Heap::free(void *ptr) {
 			header->size >= 0x2000 and (m_end - m_start > HEAP_MIN_SIZE)) {
 		contract();
 	}
+
+	m_mutex.unlock();
 }
