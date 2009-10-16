@@ -34,8 +34,9 @@ Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
 
 Thread::~Thread() {
 	Task::unregisterThread(this);
-	if (m_isKernel)
+	if (m_isKernel) {
 		PageAlloc::free((void*)m_kernelStackFrame);
+	}
 	//Don't unregister thread in process, it has probably already been done
 }
 

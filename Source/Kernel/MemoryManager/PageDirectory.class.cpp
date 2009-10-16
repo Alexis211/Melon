@@ -43,7 +43,6 @@ PageDirectory::PageDirectory(PageDirectory* other) {
 }
 
 PageDirectory::~PageDirectory() {
-	PageAlloc::free((void*)tablesPhysical);
 	for (int i = 0; i < 768; i++) {		//Only free addresses below 0xC0000000, upper is kernel space
 		if (tables[i] != 0) {
 			for (int j = 0; j < 1024; j++) {
@@ -52,6 +51,7 @@ PageDirectory::~PageDirectory() {
 			PageAlloc::free((void*)tables[i]);
 		}
 	}
+	PageAlloc::free((void*)tablesPhysical);
 }
 
 page_t *PageDirectory::getPage(u32int address, bool make) {

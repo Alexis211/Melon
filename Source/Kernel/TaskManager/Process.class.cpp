@@ -64,7 +64,7 @@ void Process::exit() {
 		iter->v()->close(false);
 		delete iter->v();
 	}
-	delete m_fileDescriptors;
+	delete m_fileDescriptors; //Will recursively delete whole list
 	m_state = P_FINISHED;
 }
 
