@@ -61,8 +61,9 @@ void freeFrame(page_t *page) {
 	if (page->frame == 0) {
 		return;
 	} else {
-		if (page->frame >= 0x100)	//First 1M are reserved (system)
-			frames->clearBit(page->frame / 0x1000);
+		if (page->frame >= 0x100) {	//First 1M are reserved (system)
+			frames->clearBit(page->frame);
+		}
 		page->frame = 0;
 	}
 }

@@ -7,7 +7,7 @@
 #define T_ZOMBIE 0
 #define T_RUNNING 1
 #define T_SLEEPING 2
-#define T_IRQWAIT 3		//This can only happen if process->uid == 0 (root)
+#define T_IRQWAIT 3	
 
 typedef u32int(*thread_entry_t)(void*);
 

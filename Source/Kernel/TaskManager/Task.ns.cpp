@@ -1,5 +1,9 @@
 #include "Task.ns.h"
 #include <Library/Vector.class.h>
+#include <MemoryManager/PhysMem.ns.h>
+
+#define INVALID_TASK_MAGIC 0xBEEFFEED
+#define TEMP_STACK_SIZE 128 //This must be big enough so that we can call all we need to call when a task finishes
 
 //From Task.wtf.asm
 extern "C" u32int read_eip();
@@ -16,12 +20,7 @@ SimpleList<Thread*> *idleThread = 0;
 
 u32int nextpid = 1;
 
-struct finished_thread_t {	//Forms a linked list
-	Thread* thread;
-	u32int errcode;
-};
-SimpleList<finished_thread_t> *firstFinishedThread = 0;
-
+u32int temp_stack[TEMP_STACK_SIZE];	//Temporary stack used for finishing current thread
 
 Thread* currThread() {
 	return currentThread->v();
@@ -53,20 +52,15 @@ void initialize(String cmdline, VirtualTerminal *vt) {
 }
 
 SimpleList<Thread*> *nextThread() {
-	//Clean up finished threads
-	while (firstFinishedThread != 0) {
-		if (firstFinishedThread->v().thread == currentThread->v()) break;
-		firstFinishedThread->v().thread->finish(firstFinishedThread->v().errcode);
-		firstFinishedThread = firstFinishedThread->delThis();
-	}
-
 	//Find next thread
+	if ((u32int)currentThread == INVALID_TASK_MAGIC) {
+		currentThread = threads;	//This will happen when we come here just after current thread has finished
+	}
 	SimpleList<Thread*> *iter = currentThread;
 	while (1) {
 		iter = iter->next();
 		if (iter == 0) iter = threads;
 		if (iter->v()->runnable() and iter->v() != idleThread->v()) {
-			if (firstFinishedThread != 0 and firstFinishedThread->v().thread == iter->v()) return idleThread;
 			return iter;
 		}
 		if (iter == currentThread) break;
@@ -88,7 +82,8 @@ void doSwitch() {
 		return;
 	}
 
-	if ((u32int)currentThread->v() != 0xFFFFFFFF) currentThread->v()->setState(esp, ebp, eip);
+	//This will happen when we come here just after current thread has finished
+	if ((u32int)currentThread != INVALID_TASK_MAGIC) currentThread->v()->setState(esp, ebp, eip);
 
 	currentThread = nextThread();
 	Thread* t = currentThread->v();
@@ -127,6 +122,8 @@ bool IRQwakeup(u8int irq) {
 }
 
 void allocKernelPageTable(u32int id, page_table_t *table, u32int tablePhys) {
+	kernelPageDirectory->tables[id] = table;
+	kernelPageDirectory->tablesPhysical[id] = tablePhys;
 	if (id < 768) return;	//this would be a BUG
 	for (SimpleList<Process*> *iter = processes; iter != 0; iter = iter->next()) {
 		iter->v()->getPagedir()->tables[id] = table;
@@ -134,9 +131,28 @@ void allocKernelPageTable(u32int id, page_table_t *table, u32int tablePhys) {
 	}
 }
 
-void currentThreadExits(u32int errcode) {
-	finished_thread_t tmp = {currentThread->v(), errcode};
-	firstFinishedThread = firstFinishedThread->cons(tmp);
+void currThreadExitProceed(u32int errcode) {
+	currentThread->v()->finish(errcode);
+	currentThread = (SimpleList<Thread*>*)INVALID_TASK_MAGIC;
+	doSwitch();  //Normally never come back from here
+}
+
+void currentThreadExits(u32int errcode) {	//Call currThreadExitProceed with a working stack (we use temp_stack)
+	u32int* stack = &temp_stack[TEMP_STACK_SIZE];
+	stack--;
+	*stack = errcode;
+	stack--;
+	*stack = 0;
+	u32int esp = (u32int)(stack), ebp = (u32int)(stack + 1), eip = (u32int)currThreadExitProceed;
+
+	asm volatile("			\
+			cli;			\
+			mov %0, %%ebp;	\
+			mov %1, %%esp;	\
+			mov %2, %%ecx;	\
+			mov %3, %%cr3;	\
+			jmp *%%ecx;"
+		: : "r"(ebp), "r"(esp), "r"(eip), "r"(kernelPageDirectory->physicalAddr));
 }
 
 void registerThread(Thread* t) {

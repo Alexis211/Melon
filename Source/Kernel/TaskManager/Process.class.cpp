@@ -60,11 +60,11 @@ void Process::exit() {
 		delete m_threads[i];
 	}
 	m_threads.clear();
-	for (u32int i = 0; i < m_fileDescriptors.size(); i++) {
-		m_fileDescriptors[i]->close(false);
-		delete m_fileDescriptors[i];
+	for (SimpleList<File*> *iter = m_fileDescriptors; iter != 0; iter = iter->next()) {
+		iter->v()->close(false);
+		delete iter->v();
 	}
-	m_fileDescriptors.clear();
+	delete m_fileDescriptors; //Will recursively delete whole list
 	m_state = P_FINISHED;
 }
 
@@ -91,17 +91,11 @@ void Process::threadFinishes(Thread* thread, u32int retval) {
 }
 
 void Process::registerFileDescriptor(File* fd) {
-	m_fileDescriptors.push(fd);
+	m_fileDescriptors = m_fileDescriptors->cons(fd);
 }
 
 void Process::unregisterFileDescriptor(File* fd) {
-	for (u32int i = 0; i < m_fileDescriptors.size(); i++) {
-		if (m_fileDescriptors[i] == fd) {
-			m_fileDescriptors[i] = m_fileDescriptors.back();
-			m_fileDescriptors.pop();
-			break;
-		}
-	}
+	m_fileDescriptors = m_fileDescriptors->removeOnce(fd);
 }
 
 PageDirectory* Process::getPagedir() {

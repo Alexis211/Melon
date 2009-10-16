@@ -3,6 +3,7 @@
 
 #include <Library/String.class.h>
 #include <Library/Vector.class.h>
+#include <Library/SimpleList.class.h>
 #include <MemoryManager/PageDirectory.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
 
@@ -35,7 +36,7 @@ class Process {
 	VirtualTerminal *m_vt;
 
 	Vector<Thread*> m_threads;
-	Vector<File*> m_fileDescriptors;
+	SimpleList<File*> *m_fileDescriptors;
 	
 	public:
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
