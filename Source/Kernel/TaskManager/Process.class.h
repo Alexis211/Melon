@@ -61,6 +61,7 @@ class Process {
 
 	VirtualTerminal* getVirtualTerminal();
 	void setVirtualTerminal(VirtualTerminal* vt);
+	u32int getState() { return m_state; }
 
 };
 

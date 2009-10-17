@@ -75,7 +75,6 @@ Thread::~Thread() {
 }
 
 void Thread::setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel) {
-	DEBUG("new Thread :: setup");
 	m_isKernel = isKernel;
 	m_process = process;
 	m_kernelStack.addr = Mem::kalloc(STACKSIZE);

@@ -75,9 +75,9 @@ extern "C" void interrupt_handler(registers_t regs) {
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
 	if (regs.int_no == 64) {
-		if (regs.eax == 1) {
+		if (regs.eax == 0xFFFFFF01) {
 			Task::currProcess()->getVirtualTerminal()->put(WChar(regs.ebx));
-		} else if (regs.eax == 2) {
+		} else if (regs.eax == 0xFFFFFF02) {
 			Task::currThread()->sleep(regs.ebx);
 		}
 	}

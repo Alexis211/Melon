@@ -42,6 +42,7 @@ Process::Process(String cmdline, u32int uid) {
 	m_state = P_RUNNING;
 	m_uid = uid;
 	m_vt = Task::currProcess()->getVirtualTerminal();
+	m_fileDescriptors = 0;
 	//Create page directory and user heap
 	m_pagedir = new PageDirectory(kernelPageDirectory);
 	m_pagedir->switchTo();
@@ -65,7 +66,7 @@ void Process::exit() {
 		iter->v()->close(false);
 		delete iter->v();
 	}
-	delete m_fileDescriptors; //Will recursively delete whole list
+	if (m_fileDescriptors != 0) delete m_fileDescriptors; //Will recursively delete whole list
 	m_state = P_FINISHED;
 }
 

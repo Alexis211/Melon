@@ -26,6 +26,7 @@ class KernelShell {
 	void mkdir(Vector<String>& args);
 	void rm(Vector<String>& args);
 	void wf(Vector<String>& args);
+	void run(Vector<String>& args);
 
 	//in KernelShell-sys
 	void devices(Vector<String>& args);

@@ -1,12 +1,13 @@
 .PHONY: clean, mrproper, Init.rfs
 
-Projects = Kernel Tools/MakeRamFS
+Projects = Kernel Tools/MakeRamFS Applications/ASMApps
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
 RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
+	Source/Applications/ASMApps/test:/System/Applications/Test \
 	:/Useless \
 	Source/Kernel/Ressources/Texts/Info.txt:/Useless/Info.txt \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 

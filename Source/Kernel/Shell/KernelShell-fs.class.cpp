@@ -1,6 +1,8 @@
 #include "KernelShell.class.h"
 #include <VFS/VFS.ns.h>
 #include <VFS/File.class.h>
+#include <TaskManager/Task.ns.h>
+#include <MemoryManager/PhysMem.ns.h>
 
 void KernelShell::ls(Vector<String>& args) {
 	DirectoryNode* d = m_cwd;
@@ -99,6 +101,35 @@ void KernelShell::wf(Vector<String>& args) {
 			}
 		} else {
 			*m_vt << "Error openning file.\n";
+		}
+	}
+}
+
+void KernelShell::run(Vector<String>& args) {
+	if (args.size() == 1) {
+		*m_vt << "No app to run !\n";
+	} else {
+		File f(args[1], FM_READ, m_cwd);
+		if (f.valid()) {
+			u32int magic = 0;
+			f.read<u32int>(&magic);
+			if (magic == 0xFEEDBEEF) {
+				u32int size;
+				f.read<u32int>(&size);
+				Process* p;
+				p = new Process(args[1], 0);
+				p->setVirtualTerminal(m_vt);
+				u8int *ptr = (u8int*)p->heap().alloc(size);
+				f.read(size, ptr);
+				new Thread(p, (thread_entry_t)ptr, 0);
+				kernelPageDirectory->switchTo();
+				while (p->getState() != P_FINISHED) Task::currThread()->sleep(10);
+				delete p;
+			} else {
+				*m_vt << "Bad magic number : " << (u32int)magic << "\n";
+			}
+		} else {
+			*m_vt << "Unable to read from file.\n";
 		}
 	}
 }

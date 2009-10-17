@@ -49,16 +49,3 @@ copy_page_physical:
    ret
 
 
-[GLOBAL sample_task]
-sample_task:
-	mov eax, 0x00000001	;temporarily defined as syscall id for writing one char to screen
-	mov ebx, 'a'		;loopingly write a's to screen
-	int 64
-	mov eax, 0x00000002	;temporary syscall for sleeping
-	mov ebx, 20			;20ms
-	int 64
-	jmp sample_task
-	int 66				;finish task - will never happen since we have an infinite loop
-[GLOBAL sample_task_size]
-sample_task_size:
-	dd sample_task_size - sample_task

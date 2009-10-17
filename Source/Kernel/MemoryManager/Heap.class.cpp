@@ -27,6 +27,7 @@ void Heap::create(u32int start, u32int size, u32int idxsize, PageDirectory* page
 	for (u32int i = start ; i < m_end; i += 0x1000) {
 		m_pagedir->allocFrame(i, m_user, m_rw);
 	}
+	m_pagedir->switchTo();
 
 	m_index.data = (heap_header_t **)start;		//Set index start. start == start of all heap
 	m_index.size = 0;

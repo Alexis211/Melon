@@ -3,7 +3,9 @@
 #include <DeviceManager/Kbd.ns.h>
 #include <Library/Rand.ns.h>
 #include <Library/SimpleList.class.h>
+#include <MemoryManager/PhysMem.ns.h>
 #include <VFS/VFS.ns.h>
+#include <TaskManager/Task.ns.h>
 
 u32int KernelShell::m_instances = 0;
 
@@ -51,6 +53,7 @@ u32int KernelShell::run() {
 		{"mkdir", &KernelShell::mkdir},
 		{"rm",    &KernelShell::rm},
 		{"wf",    &KernelShell::wf},
+		{"run",	  &KernelShell::run},
 
 		{"devices", &KernelShell::devices},
 		{"loadkeys", &KernelShell::loadkeys},

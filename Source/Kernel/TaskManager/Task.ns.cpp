@@ -141,6 +141,7 @@ void currThreadExitProceed(u32int errcode) {
 }
 
 void currentThreadExits(u32int errcode) {	//Call currThreadExitProceed with a working stack (we use temp_stack)
+	asm volatile("cli");
 	u32int* stack = &temp_stack[TEMP_STACK_SIZE];
 	stack--;
 	*stack = errcode;
@@ -149,7 +150,6 @@ void currentThreadExits(u32int errcode) {	//Call currThreadExitProceed with a wo
 	u32int esp = (u32int)(stack), ebp = (u32int)(stack + 1), eip = (u32int)currThreadExitProceed;
 
 	asm volatile("			\
-			cli;			\
 			mov %0, %%ebp;	\
 			mov %1, %%esp;	\
 			mov %2, %%ecx;	\

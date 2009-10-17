@@ -2,7 +2,7 @@
 #include <DeviceManager/Disp.ns.h>
 #include <VTManager/VT.ns.h>
 
-VirtualTerminal::VirtualTerminal() : m_kbdMutex(false), m_kbdbuffMutex(false) {
+VirtualTerminal::VirtualTerminal() : m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {
 }
 
 VirtualTerminal::~VirtualTerminal() {
