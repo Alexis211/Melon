@@ -25,7 +25,8 @@ Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	t->m_process = p;
 	t->m_state = T_RUNNING;
 	t->m_isKernel = true;
-	t->m_kernelStackFrame = 0;
+	t->m_kernelStack.addr = 0;
+	t->m_kernelStack.size = 0;
 
 	p->registerThread(t);
 	Task::registerProcess(p);
@@ -43,6 +44,7 @@ Process::Process(String cmdline, u32int uid) {
 	m_vt = Task::currProcess()->getVirtualTerminal();
 	//Create page directory and user heap
 	m_pagedir = new PageDirectory(kernelPageDirectory);
+	m_pagedir->switchTo();
 	m_userHeap = new Heap();
 	u32int heapIdxSize = PhysMem::total() * 16 + 0x10000;
 	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize, heapIdxSize, m_pagedir, true, true);

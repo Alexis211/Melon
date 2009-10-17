@@ -14,35 +14,40 @@ Thread::Thread() {	//Private constructor, does nothing
 
 Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
 	if (iskernel) {
-		m_isKernel = true;
-		u32int tmp;
-		m_kernelStackFrame = (u32int)PageAlloc::alloc(&tmp);
-		m_process = Task::getKernelProcess();
-		setup(entry_point, data, m_kernelStackFrame + 0x1000);	//A kernel stack always is 1 frame, meaning 0x1000 bytes
+		setup(Task::getKernelProcess(), entry_point, data, true);
 	} else {
-		m_isKernel = false;
-		m_process = Task::currProcess();
-		setup(entry_point,  data, (u32int)(m_process->heap().alloc(STACKSIZE)) + STACKSIZE);
+		setup(Task::currProcess(), entry_point, data, false);
 	}
 }
 
 Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
-	m_isKernel = false;
-	m_process = process;
-	setup(entry_point, data, (u32int)(m_process->heap().alloc(STACKSIZE)) + STACKSIZE);
+	setup(process, entry_point, data, false);
 }
 
 Thread::~Thread() {
 	Task::unregisterThread(this);
-	if (m_isKernel) {
-		PageAlloc::free((void*)m_kernelStackFrame);
-	}
+	Mem::kfree(m_kernelStack.addr);
+	if (!m_isKernel) m_process->heap().free(m_userStack.addr);
 	//Don't unregister thread in process, it has probably already been done
 }
 
-void Thread::setup(thread_entry_t entry_point, void* data, u32int esp) {
+void Thread::setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel) {
+	DEBUG("new Thread :: setup");
+	m_isKernel = isKernel;
+	m_process = process;
+	m_kernelStack.addr = Mem::kalloc(STACKSIZE);
+	m_kernelStack.size = STACKSIZE;
+
+	if (m_isKernel) {
+		m_userStack.size = 0;
+		m_userStack.addr = 0;
+	} else {
+		m_userStack.addr = m_process->heap().alloc(STACKSIZE);
+		m_userStack.size = STACKSIZE;
+	}
+	u32int* stack = (u32int*)((u32int)(m_kernelStack.addr) + m_kernelStack.size);
+
 	//Pass function parameters for runThread()
-	u32int *stack = (u32int*)esp;
 	stack--;
 	*stack = (u32int)entry_point;	//Push entry point (function parameter)
 	stack--;

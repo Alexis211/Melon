@@ -8,7 +8,7 @@ typedef FileSystem* (* mountcallback)(Partition* partition);
 
 namespace VFS {
 	void registerMountCallback(mountcallback mcb);
-	bool mount(Partition* partition, DirectoryNode mountpoint);
+	bool mount(Partition* partition, DirectoryNode *mountpoint);
 	bool setRootNode(DirectoryNode* root);
 	DirectoryNode* getRootNode();
 

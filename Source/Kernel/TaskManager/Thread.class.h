@@ -13,6 +13,7 @@ typedef u32int(*thread_entry_t)(void*);
 
 class Thread {
 	friend class Process;	//This might be useful
+	friend void runThread(Thread*, void*, thread_entry_t);
 
 	private:
 	Thread();	//Creates a thread without initializing anything. Used by Process::createKernel();
@@ -27,9 +28,12 @@ class Thread {
 	} waitfor;
 	
 	bool m_isKernel;	//Says if stack is in kernel pagedir, and if thread should run in ring 0
-	u32int m_kernelStackFrame;	//Used for allocating and freeing a frame used as a stack
+	struct {
+		void* addr;
+		u32int size;
+	} m_userStack, m_kernelStack;
 
-	void setup(thread_entry_t entry_point, void* data, u32int esp);	//Sets up stack, called by both constructors
+	void setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel);
 
 	public:
 	Thread(thread_entry_t entry_point, void* data, bool iskernel = false);	//Assumes process is current process, or is kprocess if isk

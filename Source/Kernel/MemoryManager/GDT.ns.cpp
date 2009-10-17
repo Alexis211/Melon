@@ -2,9 +2,11 @@
 
 extern "C" void gdt_flush(u32int);
 
+#define GDT_ENTRIES 6
+
 namespace GDT {
 
-gdt_entry_t gdt_entries[5];
+gdt_entry_t gdt_entries[GDT_ENTRIES];
 gdt_ptr_t   gdt_ptr;
 
 void setGate(s32int num, u32int base, u32int limit, u8int access, u8int gran) {
@@ -19,7 +21,7 @@ void setGate(s32int num, u32int base, u32int limit, u8int access, u8int gran) {
 }
 
 void init() {
-	gdt_ptr.limit = (sizeof(gdt_entry_t) * 5) - 1;
+	gdt_ptr.limit = (sizeof(gdt_entry_t) * GDT_ENTRIES) - 1;
 	gdt_ptr.base = (u32int)&gdt_entries;
 
 	setGate(0, 0, 0, 0, 0);					//Null segment
