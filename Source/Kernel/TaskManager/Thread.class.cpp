@@ -22,14 +22,14 @@ Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
 	} else {
 		m_isKernel = false;
 		m_process = Task::currProcess();
-		setup(entry_point,  data, m_process->stackAlloc() + STACKSIZE);
+		setup(entry_point,  data, (u32int)(m_process->heap().alloc(STACKSIZE)) + STACKSIZE);
 	}
 }
 
 Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
 	m_isKernel = false;
 	m_process = process;
-	setup(entry_point, data, m_process->stackAlloc() + STACKSIZE);
+	setup(entry_point, data, (u32int)(m_process->heap().alloc(STACKSIZE)) + STACKSIZE);
 }
 
 Thread::~Thread() {

@@ -3,6 +3,10 @@
 #include <MemoryManager/PhysMem.ns.h>
 #include <VFS/File.class.h>
 
+namespace Mem {
+	extern Heap kheap;
+}
+
 Process::Process() {	//Private constructor, does nothing
 }
 
@@ -14,7 +18,7 @@ Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	p->m_state = P_RUNNING;
 	p->m_pagedir = kernelPageDirectory;
 	p->m_uid = 0;
-	p->m_stacksstart = 0;
+	p->m_userHeap = &Mem::kheap;
 	p->m_vt = vt;
 	
 	Thread* t = new Thread();
@@ -35,24 +39,19 @@ Process::Process(String cmdline, u32int uid) {
 	m_cmdline = cmdline;
 	m_retval = 0;
 	m_state = P_RUNNING;
-	m_pagedir = new PageDirectory(kernelPageDirectory);
 	m_uid = uid;
 	m_vt = Task::currProcess()->getVirtualTerminal();
-	m_stacksstart = 0xC0000000;
+	//Create page directory and user heap
+	m_pagedir = new PageDirectory(kernelPageDirectory);
+	m_userHeap = new Heap();
+	u32int heapIdxSize = PhysMem::total() * 16 + 0x10000;
+	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize, heapIdxSize, m_pagedir, true, true);
 }
 
 Process::~Process() {
 	exit();	//Kill all threads
 	delete m_pagedir;
-}
-
-u32int Process::stackAlloc() {
-	if (m_stacksstart < STACKSIZE) return 0;
-	for (u32int i = m_stacksstart - STACKSIZE; i < m_stacksstart; i += 0x1000) {
-		m_pagedir->allocFrame(i & 0xFFFFF000, true, true);
-	}
-	m_stacksstart -= STACKSIZE;
-	return m_stacksstart;
+	delete m_userHeap;
 }
 
 void Process::exit() {

@@ -3,7 +3,7 @@
 #include <MemoryManager/PhysMem.ns.h>
 
 #define INVALID_TASK_MAGIC 0xBEEFFEED
-#define TEMP_STACK_SIZE 128 //This must be big enough so that we can call all we need to call when a task finishes
+#define TEMP_STACK_SIZE 256 //This must be big enough so that we can call all we need to call when a task finishes
 
 //From Task.wtf.asm
 extern "C" u32int read_eip();
