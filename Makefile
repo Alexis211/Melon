@@ -1,10 +1,8 @@
 .PHONY: clean, mrproper, Init.rfs
 
-Files = Source/Kernel/Melon.ke Init.rfs
-Floppy = Melon.img
-
 Projects = Kernel Tools/MakeRamFS
 
+Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
 RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
@@ -13,10 +11,15 @@ RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keym
 	Source/Kernel/Ressources/Texts/Info.txt:/Useless/Info.txt \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 
 
+Files = $(Kernel) $(RamFS)
+Floppy = Melon.img
+
 all:
 	for p in $(Projects); do \
 		make -C Source/$$p -s; \
 	done
+
+$(Files): all
 
 rebuild:
 	for p in $(Projects); do \
@@ -36,7 +39,7 @@ mproper:
 $(RamFS):
 	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)
 
-floppy: $(RamFS)
+floppy: $(Files)
 	sudo mount $(Floppy) Mount -o loop
 	for f in $(Files); do \
 		sudo cp $$f Mount; \

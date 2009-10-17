@@ -5,6 +5,7 @@
 #include <Library/Vector.class.h>
 #include <Library/SimpleList.class.h>
 #include <MemoryManager/PageDirectory.class.h>
+#include <MemoryManager/Heap.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
 
 #define P_ZOMBIE 0
@@ -15,7 +16,10 @@
 #define E_ABORTED 0x0FFFFF01
 #define E_UNHANDLED_EXCEPTION 0x0FFFFF02
 
-#define STACKSIZE 4096	//Can change
+#define STACKSIZE 4096	//Could change
+
+#define USERHEAPINITSIZE 0x00010000	//Heap initially is 64k, but can grow
+#define USERHEAPSTART 0xB7000000	//Heap is at 0xB7000000, 128Mo before kernel space.
 
 class Thread;
 class File;
@@ -32,8 +36,9 @@ class Process {
 	u8int m_state; 	//Is one of P_* defined above
 	PageDirectory* m_pagedir;
 	u32int m_uid;	//User ID
-	u32int m_stacksstart;
 	VirtualTerminal *m_vt;
+
+	Heap *m_userHeap;
 
 	Vector<Thread*> m_threads;
 	SimpleList<File*> *m_fileDescriptors;
@@ -43,8 +48,9 @@ class Process {
 	Process(String cmdline, u32int uid);
 	~Process();
 
-	u32int stackAlloc();	//Allocates pages for STACKSIZE bytes at end of app memory (just before 0xC0000000)
-	void exit();	//Exits properly process by killing all threads
+	Heap& heap() { return *m_userHeap; }
+
+	void exit();	//Exits properly process by killing all threads and deleting file descriptors
 	void registerThread(Thread* t);	//Called when a thread starts
 	void threadFinishes(Thread* thread, u32int retval); //Called when a thread finishes
 
