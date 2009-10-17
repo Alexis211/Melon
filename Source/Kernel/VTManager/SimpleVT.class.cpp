@@ -82,6 +82,7 @@ void SimpleVT::scroll() {
 }
 
 void SimpleVT::updateCursor() {
+	if (!m_mapped) return;
 	Disp::moveCursor(m_csrlin + m_maprow, m_csrcol + m_mapcol);
 }
 
@@ -126,7 +127,7 @@ void SimpleVT::put(WChar c, bool updatecsr) {
 		scroll();
 		m_csrlin--;
 	}
-	if (updatecsr) updateCursor();
+	if (updatecsr && m_mapped) updateCursor();
 }
 
 void SimpleVT::hexDump(u8int *ptr, u32int sz, bool addnl) {
