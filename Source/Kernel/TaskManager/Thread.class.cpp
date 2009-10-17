@@ -2,11 +2,51 @@
 #include <TaskManager/Task.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
 #include <DeviceManager/Time.ns.h>
+#include <MemoryManager/GDT.ns.h>
 
 void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
-	asm volatile("sti");
-	u32int ret = entry_point(data);	//Run !
-	asm volatile("mov %0, %%eax; int $66;" : : "r"(ret));	//Syscall for thread ending
+	if (thread->m_isKernel) {
+		asm volatile("sti");
+		u32int ret = entry_point(data);	//Run !
+		asm volatile("mov %0, %%eax; int $66;" : : "r"(ret));	//Syscall for thread ending
+	} else {
+		//Setup values on user stack
+		u32int *stack = (u32int*)((u32int)thread->m_userStack.addr + thread->m_userStack.size);
+		stack--;
+		*stack = (u32int)data;
+		stack--;
+		*stack = 0;
+		u32int esp = (u32int)stack, eip = (u32int)entry_point;
+		//Setup a false structure for returning from an interrupt :
+		//- update data segments to 0x23 = user data segment with RPL=3
+		//- mov esp in ebx and eip in ecx
+		//- push value for ss : 0x23 (user data seg rpl3)
+		//- push value for esp
+		//- push flags
+		//- update flags, set IF = 1 (interrupts flag)
+		//- push value for cs : 0x1B = user code segment with RPL=3
+		//- push eip
+		//- return from fake interrupt
+		asm volatile("				\
+				mov $0x23, %%ax;	\
+				mov %%ax, %%ds;		\
+				mov %%ax, %%es;		\
+				mov %%ax, %%fs;		\
+				mov %%ax, %%gs;		\
+									\
+				mov %0, %%ebx;		\
+				mov %1, %%ecx;		\
+				pushl $0x23;		\
+				pushl %%ebx;		\
+				pushf;				\
+				pop %%eax;			\
+				or $0x200, %%eax;	\
+				push %%eax;			\
+				pushl $0x1B;		\
+				push %%ecx;			\
+				iret;				\
+				" : : "r"(esp), "r"(eip));
+	}
 }
 
 Thread::Thread() {	//Private constructor, does nothing
@@ -27,7 +67,10 @@ Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
 Thread::~Thread() {
 	Task::unregisterThread(this);
 	Mem::kfree(m_kernelStack.addr);
-	if (!m_isKernel) m_process->heap().free(m_userStack.addr);
+	if (m_userStack.addr != 0) {
+		m_process->getPagedir()->switchTo();
+		m_process->heap().free(m_userStack.addr);
+	}
 	//Don't unregister thread in process, it has probably already been done
 }
 
@@ -111,17 +154,21 @@ void Thread::handleException(registers_t regs, int no) {
 		*(m_process->m_vt) << "At:" << (u32int)faddr;
 
 		*(m_process->m_vt) << "\nThread finishing.\n";
-		finish(E_PAGEFAULT);
+		Task::currentThreadExits(E_PAGEFAULT);	//Calling this will setup a new stack
 		return;
 	}
 	*(m_process->m_vt) << "\nThread finishing.\n";
-	finish(E_UNHANDLED_EXCEPTION);
+	Task::currentThreadExits(E_UNHANDLED_EXCEPTION);
 }
 
 void Thread::setState(u32int esp, u32int ebp, u32int eip) {
 	m_esp = esp;
 	m_ebp = ebp;
 	m_eip = eip;
+}
+
+void Thread::setKernelStack() {
+	GDT::tss_entry.esp0 = (u32int)(m_kernelStack.addr) + m_kernelStack.size;
 }
 
 u32int Thread::getEsp() { return m_esp; }

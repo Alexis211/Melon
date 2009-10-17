@@ -28,7 +28,6 @@ void initPaging(u32int mem_size) {
 		kernelPageDirectory->tables[i] = kernelPageDirectory->tables[768 + i];
 	}
 	DEBUG_HEX((u32int)kernelPageDirectory->physicalAddr); DEBUG(" is page dir phys addr.");
-	//asm volatile("hlt");
 
 	kernelPageDirectory->switchTo();
 	DEBUG("Paging enabled !");

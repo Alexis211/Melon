@@ -35,6 +35,9 @@ extern u32int end;	//Placement address
 
 extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
 
+extern "C" void sample_task();
+extern u32int sample_task_size;
+
 #define INFO(vt) vt->setColor(KVT_FGCOLOR); *vt << " - "; vt->setColor(KVT_LIGHTCOLOR);
 #define PROCESSING(vt, m) vt->setColor(KVT_BLECOLOR); *vt << " > "; vt->setColor(KVT_FGCOLOR); *vt << m; \
 	vt->setCursorCol(60); vt->setColor(KVT_LIGHTCOLOR); *vt << ": ";
@@ -163,6 +166,14 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	FloppyController::detect();
 	Log::log(KL_STATUS, "kmain : Floppy drives detected");
+
+	//Create dummy process, for testing user mode
+	Process* p;
+	p = new Process("dummy task", 0);
+	u8int *ptr = (u8int*)p->heap().alloc(sample_task_size);
+	memcpy(ptr, (const u8int*)sample_task, sample_task_size);
+	new Thread(p, (thread_entry_t)ptr, 0);
+	kernelPageDirectory->switchTo();
 
 	asm volatile("sti");
 	Log::log(KL_STATUS, "kmain : Interrupts enabled.");

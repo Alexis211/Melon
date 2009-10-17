@@ -93,7 +93,14 @@ void panic(char *message, registers_t *regs, char *file, u32int line) {
 	vt << "eax=" << (u32int)regs->eax << ", ebx=" << (u32int)regs->ebx << ", ecx=" << (u32int)regs->ecx <<
 		", edx=" << (u32int)regs->edx << "\n";
 	vt << "int_no=" << (s32int)regs->int_no << ", err_code=" << (u32int)regs->err_code << "\n";
-	vt << "eflags=" << (u32int)regs->eflags << ", useresp=" << (u32int)regs->useresp << ", ss=" << (u32int)regs->ss << "\n\n";
+	vt << "eflags=" << (u32int)regs->eflags << ", useresp=" << (u32int)regs->useresp << ", ss=" << (u32int)regs->ss << "\n";
+	if (regs->int_no == 14) {
+		u32int cr2;
+		asm volatile("mov %%cr2, %0" : "=r"(cr2));
+		vt << "cr2=" << (u32int)cr2 << "\n";
+	}
+	vt << "\n";
+
 	while (1) asm volatile("cli; hlt");
 
 	u32int *v = (u32int*)regs->ebp;

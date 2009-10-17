@@ -15,3 +15,9 @@ gdt_flush:
 .flush:
   ret
   
+
+[GLOBAL tss_flush]
+tss_flush:
+	mov ax, 0x2B		;entry 5 = 0x28, with RPL=3
+	ltr ax
+	ret

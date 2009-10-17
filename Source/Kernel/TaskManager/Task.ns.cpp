@@ -94,8 +94,11 @@ void doSwitch() {
 	eip = t->getEip();
 	cr3 = currentProcess->getPagedir()->physicalAddr;
 
+	asm volatile("cli");
+
+	t->setKernelStack();
+
 	asm volatile("			\
-			cli;			\
 			mov %0, %%ebp;	\
 			mov %1, %%esp;	\
 			mov %2, %%ecx;	\

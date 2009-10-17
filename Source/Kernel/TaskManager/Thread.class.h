@@ -43,6 +43,7 @@ class Thread {
 	void handleException(registers_t regs, int no);
 
 	void setState(u32int esp, u32int ebp, u32int eip);
+	void setKernelStack();
 	u32int getEsp();
 	u32int getEbp();
 	u32int getEip();
