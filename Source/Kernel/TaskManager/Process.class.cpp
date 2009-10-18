@@ -3,12 +3,13 @@
 #include <MemoryManager/PhysMem.ns.h>
 #include <VFS/File.class.h>
 #include <Linker/Binary.proto.h>
+#include <Process.iface.h>
 
 namespace Mem {
 	extern Heap kheap;
 }
 
-Process::Process() {	//Private constructor, does nothing
+Process::Process() : Ressource(PR_IFACE_OBJTYPE) {	//Private constructor, does nothing
 }
 
 Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
@@ -53,7 +54,9 @@ Process* Process::run(String filename, FSNode* cwd, u32int uid) {
 	}
 }
 
-Process::Process(String cmdline, u32int uid) {
+Process::Process(String cmdline, u32int uid) : Ressource(PR_IFACE_OBJTYPE) {
+	addCall0(PR_IFACE_EXIT, (call0)&Process::exitSC);
+	addCall1(PR_IFACE_ALLOCPAGE, (call1)&Process::allocPageSC);
 	m_pid = Task::nextPid();
 	m_cmdline = cmdline;
 	m_retval = 0;
@@ -99,7 +102,7 @@ void Process::registerThread(Thread* t) {
 
 void Process::threadFinishes(Thread* thread, u32int retval) {
 	// If it is the main thread of the process, or if it pagefaulted
-	if (thread == m_threads[0] or retval == E_PAGEFAULT) {
+	if (thread == m_threads[0] or retval == E_PAGEFAULT or retval == E_EXIT) {
 		exit();
 	} else {
 		//Simply unregister thread
@@ -132,4 +135,18 @@ VirtualTerminal* Process::getVirtualTerminal() {
 
 void Process::setVirtualTerminal(VirtualTerminal* vt) {
 	m_vt = vt;
+}
+
+u32int Process::exitSC() {
+	if (Task::currProcess() != this) return 1;
+	Task::currentThreadExits(E_EXIT);
+	return 0;
+}
+
+u32int Process::allocPageSC(u32int pos) {
+	if (Task::currProcess() != this) return 1;
+	if ((pos & 0x00000FFF) != 0) pos = (pos & 0xFFFFF000) + 0x1000;
+	if (pos >= 0xC0000000) return 1;
+	m_pagedir->allocFrame(pos, true, true);
+	return 0;
 }

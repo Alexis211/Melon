@@ -9,13 +9,15 @@
 #include <VTManager/VirtualTerminal.proto.h>
 #include <VFS/File.class.h>
 
+#include <SyscallManager/Ressource.class.h>
+
 #define P_ZOMBIE 0
 #define P_RUNNING 1
 #define P_STARTING 2
 #define P_FINISHED 3
 
 #define E_PAGEFAULT 0x0FFFFF00
-#define E_ABORTED 0x0FFFFF01
+#define E_EXIT 0x0FFFFF01
 #define E_UNHANDLED_EXCEPTION 0x0FFFFF02
 
 #define STACKSIZE 4096	//Could change
@@ -26,7 +28,7 @@
 class Thread;
 class File;
 
-class Process {
+class Process : public Ressource {
 	friend class Thread;
 
 	private:
@@ -67,6 +69,9 @@ class Process {
 	void setVirtualTerminal(VirtualTerminal* vt);
 	u32int getState() { return m_state; }
 
+	//System calls
+	u32int exitSC();
+	u32int allocPageSC(u32int);
 };
 
 #endif

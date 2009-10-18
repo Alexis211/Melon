@@ -1,6 +1,8 @@
 #include "Res.ns.h"
 
 #include <VirtualTerminal.iface.h>
+#include <Process.iface.h>
+#include <Thread.iface.h>
 #include <TaskManager/Task.ns.h>
 
 namespace Res {
@@ -42,6 +44,8 @@ void unregisterRes(u32int id) {
 u32int call(u32int ressource, u8int wat, u32int a, u32int b, u32int c, u32int d, u32int e) {
 	if (ressource == 0xFFFFFE) {	//TODO : return ressource id for some stuff for current process
 		if (a == VT_IFACE_OBJTYPE) return Task::currProcess()->getVirtualTerminal()->resId();
+		if (a == PR_IFACE_OBJTYPE) return Task::currProcess()->resId();
+		if (a == TH_IFACE_OBJTYPE) return Task::currThread()->resId();
 		return 0;
 	} else {
 		if (ressource > size or ressources[ressource] == 0) {

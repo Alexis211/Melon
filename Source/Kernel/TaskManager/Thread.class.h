@@ -11,7 +11,7 @@
 
 typedef u32int(*thread_entry_t)(void*);
 
-class Thread {
+class Thread : public Ressource {
 	friend class Process;	//This might be useful
 	friend void runThread(Thread*, void*, thread_entry_t);
 
@@ -59,6 +59,10 @@ class Thread {
 		}
 		return false;
 	}
+
+	//Syscalls
+	u32int sleepSC(u32int msecs);
+	u32int finishSC(u32int errcode);
 };
 
 #endif

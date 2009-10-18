@@ -4,6 +4,8 @@
 #include <DeviceManager/Time.ns.h>
 #include <MemoryManager/GDT.ns.h>
 
+#include <Thread.iface.h>
+
 void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
 	if (thread->m_isKernel) {
 		asm volatile("sti");
@@ -49,10 +51,10 @@ void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
 	}
 }
 
-Thread::Thread() {	//Private constructor, does nothing
+Thread::Thread() : Ressource(TH_IFACE_OBJTYPE) {	//Private constructor, does nothing
 }
 
-Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
+Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) : Ressource(TH_IFACE_OBJTYPE) {
 	if (iskernel) {
 		setup(Task::getKernelProcess(), entry_point, data, true);
 	} else {
@@ -60,7 +62,7 @@ Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
 	}
 }
 
-Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
+Thread::Thread(Process* process, thread_entry_t entry_point, void* data) : Ressource(TH_IFACE_OBJTYPE) {
 	setup(process, entry_point, data, false);
 }
 
@@ -75,6 +77,9 @@ Thread::~Thread() {
 }
 
 void Thread::setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel) {
+	addCall1(TH_IFACE_SLEEP, (call1)&Thread::sleepSC);
+	addCall1(TH_IFACE_FINISH, (call1)&Thread::finishSC);
+
 	m_isKernel = isKernel;
 	m_process = process;
 	m_kernelStack.addr = Mem::kalloc(STACKSIZE);
@@ -199,3 +204,17 @@ bool Thread::runnable() {
 	}
 	return false;
 }
+
+u32int Thread::sleepSC(u32int msecs) {
+	if (this != Task::currThread()) return 1;
+	sleep(msecs);
+	return 0;
+}
+
+u32int Thread::finishSC(u32int errcode) {
+	if (this != Task::currThread()) return 1;
+	Task::currentThreadExits(errcode);
+	return 0;
+}
+
+
