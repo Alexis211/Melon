@@ -9,6 +9,9 @@ class String : public BasicString<WChar> {
 	static String hex(u32int number);
 	static String number(s32int number);
 
+	static String unserialize(u32int w);
+	u32int serialize();
+
 	String(const char* string, u8int encoding = UE_UTF8);
 	String() : BasicString<WChar>() {}
 	String(const String &other) : BasicString<WChar> (other) {}
@@ -34,7 +37,7 @@ class String : public BasicString<WChar> {
 	String operator+ (const String &other) const { return concat(other); }
 	String operator+ (const char* other) const { return concat(other); }
 	String operator+ (WChar other) const { return concat(other); }
-
+	
 	s64int toInt() const; 	//Convert from DEC
 	u64int toInt16() const;	//Convert from HEX
 

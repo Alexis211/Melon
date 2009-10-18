@@ -22,6 +22,8 @@ class Thread : public Ressource {
 	u32int m_esp, m_ebp, m_eip;
 	u8int m_state;	//Is one of T_* defined above
 
+	void* m_xchgspace;
+
 	union {		//What the thread might be waiting for
 		u32int m_time;
 		u8int m_irq;		//An IRQ number
@@ -48,6 +50,8 @@ class Thread : public Ressource {
 	u32int getEbp();
 	u32int getEip();
 	Process* getProcess();
+
+	void* mkXchgSpace(u32int sz);
 
 	void sleep(u32int msecs);
 	void waitIRQ(u8int irq);

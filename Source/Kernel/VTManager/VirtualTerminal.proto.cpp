@@ -7,7 +7,10 @@
 VirtualTerminal::VirtualTerminal() : 
 	Ressource(VT_IFACE_OBJTYPE), m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {
 	addCall1(VT_IFACE_WRITEHEX, (call1)&VirtualTerminal::writeHexSC);
+	addCall2(VT_IFACE_WRITEDEC, (call2)&VirtualTerminal::writeDecSC);
+	addCall1(VT_IFACE_WRITE, (call1)&VirtualTerminal::writeSC);
 	addCall1(VT_IFACE_PUT, (call1)&VirtualTerminal::putSC);
+	addCall0(VT_IFACE_READLINE, (call0)&VirtualTerminal::readLineSC);
 }
 
 VirtualTerminal::~VirtualTerminal() {

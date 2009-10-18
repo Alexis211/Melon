@@ -11,6 +11,8 @@ namespace Mem {
 	void *alloc(u32int sz, bool align = false);
 	void free(void *ptr);
 
+	void* mkXchgSpace(u32int sz);	//This creates a space between userland and kernel land where data can be exchanged
+
 	u32int kheapSize(), kheapFree();
 }
 

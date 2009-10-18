@@ -1,5 +1,6 @@
 #include <common.h>
 #include <MemoryManager/PhysMem.ns.h>
+#include <TaskManager/Task.ns.h>
 #include <Heap.class.h>
 
 namespace Mem {
@@ -48,6 +49,10 @@ void *alloc(u32int sz, bool align) {
 
 void free(void *ptr) {
 	kheap.free(ptr);
+}
+
+void* mkXchgSpace(u32int sz) {
+	return Task::currThread()->mkXchgSpace(sz);
 }
 
 u32int kheapSize() {

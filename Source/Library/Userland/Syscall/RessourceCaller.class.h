@@ -2,6 +2,17 @@
 #define DEF_RESSOURCECALLER_CLASS_H
 
 #include <Syscall/Syscall.wtf.h>
+#include <common.h>
+
+class Serialized {
+	private:
+	u32int m_value;
+
+	public:
+	Serialized(u32int v) : m_value(v) {}
+	~Serialized() { Mem::free( (void*)m_value); }
+	operator u32int () { return m_value; }
+};
 
 class RessourceCaller {
 	private:

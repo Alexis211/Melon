@@ -10,6 +10,7 @@
 namespace Mem {
 	void* alloc(u32int);
 	void free(void*);
+	void* mkXchgSpace(u32int sz);
 }
 
 //Standard implemenations of operator new/delete

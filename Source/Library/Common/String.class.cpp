@@ -49,6 +49,26 @@ String String::number(s32int number) {
 	return ret;
 }
 
+String String::unserialize(u32int w) {
+	u32int* a = (u32int*)w;
+	String ret;
+	ret.m_length = a[0];
+	ret.m_string = (WChar*)Mem::alloc(a[0] * sizeof(WChar));
+	for (u32int i = 0; i < a[0]; i++) {
+		ret[i] = a[i + 1];
+	}
+	return ret;
+}
+
+u32int String::serialize() {
+	u32int* x = (u32int*)Mem::mkXchgSpace((m_length + 1) * sizeof(u32int));
+	x[0] = m_length;
+	for (u32int i = 0; i < m_length; i++) {
+		x[i + 1] = m_string[i];
+	}
+	return (u32int)x;
+}
+
 String::String(const char* string, u8int encoding) {
 	m_string = 0;
 	m_length = 0;

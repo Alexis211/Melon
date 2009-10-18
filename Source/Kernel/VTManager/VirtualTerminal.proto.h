@@ -21,7 +21,10 @@ class VirtualTerminal : public Ressource {
 
 	//SYSCALLS :
 	u32int writeHexSC(u32int);
+	u32int writeDecSC(u32int, u32int);
+	u32int writeSC(u32int);
 	u32int putSC(u32int);
+	u32int readLineSC();
 
 	public:
 	VirtualTerminal();

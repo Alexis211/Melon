@@ -52,6 +52,7 @@ void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
 }
 
 Thread::Thread() : Ressource(TH_IFACE_OBJTYPE) {	//Private constructor, does nothing
+	m_xchgspace = 0;
 }
 
 Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) : Ressource(TH_IFACE_OBJTYPE) {
@@ -69,9 +70,12 @@ Thread::Thread(Process* process, thread_entry_t entry_point, void* data) : Resso
 Thread::~Thread() {
 	Task::unregisterThread(this);
 	Mem::free(m_kernelStack.addr);
+	m_process->getPagedir()->switchTo();
 	if (m_userStack.addr != 0) {
-		m_process->getPagedir()->switchTo();
 		m_process->heap().free(m_userStack.addr);
+	}
+	if (m_xchgspace != 0) {
+		m_process->heap().free(m_xchgspace);
 	}
 	//Don't unregister thread in process, it has probably already been done
 }
@@ -80,6 +84,7 @@ void Thread::setup(Process* process, thread_entry_t entry_point, void* data, boo
 	addCall1(TH_IFACE_SLEEP, (call1)&Thread::sleepSC);
 	addCall1(TH_IFACE_FINISH, (call1)&Thread::finishSC);
 
+	m_xchgspace = 0;
 	m_isKernel = isKernel;
 	m_process = process;
 	m_kernelStack.addr = Mem::alloc(STACKSIZE);
@@ -180,6 +185,12 @@ u32int Thread::getEbp() { return m_ebp; }
 u32int Thread::getEip() { return m_eip; }
 
 Process* Thread::getProcess() { return m_process; }
+
+void* Thread::mkXchgSpace(u32int sz) {
+	if (m_xchgspace != 0) m_process->heap().free(m_xchgspace);
+	m_xchgspace = m_process->heap().alloc(sz);
+	return m_xchgspace;
+}
 
 void Thread::sleep(u32int msecs) {
 	m_state = T_SLEEPING;

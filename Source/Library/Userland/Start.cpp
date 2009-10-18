@@ -18,7 +18,7 @@ extern "C" void start() {
         ((void (*)(void))*call)();
     }
 
-	heap.create(0x40000000, 0x00100000, 0x00003000);	//Initially create a 1M heap with 12ko index
+	heap.create(0x40000000, 0x00100000, 0x00004000);	//Initially create a 1M heap with 16ko index
 	u32int r = main();
 
 	//Call static destructors 
@@ -32,4 +32,5 @@ extern "C" void start() {
 namespace Mem {
 	void* alloc (u32int sz) { return heap.alloc(sz); }
 	void free(void* ptr) { heap.free(ptr); }
+	void* mkXchgSpace (u32int sz) { return alloc(sz); }
 }

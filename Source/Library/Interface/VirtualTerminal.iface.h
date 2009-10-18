@@ -4,5 +4,9 @@
 #define VT_IFACE_OBJTYPE 0x10
 #define VT_IFACE_PUT 0x01
 #define VT_IFACE_WRITEHEX 0x02
+#define VT_IFACE_WRITEDEC 0x03
+#define VT_IFACE_WRITE 0x04
+
+#define VT_IFACE_READLINE 0x05
 
 #endif
