@@ -3,7 +3,7 @@
 
 #include <common.h>
 #include <String.class.h>
-#include <TaskManager/Mutex.class.h>
+#include <Mutex.class.h>
 #include <DeviceManager/Kbd.ns.h>
 #include <Vector.class.h>
 

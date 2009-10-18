@@ -57,6 +57,7 @@ Process* Process::run(String filename, FSNode* cwd, u32int uid) {
 Process::Process(String cmdline, u32int uid) : Ressource(PR_IFACE_OBJTYPE) {
 	addCall0(PR_IFACE_EXIT, (call0)&Process::exitSC);
 	addCall1(PR_IFACE_ALLOCPAGE, (call1)&Process::allocPageSC);
+	addCall1(PR_IFACE_FREEPAGE, (call1)&Process::freePageSC);
 	m_pid = Task::nextPid();
 	m_cmdline = cmdline;
 	m_retval = 0;
@@ -148,5 +149,13 @@ u32int Process::allocPageSC(u32int pos) {
 	if ((pos & 0x00000FFF) != 0) pos = (pos & 0xFFFFF000) + 0x1000;
 	if (pos >= 0xC0000000) return 1;
 	m_pagedir->allocFrame(pos, true, true);
+	return 0;
+}
+
+u32int Process::freePageSC(u32int pos) {
+	if (Task::currProcess() != this) return 1;
+	if ((pos & 0x00000FFF) != 0) pos = (pos & 0xFFFFF000) + 0x1000;
+	if (pos >= 0xC0000000) return 1;
+	m_pagedir->freeFrame(pos);
 	return 0;
 }

@@ -16,8 +16,6 @@ Objects = Core/loader.wtf.o \
 		Core/Sys.ns.o \
 		Core/Log.ns.o \
 		MemoryManager/Mem.ns.o \
-		MemoryManager/Heap.class.o \
-		MemoryManager/Heap-index.class.o \
 		MemoryManager/PhysMem.ns.o \
 		MemoryManager/GDT.wtf.o \
 		MemoryManager/GDT.ns.o \
@@ -31,7 +29,6 @@ Objects = Core/loader.wtf.o \
 		TaskManager/Thread.class.o \
 		TaskManager/Task.ns.o \
 		TaskManager/Task.wtf.o \
-		TaskManager/Mutex.class.o \
 		VTManager/VirtualTerminal.proto.o \
 		VTManager/SimpleVT.class.o \
 		VTManager/ScrollableVT.class.o \
@@ -52,6 +49,9 @@ Objects = Core/loader.wtf.o \
 		../Library/Common/WChar.class.o \
 		../Library/Common/Rand.ns.o \
 		../Library/Common/CMem.ns.o \
+		../Library/Common/Heap.class.o \
+		../Library/Common/Heap-index.class.o \
+		../Library/Common/Mutex.class.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \
 		VFS/VFS.ns.o \
@@ -95,6 +95,7 @@ clean:
 	rm -rf *.o
 	rm -rf */*.o
 	rm -rf */*/*.o
+	rm -rf ../Library/Common/*.o
  
 mrproper: clean
 	echo "* Removing executable : $(OutFile)"

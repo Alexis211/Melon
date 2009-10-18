@@ -16,4 +16,7 @@ class Process : public RessourceCaller {
 	void allocPage(u32int pos) {
 		doCall(PR_IFACE_ALLOCPAGE, pos);
 	}
+	void freePage(u32int pos) {
+		doCall(PR_IFACE_FREEPAGE, pos);
+	}
 };

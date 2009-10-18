@@ -2,7 +2,7 @@
 #define DEF_HEAP_CLASS_H
 
 #include <common.h>
-#include <TaskManager/Mutex.class.h>
+#include <Mutex.class.h>
 
 //Heap minimum size : 2M
 #define HEAP_MIN_SIZE 0x00200000
@@ -25,14 +25,23 @@ struct heap_index_t {
 	u32int size;
 };
 
+#ifdef THIS_IS_MELON_KERNEL
 class PageDirectory;
+#else
+#include <Binding/Process.class.h>
+#endif
 
 class Heap {
 	private:
-	bool m_usable, m_user, m_rw;
 	u32int m_free, m_start, m_end;
+	bool m_usable;
 	heap_index_t m_index;
+#ifdef THIS_IS_MELON_KERNEL
+	bool m_user, m_rw;
 	PageDirectory* m_pagedir;
+#else
+	Process m_process;
+#endif
 
 	Mutex m_mutex;
 
@@ -48,7 +57,11 @@ class Heap {
 	Heap();
 	~Heap();
 
+#ifdef THIS_IS_MELON_KERNEL
 	void create(u32int start, u32int size, u32int idxsize, PageDirectory* pagedir, bool user, bool rw);
+#else
+	void create(u32int start, u32int size, u32int idxsize);
+#endif
 
 	void* alloc(u32int sz, bool no_expand = false);
 	void free(void* ptr);

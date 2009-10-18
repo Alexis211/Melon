@@ -4,5 +4,6 @@
 #define PR_IFACE_OBJTYPE 0x20
 #define PR_IFACE_EXIT 0x01
 #define PR_IFACE_ALLOCPAGE 0x02
+#define PR_IFACE_FREEPAGE 0x03
 
 #endif

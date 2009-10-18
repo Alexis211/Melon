@@ -1,6 +1,6 @@
 #include <common.h>
 #include <MemoryManager/PhysMem.ns.h>
-#include <MemoryManager/Heap.class.h>
+#include <Heap.class.h>
 
 namespace Mem {
 

@@ -7,7 +7,7 @@ CXX = g++
 CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
 
 LD = ld
-LDFLAGS = --entry=start -Ttext=40000000
+LDFLAGS = -T ../../Library/Link.ld
 
 Applications = asmdemo cxxdemo
 

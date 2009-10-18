@@ -5,7 +5,7 @@
 #include <Vector.class.h>
 #include <SimpleList.class.h>
 #include <MemoryManager/PageDirectory.class.h>
-#include <MemoryManager/Heap.class.h>
+#include <Heap.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
 #include <VFS/File.class.h>
 
@@ -72,6 +72,7 @@ class Process : public Ressource {
 	//System calls
 	u32int exitSC();
 	u32int allocPageSC(u32int);
+	u32int freePageSC(u32int);
 };
 
 #endif
