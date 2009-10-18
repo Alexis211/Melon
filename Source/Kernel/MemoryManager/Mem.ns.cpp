@@ -19,7 +19,7 @@ void *kallocInternal(u32int sz, bool align) {
 	u32int temp = placementAddress;
 	placementAddress += sz;
 	for (u32int i = temp; i < placementAddress; i += 0x1000) {
-		if (pagingEnabled) kernelPageDirectory->allocFrame(i, true, false);
+		if (pagingEnabled) kernelPageDirectory->allocFrame(i, false, false);
 	}
 	return (void*)temp;
 }

@@ -2,6 +2,7 @@
 #include <TaskManager/Task.ns.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <VFS/File.class.h>
+#include <Linker/Binary.proto.h>
 
 namespace Mem {
 	extern Heap kheap;
@@ -35,11 +36,28 @@ Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	return p;
 }
 
+Process* Process::run(String filename, FSNode* cwd, u32int uid) {
+	File file(filename, FM_READ, cwd);
+	if (!file.valid()) return 0;
+	Binary* b = Binary::load(file);
+	if (b == 0) return 0;
+	Process* p = new Process(filename, uid);
+	thread_entry_t e = b->toProcess(p);
+	delete b;
+	if (e != 0) {
+		new Thread(p, e, 0);
+		return p;
+	} else {
+		delete p;
+		return 0;
+	}
+}
+
 Process::Process(String cmdline, u32int uid) {
 	m_pid = Task::nextPid();
 	m_cmdline = cmdline;
 	m_retval = 0;
-	m_state = P_RUNNING;
+	m_state = P_STARTING;
 	m_uid = uid;
 	m_vt = Task::currProcess()->getVirtualTerminal();
 	m_fileDescriptors = 0;
@@ -55,6 +73,10 @@ Process::~Process() {
 	exit();	//Kill all threads
 	delete m_pagedir;
 	delete m_userHeap;
+}
+
+void Process::start() {
+	if (m_state == P_STARTING) m_state = P_RUNNING;
 }
 
 void Process::exit() {

@@ -7,10 +7,12 @@
 #include <MemoryManager/PageDirectory.class.h>
 #include <MemoryManager/Heap.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
+#include <VFS/File.class.h>
 
 #define P_ZOMBIE 0
 #define P_RUNNING 1
-#define P_FINISHED 2
+#define P_STARTING 2
+#define P_FINISHED 3
 
 #define E_PAGEFAULT 0x0FFFFF00
 #define E_ABORTED 0x0FFFFF01
@@ -45,11 +47,13 @@ class Process {
 	
 	public:
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
+	static Process* run(String filename, FSNode* cwd, u32int uid);
 	Process(String cmdline, u32int uid);
 	~Process();
 
 	Heap& heap() { return *m_userHeap; }
 
+	void start();	//Starts thread execution - sets m_state to P_RUNNING if == P_STARTING
 	void exit();	//Exits properly process by killing all threads and deleting file descriptors
 	void registerThread(Thread* t);	//Called when a thread starts
 	void threadFinishes(Thread* thread, u32int retval); //Called when a thread finishes

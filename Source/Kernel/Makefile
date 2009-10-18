@@ -43,6 +43,8 @@ Objects = Core/loader.wtf.o \
 		Shell/KernelShell.class.o \
 		Shell/KernelShell-fs.class.o \
 		Shell/KernelShell-sys.class.o \
+		Linker/Binary.proto.o \
+		Linker/MelonBinary.class.o \
 		Library/Bitset.class.o \
 		Library/String.class.o \
 		Library/ByteArray.class.o \

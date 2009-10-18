@@ -19,7 +19,7 @@ void initPaging(u32int mem_size) {
 	u32int i = 0xC0000000;
 	while (i < Mem::placementAddress) {
 		page_t *p2 = kernelPageDirectory->getPage(i, true);
-		allocFrame(p2, true, false);
+		allocFrame(p2, false, false);
 		i += 0x1000;
 	}
 	//Also map thoses pages at begning of virtual memory

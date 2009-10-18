@@ -79,7 +79,11 @@ extern "C" void interrupt_handler(registers_t regs) {
 			Task::currProcess()->getVirtualTerminal()->put(WChar(regs.ebx));
 		} else if (regs.eax == 0xFFFFFF02) {
 			Task::currThread()->sleep(regs.ebx);
+		} else if (regs.eax == 0xFFFFFF03) {
+			Task::currProcess()->getVirtualTerminal()->writeHex(regs.ebx);
 		}
+		//Some syscalls have maybee modified current page directory, set it back to one for current process
+		Task::currProcess()->getPagedir()->switchTo();
 	}
 	if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
 		Task::currentThreadExits(regs.eax);	//DO NOT COUNT ON COMMING BACK FROM HERE

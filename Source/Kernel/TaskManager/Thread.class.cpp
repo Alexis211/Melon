@@ -191,6 +191,7 @@ void Thread::waitIRQ(u8int irq) {
 }
 
 bool Thread::runnable() {
+	if (m_process->getState() != P_RUNNING) return false;
 	if (m_state == T_RUNNING) return true;
 	if (m_state == T_SLEEPING and Time::time() >= waitfor.m_time) {
 		m_state = T_RUNNING;
