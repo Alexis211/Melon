@@ -39,14 +39,14 @@ void createHeap() {
 	kheap.create(heapStart, heapSize, heapIndexSize, kernelPageDirectory, false, false);
 }
 
-void *kalloc(u32int sz, bool align) {
+void *alloc(u32int sz, bool align) {
 	if (!kheap.usable()) return kallocInternal(sz, align);
 	if (align) return 0;
 
 	return kheap.alloc(sz);
 }
 
-void kfree(void *ptr) {
+void free(void *ptr) {
 	kheap.free(ptr);
 }
 

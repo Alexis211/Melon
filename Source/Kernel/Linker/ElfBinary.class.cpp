@@ -26,7 +26,7 @@ Binary* ElfBinary::load(File& file) {
 	}
 	//Load data
 	for (SimpleList<phdr_t> *iter = b->m_phdr; iter != 0; iter = iter->next()) {
-		iter->v().data = (u8int*)Mem::kalloc(iter->v().h.p_filesz);
+		iter->v().data = (u8int*)Mem::alloc(iter->v().h.p_filesz);
 		file.seek(iter->v().h.p_offset, SM_BEGINNING);
 		file.read(iter->v().h.p_filesz, iter->v().data);
 	}

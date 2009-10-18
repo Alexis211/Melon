@@ -12,18 +12,18 @@ u32int size = 0;
 
 void expand() {	//Expands size of ressources array of 20 entries
 	size += 20;
-	Ressource** tmp = (Ressource**)Mem::kalloc(size * sizeof(Ressource*));
+	Ressource** tmp = (Ressource**)Mem::alloc(size * sizeof(Ressource*));
 	for (u32int i = 0; i < size; i++) {
 		if (i < size - 20) tmp[i] = ressources[i];
 		else tmp[i] = 0;
 	}
-	Mem::kfree(ressources);
+	Mem::free(ressources);
 	ressources = tmp;
 }
 
 u32int registerRes(Ressource* r) {
 	if (ressources == 0 or size == 0) {
-		ressources = (Ressource**)Mem::kalloc(20 * sizeof(Ressource*)); 
+		ressources = (Ressource**)Mem::alloc(20 * sizeof(Ressource*)); 
 		size = 20;
 		for (u32int i = 0; i < 20; i++) ressources[i] = 0;
 	}

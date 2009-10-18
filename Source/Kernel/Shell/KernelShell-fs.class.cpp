@@ -55,11 +55,11 @@ void KernelShell::cat(Vector<String>& args) {
 	for (u32int i = 1; i < args.size(); i++) {
 		File f(args[i], FM_READ, m_cwd);
 		if (f.valid()) {
-			u8int *buff = (u8int*)Mem::kalloc(f.length() + 1);
+			u8int *buff = (u8int*)Mem::alloc(f.length() + 1);
 			f.read(f.length(), buff);
 			buff[f.length()] = 0;
 			*m_vt << String((const char*) buff);
-			Mem::kfree(buff);
+			Mem::free(buff);
 		} else {
 			*m_vt << "Error reading from file " << args[i] << "\n";
 		}

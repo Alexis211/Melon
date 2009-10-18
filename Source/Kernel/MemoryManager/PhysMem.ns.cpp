@@ -14,7 +14,7 @@ void initPaging(u32int mem_size) {
 	
 	frames = new Bitset(nframes);
 
-	kernelPageDirectory = new (Mem::kalloc(sizeof(PageDirectory), true)) PageDirectory();
+	kernelPageDirectory = new (Mem::alloc(sizeof(PageDirectory), true)) PageDirectory();
 
 	u32int i = 0xC0000000;
 	while (i < Mem::placementAddress) {

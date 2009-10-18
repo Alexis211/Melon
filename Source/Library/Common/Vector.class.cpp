@@ -4,7 +4,7 @@ using namespace CMem;	//strlen and memcpy
 	for (u32int i = 0; i < m_size; i++) { \
 		m_data[i].~T(); \
 	} \
-	Mem::kfree(m_data); \
+	Mem::free(m_data); \
 }
 
 template <typename T>
@@ -25,7 +25,7 @@ Vector<T>::Vector(u32int size) {
 template <typename T>
 Vector<T>::Vector(u32int size, const T& value) {
 	//DEBUG_HEX((u32int)this); DEBUG(" NEW FILLED");
-	//m_data = (T*)Mem::kalloc(size * sizeof(T));
+	//m_data = (T*)Mem::alloc(size * sizeof(T));
 	m_data = new T[size];
 	m_size = size;
 	for (u32int i = 0; i < m_size; i++) {
@@ -40,7 +40,7 @@ template <typename T>
 Vector<T>::Vector(const Vector<T> &other) {
 	//DEBUG_HEX((u32int)this); DEBUG(" COPY REF");
 	m_size = other.m_size;
-	m_data = (T*)Mem::kalloc(m_size * sizeof(T));
+	m_data = (T*)Mem::alloc(m_size * sizeof(T));
 	for (u32int i = 0; i < m_size; i++) {
 		new(&m_data[i]) T(other.m_data[i]);
 	}
@@ -51,7 +51,7 @@ Vector<T>& Vector<T>::operator= (const Vector<T> &other) {
 	//DEBUG_HEX((u32int)this); DEBUG(" COPY EQ");
 	DELDATA;
 	m_size = other.m_size;
-	m_data = (T*)Mem::kalloc(m_size * sizeof(T));
+	m_data = (T*)Mem::alloc(m_size * sizeof(T));
 	for (u32int i = 0; i < m_size; i++) {
 		new(&m_data[i]) T(other.m_data[i]);
 	}
@@ -72,14 +72,14 @@ T& Vector<T>::operator[] (u32int index) const {
 
 template <typename T>
 void Vector<T>::push(const T& element) {
-	T* newdata = (T*)Mem::kalloc((m_size + 1) * sizeof(T));
+	T* newdata = (T*)Mem::alloc((m_size + 1) * sizeof(T));
 	if (m_size != 0 and m_data != 0) {
 		memcpy((u8int*)newdata, (const u8int*) m_data, m_size * sizeof(T));
 	}
 	new(&newdata[m_size]) T(element);			//Construct by copy
 	//newdata[m_size] = element;
 	m_size++;
-	Mem::kfree(m_data);
+	Mem::free(m_data);
 	m_data = newdata;
 }
 
@@ -99,9 +99,9 @@ void Vector<T>::pop() {
 	m_size--;
 	//delete(&m_data[m_size], &m_data[m_size]);		//implicitly call destructor with placement delete
 	m_data[m_size].~T();	//Call destructor
-	T* newdata = (T*)Mem::kalloc(m_size * sizeof(T));
+	T* newdata = (T*)Mem::alloc(m_size * sizeof(T));
 	memcpy((u8int*)newdata, (const u8int*) m_data, m_size * sizeof(T));
-	Mem::kfree(m_data);
+	Mem::free(m_data);
 	m_data = newdata;
 }
 

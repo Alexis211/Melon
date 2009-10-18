@@ -20,9 +20,9 @@ inline void* operator new[](u32int, void *p) { return p; }
 inline void operator delete(void*, void*) { }
 inline void operator delete[](void*, void*) { }
 
-inline void* operator new(u32int sz) { return Mem::kalloc(sz); }
-inline void* operator new[](u32int sz) { return Mem::kalloc(sz); }
-inline void operator delete(void *ptr) { Mem::kfree(ptr); }
-inline void operator delete[](void *ptr) { Mem::kfree(ptr); }
+inline void* operator new(u32int sz) { return Mem::alloc(sz); }
+inline void* operator new[](u32int sz) { return Mem::alloc(sz); }
+inline void operator delete(void *ptr) { Mem::free(ptr); }
+inline void operator delete[](void *ptr) { Mem::free(ptr); }
 
 #endif

@@ -8,8 +8,8 @@ namespace Mem {
 	extern u32int placementAddress;
 
 	void createHeap();
-	void *kalloc(u32int sz, bool align = false);
-	void kfree(void *ptr);
+	void *alloc(u32int sz, bool align = false);
+	void free(void *ptr);
 
 	u32int kheapSize(), kheapFree();
 }

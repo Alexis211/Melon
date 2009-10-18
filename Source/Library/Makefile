@@ -15,6 +15,7 @@ Objects = Common/WChar.class.uo \
 		  Common/Mutex.class.uo \
 		  Common/Heap.class.uo \
 		  Common/Heap-index.class.uo \
+		  Common/String.class.uo \
 		  Userland/Syscall/Syscall.wtf.uo \
 		  Userland/Syscall/RessourceCaller.class.uo \
 		  Userland/Start.uo

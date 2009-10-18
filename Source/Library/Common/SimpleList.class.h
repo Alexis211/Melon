@@ -36,7 +36,7 @@ class SimpleList {
 
 	SimpleList<T>* delThis() {
 		SimpleList<T>* ret = m_next;
-		Mem::kfree(this);
+		Mem::free(this);
 		return ret;
 	}
 
@@ -44,7 +44,7 @@ class SimpleList {
 		if (m_next == 0) return;
 		SimpleList<T>* temp = m_next;
 		m_next = m_next->m_next;
-		Mem::kfree(temp);
+		Mem::free(temp);
 	}
 
 	SimpleList<T>* removeOnce(const T& value) {

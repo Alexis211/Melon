@@ -68,7 +68,7 @@ Thread::Thread(Process* process, thread_entry_t entry_point, void* data) : Resso
 
 Thread::~Thread() {
 	Task::unregisterThread(this);
-	Mem::kfree(m_kernelStack.addr);
+	Mem::free(m_kernelStack.addr);
 	if (m_userStack.addr != 0) {
 		m_process->getPagedir()->switchTo();
 		m_process->heap().free(m_userStack.addr);
@@ -82,7 +82,7 @@ void Thread::setup(Process* process, thread_entry_t entry_point, void* data, boo
 
 	m_isKernel = isKernel;
 	m_process = process;
-	m_kernelStack.addr = Mem::kalloc(STACKSIZE);
+	m_kernelStack.addr = Mem::alloc(STACKSIZE);
 	m_kernelStack.size = STACKSIZE;
 
 	if (m_isKernel) {

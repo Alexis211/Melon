@@ -112,11 +112,11 @@ bool RamFS::write(FileNode* file, u64int position, u32int length, u8int *data) {
 		m_usedSize -= node->getLength();
 		m_usedSize += end;
 
-		u8int* data = (u8int*)Mem::kalloc(end);
+		u8int* data = (u8int*)Mem::alloc(end);
 		if (data == 0) return false;	//Invalid pointer
 		if (node->m_data != 0) {
 			memcpy(data, node->m_data, node->getLength());
-			Mem::kfree(node->m_data);
+			Mem::free(node->m_data);
 		}
 		node->m_data = data;
 		node->setLength(end);
@@ -129,7 +129,7 @@ bool RamFS::truncate(FileNode* file) {
 	if (!m_isWritable) return false;
 	RamFileNode *node = (RamFileNode*) file;
 
-	Mem::kfree(node->m_data);
+	Mem::free(node->m_data);
 	node->setLength(0);
 	node->m_data = 0;
 
@@ -163,7 +163,7 @@ DirectoryNode* RamFS::createDirectory(DirectoryNode* parent, String name) {
 bool RamFS::remove(DirectoryNode* parent, FSNode* node) { 
 	if (node->type() == NT_FILE) {
 		u8int *d = ((RamFileNode*)node)->m_data;
-		if (d != 0) Mem::kfree(d);
+		if (d != 0) Mem::free(d);
 	}
 	return true;
 }

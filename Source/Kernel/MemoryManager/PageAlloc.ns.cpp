@@ -14,7 +14,7 @@ bool usable = false, locked = false;
 void init() {
 	freec = CACHED_PAGES;
 	for (u32int i = 0; i < CACHED_PAGES; i++) {
-		freePage[i] = Mem::kalloc(0x1000, true);
+		freePage[i] = Mem::alloc(0x1000, true);
 	}
 	usable = true;
 }
@@ -26,7 +26,7 @@ void* alloc(u32int* phys) {
 		locked = true;
 		void* next = 0;
 		if (!Mem::pagingEnabled) {
-			next = Mem::kalloc(0x1000, true);
+			next = Mem::alloc(0x1000, true);
 		} else {
 			u32int i = 0xFFFFF000;
 			page_t *p;

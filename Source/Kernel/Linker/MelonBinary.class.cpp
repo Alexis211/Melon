@@ -7,7 +7,7 @@ Binary* MelonBinary::load(File& file) {
 		MelonBinary* r = new MelonBinary;
 		file.read<u32int>(&r->m_size);
 		file.read<u32int>(&r->m_org);
-		r->m_data = (u8int*)Mem::kalloc(r->m_size);
+		r->m_data = (u8int*)Mem::alloc(r->m_size);
 		file.read(r->m_size, r->m_data);
 		return r;
 	} else {

@@ -4,7 +4,7 @@ Bitset::Bitset() {
 }
 
 Bitset::Bitset(u32int size) {
-	init(size, (u32int*)Mem::kalloc(INDEX_FROM_BIT(size)));
+	init(size, (u32int*)Mem::alloc(INDEX_FROM_BIT(size)));
 }
 
 Bitset::Bitset(u32int size, u32int *ptr) {
@@ -12,7 +12,7 @@ Bitset::Bitset(u32int size, u32int *ptr) {
 }
 
 Bitset::~Bitset() {
-	Mem::kfree(m_data);
+	Mem::free(m_data);
 }
 
 void Bitset::init(u32int size, u32int *ptr) {
