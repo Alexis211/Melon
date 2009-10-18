@@ -3,7 +3,11 @@
 
 #include <types.h>
 
+//Three basic syscalls, just for testing
 void putch(char);
-unsigned int syscall(unsigned int n, unsigned int a, unsigned int b = 0, unsigned int c = 0);
+void sleep(u32int);
+void write_hex(u32int);
+
+u32int syscall(u32int n, u32int a, u32int b = 0, u32int c = 0, u32int d = 0, u32int e = 0);
 
 #endif

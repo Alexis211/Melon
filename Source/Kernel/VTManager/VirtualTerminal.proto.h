@@ -7,15 +7,21 @@
 #include <DeviceManager/Kbd.ns.h>
 #include <Vector.class.h>
 
+#include <SyscallManager/Ressource.class.h>
+
 struct vtchr {
 	u8int color;
 	WChar c;
 };
 
-class VirtualTerminal {
+class VirtualTerminal : public Ressource {
 	protected:
 	Mutex m_kbdMutex, m_kbdbuffMutex;
 	Vector<Kbd::keypress_t> m_kbdbuff;	//Key press events buffer
+
+	//SYSCALLS :
+	u32int writeHexSC(u32int);
+	u32int putSC(u32int);
 
 	public:
 	VirtualTerminal();

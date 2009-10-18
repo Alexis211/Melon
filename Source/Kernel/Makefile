@@ -5,7 +5,7 @@ CXX = g++
 LD = ld
 LDFLAGS = -T Link.ld -Map Map.txt --oformat=elf32-i386
 CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I .
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL -g
+CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -I ../Library/Interface -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL -g
 ASM = nasm
 ASMFLAGS = -f elf
  
@@ -38,6 +38,7 @@ Objects = Core/loader.wtf.o \
 		VTManager/PipeVT.class.o \
 		VTManager/FileVT.class.o \
 		VTManager/VirtualTerminal-kbd.proto.o \
+		VTManager/VirtualTerminal-sc.proto.o \
 		VTManager/VT.ns.o \
 		Shell/KernelShell.class.o \
 		Shell/KernelShell-fs.class.o \
@@ -59,6 +60,8 @@ Objects = Core/loader.wtf.o \
 		VFS/DirectoryNode.class.o \
 		FileSystems/RamFS/RamFS.class.o \
 		SyscallManager/IDT.ns.o \
+		SyscallManager/Ressource.class.o \
+		SyscallManager/Res.ns.o \
 		SyscallManager/IDT.wtf.o \
 		Devices/Display/VGATextOutput.class.o \
 		Devices/Keyboard/PS2Keyboard.class.o \

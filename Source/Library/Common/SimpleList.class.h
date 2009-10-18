@@ -1,6 +1,8 @@
 #ifndef DEF_SIMPLELIST_CLASS_H
 #define DEF_SIMPLELIST_CLASS_H
 
+#include <common.h>
+
 /* This class implements a singly linked list. It is also used to represent one of its elements. */
 
 template <typename T>

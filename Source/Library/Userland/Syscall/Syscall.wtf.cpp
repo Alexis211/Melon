@@ -1,20 +1,21 @@
 #include "Syscall.wtf.h"
 
-int main();
-
-unsigned int syscall(unsigned int n, unsigned int a, unsigned int b, unsigned int c) {
-	unsigned int r;
+u32int syscall(u32int n, u32int a, u32int b, u32int c, u32int d, u32int e) {
+	u32int r;
 	asm volatile ("int $64;"
-			: "=a"(r) : "a"(n), "b"(a), "c"(b), "d"(c));
+			: "=a"(r) : "a"(n), "b"(a), "c"(b), "d"(c), "D"(d), "S"(e));
 	return r;
 }
 
-extern "C" void start() {
-	unsigned int r = main();
-	asm volatile("int $66" : : "a"(r));
+void putch(char c) {
+	u32int x = c;
+	syscall(0xFFFFFF01, x);
 }
 
-void putch(char c) {
-	unsigned int x = c;
-	syscall(0xFFFFFF01, x);
+void sleep(u32int t) {
+	syscall(0xFFFFFF02, t);
+}
+
+void write_hex(u32int n) {
+	syscall(0XFFFFFF03, n);
 }

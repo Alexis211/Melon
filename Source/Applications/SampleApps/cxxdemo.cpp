@@ -1,10 +1,14 @@
 #include <Syscall/Syscall.wtf.h>
 #include <WChar.class.h>
+#include <VirtualTerminal.class.h>
 
 int main() {
+	VirtualTerminal x = VirtualTerminal::get();
 	for (char c = ' '; c <= 'z'; c++) {
-		syscall(0xFFFFFF02, (unsigned int)c);
-		putch(c);
+		sleep((u32int)c / 4);
+		x.put(c);
 	}
-	putch('\n');
+	x.put("\n");
+	x.writeHex(0xDEADBEEF);
+	x.put("\n");
 }

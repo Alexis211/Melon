@@ -2,6 +2,7 @@
 #include <VTManager/SimpleVT.class.h>
 #include <DeviceManager/Dev.ns.h>
 #include <TaskManager/Task.ns.h>
+#include <SyscallManager/Res.ns.h>
 
 using namespace Sys; 	//For outb
 
@@ -75,12 +76,18 @@ extern "C" void interrupt_handler(registers_t regs) {
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
 	if (regs.int_no == 64) {
-		if (regs.eax == 0xFFFFFF01) {
-			Task::currProcess()->getVirtualTerminal()->put(WChar(regs.ebx));
-		} else if (regs.eax == 0xFFFFFF02) {
-			Task::currThread()->sleep(regs.ebx);
-		} else if (regs.eax == 0xFFFFFF03) {
-			Task::currProcess()->getVirtualTerminal()->writeHex(regs.ebx);
+		u32int res = (regs.eax >> 8);
+		u8int wat = (regs.eax & 0xFF);
+		if (res == 0xFFFFFF) {
+			if (regs.eax == 0xFFFFFF01) {
+				Task::currProcess()->getVirtualTerminal()->put(WChar(regs.ebx));
+			} else if (regs.eax == 0xFFFFFF02) {
+				Task::currThread()->sleep(regs.ebx);
+			} else if (regs.eax == 0xFFFFFF03) {
+				Task::currProcess()->getVirtualTerminal()->writeHex(regs.ebx);
+			}
+		} else {
+			regs.eax = Res::call(res, wat, regs.ebx, regs.ecx, regs.edx, regs.edi, regs.esi);
 		}
 		//Some syscalls have maybee modified current page directory, set it back to one for current process
 		Task::currProcess()->getPagedir()->switchTo();

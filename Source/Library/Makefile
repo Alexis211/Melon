@@ -9,7 +9,9 @@ LD = ld
 Library = Melon.o
 Objects = Common/WChar.class.uo \
 		  Common/CMem.ns.uo \
-		  Userland/Syscall/Syscall.wtf.uo
+		  Userland/Syscall/Syscall.wtf.uo \
+		  Userland/Syscall/RessourceCaller.class.uo \
+		  Userland/Start.uo
 
 all: $(Library)
 	echo "* Done with library"

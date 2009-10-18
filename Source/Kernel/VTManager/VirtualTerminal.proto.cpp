@@ -2,7 +2,12 @@
 #include <DeviceManager/Disp.ns.h>
 #include <VTManager/VT.ns.h>
 
-VirtualTerminal::VirtualTerminal() : m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {
+#include <VirtualTerminal.iface.h>
+
+VirtualTerminal::VirtualTerminal() : 
+	Ressource(VT_IFACE_OBJTYPE), m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {
+	addCall1(VT_IFACE_WRITEHEX, (call1)&VirtualTerminal::writeHexSC);
+	addCall1(VT_IFACE_PUT, (call1)&VirtualTerminal::putSC);
 }
 
 VirtualTerminal::~VirtualTerminal() {
