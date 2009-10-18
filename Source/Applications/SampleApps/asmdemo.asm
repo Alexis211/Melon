@@ -1,4 +1,4 @@
-%include "syscalls.asm"
+%include "lib-melonasm.asm"
 
 start:			; label used for calculating app size
  mov ecx, [data]
