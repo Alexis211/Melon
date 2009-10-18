@@ -1,5 +1,5 @@
 #include "String.class.h"
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 
 using namespace CMem;	//strlen and memcpy
 

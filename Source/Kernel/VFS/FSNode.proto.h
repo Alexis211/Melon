@@ -1,8 +1,8 @@
 #ifndef DEF_FSNODE_PROTO_H
 #define DEF_FSNODE_PROTO_H
 
-#include <Core/common.wtf.h>
-#include <Library/String.class.h>
+#include <common.h>
+#include <String.class.h>
 class FSNode;
 #include <VFS/FileSystem.proto.h>
 

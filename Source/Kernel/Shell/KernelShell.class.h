@@ -4,7 +4,7 @@
 #include <VTManager/VirtualTerminal.proto.h>
 #include <VFS/DirectoryNode.class.h>
 #include <TaskManager/Thread.class.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 
 class KernelShell {
 	friend u32int shellRun(void* ks);

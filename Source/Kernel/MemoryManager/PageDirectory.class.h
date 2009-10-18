@@ -1,7 +1,7 @@
 #ifndef DEF_PAGEDIRECTORY_CLASS_H
 #define DEF_PAGEDIRECTORY_CLASS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 struct page_t {
 	u32int present		: 1;

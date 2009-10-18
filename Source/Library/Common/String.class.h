@@ -1,9 +1,8 @@
 #ifndef DEF_STRING_CLASS
 #define DEF_STRING_CLASS
 
-#include <Core/common.wtf.h>
-#include <Library/WChar.class.h>
-#include <Library/BasicString.class.h>
+#include <BasicString.class.h>
+#include <WChar.class.h>
 
 class String : public BasicString<WChar> {
 	public:

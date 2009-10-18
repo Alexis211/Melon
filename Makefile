@@ -1,13 +1,14 @@
 .PHONY: clean, mrproper, Init.rfs
 
-Projects = Kernel Tools/MakeRamFS Applications/SampleApps
+Projects = Kernel Library Tools/MakeRamFS Applications/SampleApps
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
 RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
-	Source/Applications/SampleApps/asmdemo:/ASMDemo.app \
+	Source/Applications/SampleApps/asmdemo:/ad \
+	Source/Applications/SampleApps/cxxdemo:/cd \
 	:/Useless \
 	Source/Kernel/Ressources/Texts/Info.txt:/Useless/Info.txt \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 
@@ -32,9 +33,9 @@ clean:
 		make -C Source/$$p clean -s; \
 	done
 
-mproper:
+mrproper:
 	for p in $(Projects); do \
-		make -C Source mrproper -s; \
+		make -C Source/$$p mrproper -s; \
 	done
 
 $(RamFS):

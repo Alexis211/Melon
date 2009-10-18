@@ -1,7 +1,7 @@
 #ifndef DEF_BASICSTRING_CLASS_H
 #define DEF_BASICSTRING_CLASS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 template <typename T> class Vector;
 

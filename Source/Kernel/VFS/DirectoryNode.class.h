@@ -2,7 +2,7 @@
 #define DEF_DIRECTORYNODE_CLASS_H
 
 #include <VFS/FileNode.class.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 
 class DirectoryNode : public FSNode {
 	protected:

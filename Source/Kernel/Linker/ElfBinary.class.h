@@ -2,7 +2,7 @@
 #define DEF_ELFBINARY_CLASS_H
 
 #include <Linker/Binary.proto.h>
-#include <Library/SimpleList.class.h>
+#include <SimpleList.class.h>
 
 /* p_type */
 #define	PT_NULL             0

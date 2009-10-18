@@ -1,7 +1,7 @@
 #ifndef DEF_VECTOR_CLASS
 #define DEF_VECTOR_CLASS
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 template <typename T>
 class Vector {

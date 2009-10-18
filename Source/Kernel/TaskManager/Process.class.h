@@ -1,9 +1,9 @@
 #ifndef DEF_PROCESS_CLASS_H
 #define DEF_PROCESS_CLASS_H
 
-#include <Library/String.class.h>
-#include <Library/Vector.class.h>
-#include <Library/SimpleList.class.h>
+#include <String.class.h>
+#include <Vector.class.h>
+#include <SimpleList.class.h>
 #include <MemoryManager/PageDirectory.class.h>
 #include <MemoryManager/Heap.class.h>
 #include <VTManager/VirtualTerminal.proto.h>

@@ -1,8 +1,7 @@
 #include "KernelShell.class.h"
 #include <VTManager/ScrollableVT.class.h>
 #include <DeviceManager/Kbd.ns.h>
-#include <Library/Rand.ns.h>
-#include <Library/SimpleList.class.h>
+#include <SimpleList.class.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <VFS/VFS.ns.h>
 #include <TaskManager/Task.ns.h>

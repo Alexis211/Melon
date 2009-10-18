@@ -1,7 +1,7 @@
 #ifndef DEF_DEVICE_PROTO_H
 #define DEF_DEVICE_PROTO_H
 
-#include <Library/String.class.h>
+#include <String.class.h>
 
 #include <SyscallManager/IDT.ns.h>
 

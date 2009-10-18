@@ -1,6 +1,10 @@
 #include "WChar.class.h"
 
-#ifdef THIS_IS_MELON
+#ifdef THIS_IS_MELON_KERNEL
+using namespace CMem;
+#endif
+
+#ifdef THIS_IS_MELON_USERLAND
 using namespace CMem;
 #endif
 

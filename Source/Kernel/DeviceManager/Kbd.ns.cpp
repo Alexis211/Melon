@@ -1,6 +1,6 @@
 #include "Kbd.ns.h"
 #include <DeviceManager/Dev.ns.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 #include <Devices/Keyboard/Keyboard.proto.h>
 #include <VTManager/VirtualTerminal.proto.h>
 #include <Ressources/Keymaps/Keymap.h>

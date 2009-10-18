@@ -1,4 +1,4 @@
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 
 #define FREE if (m_string != 0) delete m_string;
 #define ALLOC m_string = new T[m_length];

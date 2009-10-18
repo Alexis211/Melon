@@ -1,7 +1,7 @@
 #ifndef DEF_HEAP_CLASS_H
 #define DEF_HEAP_CLASS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 #include <TaskManager/Mutex.class.h>
 
 //Heap minimum size : 2M

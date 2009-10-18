@@ -1,11 +1,11 @@
 #ifndef DEF_VIRTUALTERMINAL_CLASS_H
 #define DEF_VIRTUALTERMINAL_CLASS_H
 
-#include <Core/common.wtf.h>
-#include <Library/String.class.h>
+#include <common.h>
+#include <String.class.h>
 #include <TaskManager/Mutex.class.h>
 #include <DeviceManager/Kbd.ns.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 
 struct vtchr {
 	u8int color;

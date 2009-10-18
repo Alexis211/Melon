@@ -1,7 +1,7 @@
 #ifndef DEF_GDT_NS_H
 #define DEF_GDT_NS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 namespace GDT {
 	struct gdt_entry_t {

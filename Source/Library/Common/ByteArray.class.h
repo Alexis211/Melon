@@ -1,8 +1,7 @@
 #ifndef DEF_BYTEARRAY_CLASS_H
 #define DEF_BYTEARRAY_CLASS_H
 
-#include <Library/String.class.h>
-#include <VTManager/VirtualTerminal.proto.h>
+#include <String.class.h>
 
 class ByteArray : public BasicString<u8int> {
 	public:
@@ -20,8 +19,6 @@ class ByteArray : public BasicString<u8int> {
 
 	void affect(const String& string, u8int encoding = UE_UTF8);
 	void resize(u32int size);
-
-	void dump(VirtualTerminal *vt);
 
 	String toString(u8int encoding = UE_UTF8);
 	operator u8int* () { return m_string; }

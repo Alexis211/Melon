@@ -5,7 +5,7 @@ CXX = g++
 LD = ld
 LDFLAGS = -T Link.ld -Map Map.txt --oformat=elf32-i386
 CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I .
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON -D RANDOM_SEED=1`date +%N`LL -g
+CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL -g
 ASM = nasm
 ASMFLAGS = -f elf
  
@@ -14,7 +14,6 @@ Objects = Core/loader.wtf.o \
 		Core/kmain.wtf.o \
 		Core/cppsupport.wtf.o \
 		Core/Sys.ns.o \
-		Core/CMem.ns.o \
 		Core/Log.ns.o \
 		MemoryManager/Mem.ns.o \
 		MemoryManager/Heap.class.o \
@@ -46,11 +45,12 @@ Objects = Core/loader.wtf.o \
 		Linker/Binary.proto.o \
 		Linker/MelonBinary.class.o \
 		Linker/ElfBinary.class.o \
-		Library/Bitset.class.o \
-		Library/String.class.o \
-		Library/ByteArray.class.o \
-		Library/WChar.class.o \
-		Library/Rand.ns.o \
+		../Library/Common/Bitset.class.o \
+		../Library/Common/String.class.o \
+		../Library/Common/ByteArray.class.o \
+		../Library/Common/WChar.class.o \
+		../Library/Common/Rand.ns.o \
+		../Library/Common/CMem.ns.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \
 		VFS/VFS.ns.o \

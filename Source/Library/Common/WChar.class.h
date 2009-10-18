@@ -1,10 +1,10 @@
 #ifndef DEF_UCHAR_CLASS_H
 #define DEF_UCHAR_CLASS_H
 
-#include <Core/types.wtf.h>
+#include <types.h>
 
 #ifndef THIS_IS_NOT_MELON
-#include <Core/common.wtf.h>
+#include <common.h>
 #endif
 
 enum {

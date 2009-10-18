@@ -7,9 +7,9 @@
 
 #define NULL 0
 
-#include <Core/types.wtf.h>
+#include <types.h>
 
-#include <Core/CMem.ns.h>
+#include <CMem.ns.h>
 #include <Core/Sys.ns.h>
 
 #include <MemoryManager/Mem.ns.h>

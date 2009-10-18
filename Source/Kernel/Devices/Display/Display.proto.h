@@ -1,9 +1,9 @@
 #ifndef DEF_DISPLAY_PROTO_H
 #define DEF_DISPLAY_PROTO_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 #include <Devices/Device.proto.h>
-#include <Library/WChar.class.h>
+#include <WChar.class.h>
 
 class Display : public Device {
 	public:

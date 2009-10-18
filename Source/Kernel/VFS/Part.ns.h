@@ -2,7 +2,7 @@
 #define DEF_PART_NS_H
 
 #include <Devices/BlockDevice.proto.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 #include <VFS/Partition.class.h>
 
 namespace Part {

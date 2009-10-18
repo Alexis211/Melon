@@ -49,10 +49,6 @@ void ByteArray::resize(u32int size) {
 	m_length = size;
 }
 
-void ByteArray::dump(VirtualTerminal *vt) {
-	vt->hexDump(m_string, m_length);
-}
-
 String ByteArray::toString (u8int encoding) {
 	char* c = new char[m_length + 1];
 	memcpy((u8int*)c, m_string, m_length);

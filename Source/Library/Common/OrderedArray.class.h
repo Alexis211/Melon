@@ -1,7 +1,7 @@
 #ifndef DEF_ORDARRAY_CLASS
 #define DEF_ORDARRAY_CLASS
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 template <typename T>
 class OrderedArray {

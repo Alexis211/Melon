@@ -1,7 +1,7 @@
 #ifndef DEF_MUTEX_CLASS_H
 #define DEF_MUTEX_CLASS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 #define MUTEX_FALSE 0
 #define MUTEX_TRUE 1

@@ -1,5 +1,4 @@
 #include "Task.ns.h"
-#include <Library/Vector.class.h>
 #include <MemoryManager/PhysMem.ns.h>
 
 #define INVALID_TASK_MAGIC 0xBEEFFEED

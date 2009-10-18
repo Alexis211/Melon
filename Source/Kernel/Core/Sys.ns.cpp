@@ -1,5 +1,5 @@
 //This automatically includes Sys.ns.h
-#include <Core/common.wtf.h>
+#include <common.h>
 #include <Core/Log.ns.h>
 #include <VTManager/SimpleVT.class.h>
 #include <SyscallManager/IDT.ns.h>

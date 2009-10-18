@@ -1,4 +1,4 @@
-#include <Core/common.wtf.h>
+#include <common.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/Heap.class.h>
 

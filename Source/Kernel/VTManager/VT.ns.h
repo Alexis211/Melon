@@ -1,7 +1,7 @@
 #ifndef DEF_VT_NS_H
 #define DEF_VT_NS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 #include <VTManager/SimpleVT.class.h>
 
 namespace VT {

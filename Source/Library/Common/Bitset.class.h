@@ -1,7 +1,7 @@
 #ifndef DEF_BITSET_CLASS_H
 #define DEF_BITSET_CLASS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 #define INDEX_FROM_BIT(a) (a/(8*4))
 #define OFFSET_FROM_BIT(a) (a%(8*4))
