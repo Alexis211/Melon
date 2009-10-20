@@ -20,11 +20,16 @@ class VirtualTerminal : public Ressource {
 	Vector<Kbd::keypress_t> m_kbdbuff;	//Key press events buffer
 
 	//SYSCALLS :
+	static call_t m_callTable[];
 	u32int writeHexSC(u32int);
 	u32int writeDecSC(u32int, u32int);
 	u32int writeSC(u32int);
 	u32int putSC(u32int);
 	u32int readLineSC();
+	u32int setColorSC(u32int);
+	u32int setCursorLineSC(u32int);
+	u32int setCursorColSC(u32int);
+	u32int isBoxedSC();
 
 	public:
 	VirtualTerminal();

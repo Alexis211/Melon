@@ -46,6 +46,11 @@ class Process : public Ressource {
 
 	Vector<Thread*> m_threads;
 	SimpleList<File*> *m_fileDescriptors;
+
+	//System calls
+	static call_t m_callTable[];
+	u32int exitSC();
+	u32int allocPageSC(u32int);
 	
 	public:
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
@@ -68,10 +73,6 @@ class Process : public Ressource {
 	VirtualTerminal* getVirtualTerminal();
 	void setVirtualTerminal(VirtualTerminal* vt);
 	u32int getState() { return m_state; }
-
-	//System calls
-	u32int exitSC();
-	u32int allocPageSC(u32int);
 	u32int freePageSC(u32int);
 };
 

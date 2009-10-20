@@ -5,18 +5,18 @@
 class Process : public RessourceCaller {
 	public:
 	static Process get() {
-		u32int id = RessourceCaller::getObjId(PR_IFACE_OBJTYPE);
+		u32int id = RessourceCaller::getObjId(PRIF_OBJTYPE);
 		return Process(id);
 	}
-	Process(u32int id) : RessourceCaller(id, PR_IFACE_OBJTYPE) {}
+	Process(u32int id) : RessourceCaller(id, PRIF_OBJTYPE) {}
 
 	void exit() {
-		doCall(PR_IFACE_EXIT);
+		doCall(PRIF_EXIT);
 	}
 	void allocPage(u32int pos) {
-		doCall(PR_IFACE_ALLOCPAGE, pos);
+		doCall(PRIF_ALLOCPAGE, pos);
 	}
 	void freePage(u32int pos) {
-		doCall(PR_IFACE_FREEPAGE, pos);
+		doCall(PRIF_FREEPAGE, pos);
 	}
 };

@@ -6,6 +6,12 @@
 
 #include <Thread.iface.h>
 
+call_t Thread::m_callTable[] = {
+	CALL1(THIF_SLEEP, &Thread::sleepSC),
+	CALL1(THIF_FINISH, &Thread::finishSC),
+	CALL0(0, 0)
+};
+
 void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
 	if (thread->m_isKernel) {
 		asm volatile("sti");
@@ -51,11 +57,11 @@ void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
 	}
 }
 
-Thread::Thread() : Ressource(TH_IFACE_OBJTYPE) {	//Private constructor, does nothing
+Thread::Thread() : Ressource(THIF_OBJTYPE, m_callTable) {	//Private constructor, does nothing
 	m_xchgspace = 0;
 }
 
-Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) : Ressource(TH_IFACE_OBJTYPE) {
+Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) : Ressource(THIF_OBJTYPE, m_callTable) {
 	if (iskernel) {
 		setup(Task::getKernelProcess(), entry_point, data, true);
 	} else {
@@ -63,7 +69,7 @@ Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) : Ressourc
 	}
 }
 
-Thread::Thread(Process* process, thread_entry_t entry_point, void* data) : Ressource(TH_IFACE_OBJTYPE) {
+Thread::Thread(Process* process, thread_entry_t entry_point, void* data) : Ressource(THIF_OBJTYPE, m_callTable) {
 	setup(process, entry_point, data, false);
 }
 
@@ -81,9 +87,6 @@ Thread::~Thread() {
 }
 
 void Thread::setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel) {
-	addCall1(TH_IFACE_SLEEP, (call1)&Thread::sleepSC);
-	addCall1(TH_IFACE_FINISH, (call1)&Thread::finishSC);
-
 	m_xchgspace = 0;
 	m_isKernel = isKernel;
 	m_process = process;

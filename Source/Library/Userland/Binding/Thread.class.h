@@ -5,15 +5,15 @@
 class Thread : public RessourceCaller {
 	public:
 	static Thread get() {
-		u32int id = RessourceCaller::getObjId(TH_IFACE_OBJTYPE);
+		u32int id = RessourceCaller::getObjId(THIF_OBJTYPE);
 		return Thread(id);
 	}
-	Thread(u32int id) : RessourceCaller(id, TH_IFACE_OBJTYPE) {}
+	Thread(u32int id) : RessourceCaller(id, THIF_OBJTYPE) {}
 
 	void sleep(u32int msecs) {
-		doCall(TH_IFACE_SLEEP, msecs);
+		doCall(THIF_SLEEP, msecs);
 	}
 	void finish(u32int errcode) {
-		doCall(TH_IFACE_FINISH, errcode);
+		doCall(THIF_FINISH, errcode);
 	}
 };

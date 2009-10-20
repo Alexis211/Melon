@@ -12,6 +12,13 @@ typedef u32int (Ressource::*call3)(u32int, u32int, u32int);
 typedef u32int (Ressource::*call4)(u32int, u32int, u32int, u32int);
 typedef u32int (Ressource::*call5)(u32int, u32int, u32int, u32int, u32int);
 
+#define CALL0(id, ptr) {0, id, {(call0)ptr}}
+#define CALL1(id, ptr) {1, id, {c1: (call1)ptr}}
+#define CALL2(id, ptr) {2, id, {c2: (call2)ptr}}
+#define CALL3(id, ptr) {3, id, {c3: (call3)ptr}}
+#define CALL4(id, ptr) {4, id, {c4: (call4)ptr}}
+#define CALL5(id, ptr) {5, id, {c5: (call5)ptr}}
+
 struct call_t {
 	u8int params;
 	u8int id;
@@ -32,18 +39,13 @@ class Ressource {
 	
 	u32int m_id;
 	u32int m_type;
-	SimpleList<call_t> *m_calls;
+	SimpleList<call_t*> *m_callTables;
 
 	protected:
-	Ressource(u8int type);
+	Ressource(u8int type, call_t* callTable = 0);
 	~Ressource();
 
-	void addCall0(u8int id, call0 c);
-	void addCall1(u8int id, call1 c);
-	void addCall2(u8int id, call2 c);
-	void addCall3(u8int id, call3 c);
-	void addCall4(u8int id, call4 c);
-	void addCall5(u8int id, call5 c);
+	void addCallTable(call_t* callTable);
 
 	public:
 	u32int doCall(u8int id, u32int a, u32int b, u32int c, u32int d, u32int e);

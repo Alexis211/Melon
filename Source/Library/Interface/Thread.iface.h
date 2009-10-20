@@ -1,8 +1,8 @@
 #ifndef DEF_THREAD_IFACE_H
 #define DEF_THREAD_IFACE_H
 
-#define TH_IFACE_OBJTYPE 0x21
-#define TH_IFACE_SLEEP 0x01
-#define TH_IFACE_FINISH 0x02
+#define THIF_OBJTYPE 0x21
+#define THIF_SLEEP 0x01
+#define THIF_FINISH 0x02
 
 #endif

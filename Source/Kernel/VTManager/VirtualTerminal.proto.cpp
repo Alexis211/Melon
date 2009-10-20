@@ -4,13 +4,21 @@
 
 #include <VirtualTerminal.iface.h>
 
+call_t VirtualTerminal::m_callTable[] = {
+	CALL1(VTIF_WRITEHEX, &VirtualTerminal::writeHexSC),
+	CALL2(VTIF_WRITEDEC, &VirtualTerminal::writeDecSC),
+	CALL1(VTIF_WRITE, &VirtualTerminal::writeSC),
+	CALL1(VTIF_PUT, &VirtualTerminal::putSC),
+	CALL0(VTIF_READLINE, &VirtualTerminal::readLineSC),
+	CALL1(VTIF_SETCOLOR, &VirtualTerminal::setColorSC),
+	CALL1(VTIF_SETCSRLINE, &VirtualTerminal::setCursorLineSC),
+	CALL1(VTIF_SETCSRCOL, &VirtualTerminal::setCursorColSC),
+	CALL0(VTIF_ISBOXED, &VirtualTerminal::isBoxedSC),
+	CALL0(0, 0)
+};
+
 VirtualTerminal::VirtualTerminal() : 
-	Ressource(VT_IFACE_OBJTYPE), m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {
-	addCall1(VT_IFACE_WRITEHEX, (call1)&VirtualTerminal::writeHexSC);
-	addCall2(VT_IFACE_WRITEDEC, (call2)&VirtualTerminal::writeDecSC);
-	addCall1(VT_IFACE_WRITE, (call1)&VirtualTerminal::writeSC);
-	addCall1(VT_IFACE_PUT, (call1)&VirtualTerminal::putSC);
-	addCall0(VT_IFACE_READLINE, (call0)&VirtualTerminal::readLineSC);
+	Ressource(VTIF_OBJTYPE, m_callTable), m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {
 }
 
 VirtualTerminal::~VirtualTerminal() {

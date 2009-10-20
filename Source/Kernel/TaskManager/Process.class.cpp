@@ -9,7 +9,14 @@ namespace Mem {
 	extern Heap kheap;
 }
 
-Process::Process() : Ressource(PR_IFACE_OBJTYPE) {	//Private constructor, does nothing
+call_t Process::m_callTable[] = {
+	CALL0(PRIF_EXIT, &Process::exitSC),
+	CALL1(PRIF_ALLOCPAGE, &Process::allocPageSC),
+	CALL1(PRIF_FREEPAGE, &Process::freePageSC),
+	CALL0(0, 0)
+};
+
+Process::Process() : Ressource(PRIF_OBJTYPE, m_callTable) {	//Private constructor, does nothing
 }
 
 Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
@@ -54,10 +61,7 @@ Process* Process::run(String filename, FSNode* cwd, u32int uid) {
 	}
 }
 
-Process::Process(String cmdline, u32int uid) : Ressource(PR_IFACE_OBJTYPE) {
-	addCall0(PR_IFACE_EXIT, (call0)&Process::exitSC);
-	addCall1(PR_IFACE_ALLOCPAGE, (call1)&Process::allocPageSC);
-	addCall1(PR_IFACE_FREEPAGE, (call1)&Process::freePageSC);
+Process::Process(String cmdline, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTable) {
 	m_pid = Task::nextPid();
 	m_cmdline = cmdline;
 	m_retval = 0;

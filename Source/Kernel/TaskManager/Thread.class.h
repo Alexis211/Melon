@@ -37,6 +37,11 @@ class Thread : public Ressource {
 
 	void setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel);
 
+	//Syscalls
+	static call_t m_callTable[];
+	u32int sleepSC(u32int msecs);
+	u32int finishSC(u32int errcode);
+
 	public:
 	Thread(thread_entry_t entry_point, void* data, bool iskernel = false);	//Assumes process is current process, or is kprocess if isk
 	Thread(Process* process, thread_entry_t entry_point, void* data);
@@ -63,10 +68,6 @@ class Thread : public Ressource {
 		}
 		return false;
 	}
-
-	//Syscalls
-	u32int sleepSC(u32int msecs);
-	u32int finishSC(u32int errcode);
 };
 
 #endif
