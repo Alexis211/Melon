@@ -2,6 +2,7 @@
 #include <VTManager/SimpleVT.class.h>
 #include <DeviceManager/Dev.ns.h>
 #include <TaskManager/Task.ns.h>
+#include <SyscallManager/Res.ns.h>
 
 using namespace Sys; 	//For outb
 
@@ -55,6 +56,7 @@ extern "C" void irq13();
 extern "C" void irq14();
 extern "C" void irq15();
 
+extern "C" void int64();		//Main syscall
 extern "C" void int65();		//Syscall to request a task switch
 extern "C" void int66();		//Syscall to signal that thread ended
 
@@ -73,6 +75,23 @@ extern "C" void interrupt_handler(registers_t regs) {
 		Dev::handleIRQ(regs, (regs.int_no - 32));
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
+	if (regs.int_no == 64) {
+		u32int res = (regs.eax >> 8);
+		u8int wat = (regs.eax & 0xFF);
+		if (res == 0xFFFFFF) {
+			if (regs.eax == 0xFFFFFF01) {
+				Task::currProcess()->getVirtualTerminal()->put(WChar(regs.ebx));
+			} else if (regs.eax == 0xFFFFFF02) {
+				Task::currThread()->sleep(regs.ebx);
+			} else if (regs.eax == 0xFFFFFF03) {
+				Task::currProcess()->getVirtualTerminal()->writeHex(regs.ebx);
+			}
+		} else {
+			regs.eax = Res::call(res, wat, regs.ebx, regs.ecx, regs.edx, regs.edi, regs.esi);
+		}
+		//Some syscalls have maybee modified current page directory, set it back to one for current process
+		Task::currProcess()->getPagedir()->switchTo();
+	}
 	if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
 		Task::currentThreadExits(regs.eax);	//DO NOT COUNT ON COMMING BACK FROM HERE
 	}
@@ -89,7 +108,7 @@ void setGate(u8int num, u32int base, u16int sel, u8int flags) {
 	idt_entries[num].base_hi = (base >> 16) & 0xFFFF;
 
 	idt_entries[num].sel = sel;
-	idt_entries[num].flags = flags;
+	idt_entries[num].flags = flags | 0x60;
 	idt_entries[num].always0 = 0;
 }
 
@@ -161,6 +180,7 @@ void init() {
 	setGate(46, (u32int)irq14, 0x08, 0x8E);
 	setGate(47, (u32int)irq15, 0x08, 0x8E);
 
+	setGate(64, (u32int)int64, 0x08, 0x8E);
 	setGate(65, (u32int)int65, 0x08, 0x8E);
 	setGate(66, (u32int)int66, 0x08, 0x8E);
 	

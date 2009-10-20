@@ -2,12 +2,26 @@
 #include <TaskManager/Task.ns.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <VFS/File.class.h>
+#include <Linker/Binary.proto.h>
+#include <Process.iface.h>
 
 namespace Mem {
 	extern Heap kheap;
 }
 
-Process::Process() {	//Private constructor, does nothing
+call_t Process::m_callTable[] = {
+	CALL0(PRIF_EXIT, &Process::exitSC),
+	CALL1(PRIF_ALLOCPAGE, &Process::allocPageSC),
+	CALL1(PRIF_FREEPAGE, &Process::freePageSC),
+	CALL0(0, 0)
+};
+
+u32int Process::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
+	if (wat == PRIF_SGETCPR) return Task::currProcess()->resId();
+	return (u32int) - 1;
+}
+
+Process::Process() : Ressource(PRIF_OBJTYPE, m_callTable) {	//Private constructor, does nothing
 }
 
 Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
@@ -35,13 +49,31 @@ Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	return p;
 }
 
-Process::Process(String cmdline, u32int uid) {
+Process* Process::run(String filename, FSNode* cwd, u32int uid) {
+	File file(filename, FM_READ, cwd);
+	if (!file.valid()) return 0;
+	Binary* b = Binary::load(file);
+	if (b == 0) return 0;
+	Process* p = new Process(filename, uid);
+	thread_entry_t e = b->toProcess(p);
+	delete b;
+	if (e != 0) {
+		new Thread(p, e, 0);
+		return p;
+	} else {
+		delete p;
+		return 0;
+	}
+}
+
+Process::Process(String cmdline, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTable) {
 	m_pid = Task::nextPid();
 	m_cmdline = cmdline;
 	m_retval = 0;
-	m_state = P_RUNNING;
+	m_state = P_STARTING;
 	m_uid = uid;
 	m_vt = Task::currProcess()->getVirtualTerminal();
+	m_fileDescriptors = 0;
 	//Create page directory and user heap
 	m_pagedir = new PageDirectory(kernelPageDirectory);
 	m_pagedir->switchTo();
@@ -56,6 +88,10 @@ Process::~Process() {
 	delete m_userHeap;
 }
 
+void Process::start() {
+	if (m_state == P_STARTING) m_state = P_RUNNING;
+}
+
 void Process::exit() {
 	for (u32int i = 0; i < m_threads.size(); i++) {
 		delete m_threads[i];
@@ -65,7 +101,7 @@ void Process::exit() {
 		iter->v()->close(false);
 		delete iter->v();
 	}
-	delete m_fileDescriptors; //Will recursively delete whole list
+	if (m_fileDescriptors != 0) delete m_fileDescriptors; //Will recursively delete whole list
 	m_state = P_FINISHED;
 }
 
@@ -76,7 +112,7 @@ void Process::registerThread(Thread* t) {
 
 void Process::threadFinishes(Thread* thread, u32int retval) {
 	// If it is the main thread of the process, or if it pagefaulted
-	if (thread == m_threads[0] or retval == E_PAGEFAULT) {
+	if (thread == m_threads[0] or retval == E_PAGEFAULT or retval == E_EXIT) {
 		exit();
 	} else {
 		//Simply unregister thread
@@ -109,4 +145,26 @@ VirtualTerminal* Process::getVirtualTerminal() {
 
 void Process::setVirtualTerminal(VirtualTerminal* vt) {
 	m_vt = vt;
+}
+
+u32int Process::exitSC() {
+	if (Task::currProcess() != this) return 1;
+	Task::currentThreadExits(E_EXIT);
+	return 0;
+}
+
+u32int Process::allocPageSC(u32int pos) {
+	if (Task::currProcess() != this) return 1;
+	if ((pos & 0x00000FFF) != 0) pos = (pos & 0xFFFFF000) + 0x1000;
+	if (pos >= 0xC0000000) return 1;
+	m_pagedir->allocFrame(pos, true, true);
+	return 0;
+}
+
+u32int Process::freePageSC(u32int pos) {
+	if (Task::currProcess() != this) return 1;
+	if ((pos & 0x00000FFF) != 0) pos = (pos & 0xFFFFF000) + 0x1000;
+	if (pos >= 0xC0000000) return 1;
+	m_pagedir->freeFrame(pos);
+	return 0;
 }

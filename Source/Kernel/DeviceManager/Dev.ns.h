@@ -2,7 +2,7 @@
 #define DEF_DEV_NS_H
 
 #include <Devices/Device.proto.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 
 namespace Dev {
 	void handleIRQ(registers_t regs, int irq);

@@ -1,23 +1,39 @@
 #ifndef DEF_VIRTUALTERMINAL_CLASS_H
 #define DEF_VIRTUALTERMINAL_CLASS_H
 
-#include <Core/common.wtf.h>
-#include <Library/String.class.h>
-#include <TaskManager/Mutex.class.h>
+#include <common.h>
+#include <String.class.h>
+#include <Mutex.class.h>
 #include <DeviceManager/Kbd.ns.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
+
+#include <SyscallManager/Ressource.class.h>
 
 struct vtchr {
 	u8int color;
 	WChar c;
 };
 
-class VirtualTerminal {
+class VirtualTerminal : public Ressource {
 	protected:
 	Mutex m_kbdMutex, m_kbdbuffMutex;
 	Vector<Kbd::keypress_t> m_kbdbuff;	//Key press events buffer
 
+	//SYSCALLS :
+	static call_t m_callTable[];
+	u32int writeHexSC(u32int);
+	u32int writeDecSC(u32int, u32int);
+	u32int writeSC(u32int);
+	u32int putSC(u32int);
+	u32int readLineSC();
+	u32int setColorSC(u32int);
+	u32int setCursorLineSC(u32int);
+	u32int setCursorColSC(u32int);
+	u32int isBoxedSC();
+
 	public:
+	static u32int scall(u8int, u32int, u32int, u32int, u32int);
+
 	VirtualTerminal();
 	virtual ~VirtualTerminal();
 

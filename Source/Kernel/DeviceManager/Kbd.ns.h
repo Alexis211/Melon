@@ -1,8 +1,8 @@
 #ifndef DEF_KBD_NS_H
 #define DEF_KBD_NS_H
 
-#include <Core/common.wtf.h>
-#include <Library/WChar.class.h>
+#include <common.h>
+#include <WChar.class.h>
 
 //Used by variable kbdstatus
 #define STATUS_SCRL 0x40

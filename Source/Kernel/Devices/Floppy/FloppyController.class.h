@@ -2,7 +2,7 @@
 #define DEF_FLOPPYCONTROLLER_CLASS_H
 
 #include <Devices/Device.proto.h>
-#include <TaskManager/Mutex.class.h>
+#include <Mutex.class.h>
 
 #define FLOPPY_DMALEN 0x4800	//This is one cylinder
 

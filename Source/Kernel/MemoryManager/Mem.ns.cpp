@@ -1,6 +1,7 @@
-#include <Core/common.wtf.h>
+#include <common.h>
 #include <MemoryManager/PhysMem.ns.h>
-#include <MemoryManager/Heap.class.h>
+#include <TaskManager/Task.ns.h>
+#include <Heap.class.h>
 
 namespace Mem {
 
@@ -19,7 +20,7 @@ void *kallocInternal(u32int sz, bool align) {
 	u32int temp = placementAddress;
 	placementAddress += sz;
 	for (u32int i = temp; i < placementAddress; i += 0x1000) {
-		if (pagingEnabled) kernelPageDirectory->allocFrame(i, true, false);
+		if (pagingEnabled) kernelPageDirectory->allocFrame(i, false, false);
 	}
 	return (void*)temp;
 }
@@ -39,15 +40,19 @@ void createHeap() {
 	kheap.create(heapStart, heapSize, heapIndexSize, kernelPageDirectory, false, false);
 }
 
-void *kalloc(u32int sz, bool align) {
+void *alloc(u32int sz, bool align) {
 	if (!kheap.usable()) return kallocInternal(sz, align);
 	if (align) return 0;
 
 	return kheap.alloc(sz);
 }
 
-void kfree(void *ptr) {
+void free(void *ptr) {
 	kheap.free(ptr);
+}
+
+void* mkXchgSpace(u32int sz) {
+	return Task::currThread()->mkXchgSpace(sz);
 }
 
 u32int kheapSize() {

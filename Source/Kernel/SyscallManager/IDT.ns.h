@@ -1,7 +1,7 @@
 #ifndef DEF_IDT_NS_H
 #define DEF_IDT_NS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 struct registers_t {
 	u32int ds;                  // Data segment selector

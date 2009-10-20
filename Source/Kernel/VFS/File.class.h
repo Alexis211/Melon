@@ -2,7 +2,7 @@
 #define DEF_FILE_CLASS_H
 
 #include <VFS/FileNode.class.h>
-#include <Library/ByteArray.class.h>
+#include <ByteArray.class.h>
 
 enum {
 	FM_READ = 0,		//Open for read, put cursor at beginning

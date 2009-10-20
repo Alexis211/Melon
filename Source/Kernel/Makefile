@@ -5,7 +5,7 @@ CXX = g++
 LD = ld
 LDFLAGS = -T Link.ld -Map Map.txt --oformat=elf32-i386
 CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I .
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON -D RANDOM_SEED=1`date +%N`LL
+CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -I ../Library/Interface -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL -g
 ASM = nasm
 ASMFLAGS = -f elf
  
@@ -14,11 +14,8 @@ Objects = Core/loader.wtf.o \
 		Core/kmain.wtf.o \
 		Core/cppsupport.wtf.o \
 		Core/Sys.ns.o \
-		Core/CMem.ns.o \
 		Core/Log.ns.o \
 		MemoryManager/Mem.ns.o \
-		MemoryManager/Heap.class.o \
-		MemoryManager/Heap-index.class.o \
 		MemoryManager/PhysMem.ns.o \
 		MemoryManager/GDT.wtf.o \
 		MemoryManager/GDT.ns.o \
@@ -32,30 +29,40 @@ Objects = Core/loader.wtf.o \
 		TaskManager/Thread.class.o \
 		TaskManager/Task.ns.o \
 		TaskManager/Task.wtf.o \
-		TaskManager/Mutex.class.o \
 		VTManager/VirtualTerminal.proto.o \
 		VTManager/SimpleVT.class.o \
 		VTManager/ScrollableVT.class.o \
 		VTManager/PipeVT.class.o \
 		VTManager/FileVT.class.o \
 		VTManager/VirtualTerminal-kbd.proto.o \
+		VTManager/VirtualTerminal-sc.proto.o \
 		VTManager/VT.ns.o \
 		Shell/KernelShell.class.o \
 		Shell/KernelShell-fs.class.o \
 		Shell/KernelShell-sys.class.o \
-		Library/Bitset.class.o \
-		Library/String.class.o \
-		Library/ByteArray.class.o \
-		Library/WChar.class.o \
-		Library/Rand.ns.o \
+		Linker/Binary.proto.o \
+		Linker/MelonBinary.class.o \
+		Linker/ElfBinary.class.o \
+		../Library/Common/Bitset.class.o \
+		../Library/Common/String.class.o \
+		../Library/Common/ByteArray.class.o \
+		../Library/Common/WChar.class.o \
+		../Library/Common/Rand.ns.o \
+		../Library/Common/CMem.ns.o \
+		../Library/Common/Heap.class.o \
+		../Library/Common/Heap-index.class.o \
+		../Library/Common/Mutex.class.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \
 		VFS/VFS.ns.o \
+		VFS/FSNode-sc.proto.o \
 		VFS/File.class.o \
 		VFS/TextFile.class.o \
 		VFS/DirectoryNode.class.o \
 		FileSystems/RamFS/RamFS.class.o \
 		SyscallManager/IDT.ns.o \
+		SyscallManager/Ressource.class.o \
+		SyscallManager/Res.ns.o \
 		SyscallManager/IDT.wtf.o \
 		Devices/Display/VGATextOutput.class.o \
 		Devices/Keyboard/PS2Keyboard.class.o \
@@ -89,6 +96,7 @@ clean:
 	rm -rf *.o
 	rm -rf */*.o
 	rm -rf */*/*.o
+	rm -rf ../Library/Common/*.o
  
 mrproper: clean
 	echo "* Removing executable : $(OutFile)"

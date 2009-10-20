@@ -2,17 +2,71 @@
 #include <TaskManager/Task.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
 #include <DeviceManager/Time.ns.h>
+#include <MemoryManager/GDT.ns.h>
+
+#include <Thread.iface.h>
+
+call_t Thread::m_callTable[] = {
+	CALL1(THIF_SLEEP, &Thread::sleepSC),
+	CALL1(THIF_FINISH, &Thread::finishSC),
+	CALL0(0, 0)
+};
+
+u32int Thread::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
+	if (wat == THIF_SGETCTH) return Task::currThread()->resId();
+	return (u32int) - 1;
+}
 
 void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
-	asm volatile("sti");
-	u32int ret = entry_point(data);	//Run !
-	asm volatile("mov %0, %%eax; int $66;" : : "r"(ret));	//Syscall for thread ending
+	if (thread->m_isKernel) {
+		asm volatile("sti");
+		u32int ret = entry_point(data);	//Run !
+		asm volatile("mov %0, %%eax; int $66;" : : "r"(ret));	//Syscall for thread ending
+	} else {
+		//Setup values on user stack
+		u32int *stack = (u32int*)((u32int)thread->m_userStack.addr + thread->m_userStack.size);
+		stack--;
+		*stack = (u32int)data;
+		stack--;
+		*stack = 0;
+		u32int esp = (u32int)stack, eip = (u32int)entry_point;
+		//Setup a false structure for returning from an interrupt :
+		//- update data segments to 0x23 = user data segment with RPL=3
+		//- mov esp in ebx and eip in ecx
+		//- push value for ss : 0x23 (user data seg rpl3)
+		//- push value for esp
+		//- push flags
+		//- update flags, set IF = 1 (interrupts flag)
+		//- push value for cs : 0x1B = user code segment with RPL=3
+		//- push eip
+		//- return from fake interrupt
+		asm volatile("				\
+				mov $0x23, %%ax;	\
+				mov %%ax, %%ds;		\
+				mov %%ax, %%es;		\
+				mov %%ax, %%fs;		\
+				mov %%ax, %%gs;		\
+									\
+				mov %0, %%ebx;		\
+				mov %1, %%ecx;		\
+				pushl $0x23;		\
+				pushl %%ebx;		\
+				pushf;				\
+				pop %%eax;			\
+				or $0x200, %%eax;	\
+				push %%eax;			\
+				pushl $0x1B;		\
+				push %%ecx;			\
+				iret;				\
+				" : : "r"(esp), "r"(eip));
+	}
 }
 
-Thread::Thread() {	//Private constructor, does nothing
+Thread::Thread() : Ressource(THIF_OBJTYPE, m_callTable) {	//Private constructor, does nothing
+	m_xchgspace = 0;
 }
 
-Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
+Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) : Ressource(THIF_OBJTYPE, m_callTable) {
 	if (iskernel) {
 		setup(Task::getKernelProcess(), entry_point, data, true);
 	} else {
@@ -20,22 +74,28 @@ Thread::Thread(thread_entry_t entry_point, void* data, bool iskernel) {
 	}
 }
 
-Thread::Thread(Process* process, thread_entry_t entry_point, void* data) {
+Thread::Thread(Process* process, thread_entry_t entry_point, void* data) : Ressource(THIF_OBJTYPE, m_callTable) {
 	setup(process, entry_point, data, false);
 }
 
 Thread::~Thread() {
 	Task::unregisterThread(this);
-	Mem::kfree(m_kernelStack.addr);
-	if (!m_isKernel) m_process->heap().free(m_userStack.addr);
+	Mem::free(m_kernelStack.addr);
+	m_process->getPagedir()->switchTo();
+	if (m_userStack.addr != 0) {
+		m_process->heap().free(m_userStack.addr);
+	}
+	if (m_xchgspace != 0) {
+		m_process->heap().free(m_xchgspace);
+	}
 	//Don't unregister thread in process, it has probably already been done
 }
 
 void Thread::setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel) {
-	DEBUG("new Thread :: setup");
+	m_xchgspace = 0;
 	m_isKernel = isKernel;
 	m_process = process;
-	m_kernelStack.addr = Mem::kalloc(STACKSIZE);
+	m_kernelStack.addr = Mem::alloc(STACKSIZE);
 	m_kernelStack.size = STACKSIZE;
 
 	if (m_isKernel) {
@@ -111,11 +171,11 @@ void Thread::handleException(registers_t regs, int no) {
 		*(m_process->m_vt) << "At:" << (u32int)faddr;
 
 		*(m_process->m_vt) << "\nThread finishing.\n";
-		finish(E_PAGEFAULT);
+		Task::currentThreadExits(E_PAGEFAULT);	//Calling this will setup a new stack
 		return;
 	}
 	*(m_process->m_vt) << "\nThread finishing.\n";
-	finish(E_UNHANDLED_EXCEPTION);
+	Task::currentThreadExits(E_UNHANDLED_EXCEPTION);
 }
 
 void Thread::setState(u32int esp, u32int ebp, u32int eip) {
@@ -124,11 +184,21 @@ void Thread::setState(u32int esp, u32int ebp, u32int eip) {
 	m_eip = eip;
 }
 
+void Thread::setKernelStack() {
+	GDT::tss_entry.esp0 = (u32int)(m_kernelStack.addr) + m_kernelStack.size;
+}
+
 u32int Thread::getEsp() { return m_esp; }
 u32int Thread::getEbp() { return m_ebp; }
 u32int Thread::getEip() { return m_eip; }
 
 Process* Thread::getProcess() { return m_process; }
+
+void* Thread::mkXchgSpace(u32int sz) {
+	if (m_xchgspace != 0) m_process->heap().free(m_xchgspace);
+	m_xchgspace = m_process->heap().alloc(sz);
+	return m_xchgspace;
+}
 
 void Thread::sleep(u32int msecs) {
 	m_state = T_SLEEPING;
@@ -145,6 +215,7 @@ void Thread::waitIRQ(u8int irq) {
 }
 
 bool Thread::runnable() {
+	if (m_process->getState() != P_RUNNING) return false;
 	if (m_state == T_RUNNING) return true;
 	if (m_state == T_SLEEPING and Time::time() >= waitfor.m_time) {
 		m_state = T_RUNNING;
@@ -152,3 +223,17 @@ bool Thread::runnable() {
 	}
 	return false;
 }
+
+u32int Thread::sleepSC(u32int msecs) {
+	if (this != Task::currThread()) return 1;
+	sleep(msecs);
+	return 0;
+}
+
+u32int Thread::finishSC(u32int errcode) {
+	if (this != Task::currThread()) return 1;
+	Task::currentThreadExits(errcode);
+	return 0;
+}
+
+

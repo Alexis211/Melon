@@ -1,7 +1,7 @@
 #ifndef DEF_PAGEALLOC_NS_H
 #define DEF_PAGEALLOC_NS_H
 
-#include <Core/common.wtf.h>
+#include <common.h>
 
 namespace PageAlloc {
 	void init();

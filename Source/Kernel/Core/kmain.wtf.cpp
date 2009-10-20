@@ -1,6 +1,6 @@
 //This file contains the kernel's main procedure
 
-#include <Core/common.wtf.h>
+#include <common.h>
 #include <Core/multiboot.wtf.h>
 
 #include <Devices/Display/VGATextOutput.class.h>
@@ -18,8 +18,8 @@
 #include <MemoryManager/GDT.ns.h>
 #include <TaskManager/Task.ns.h>
 #include <SyscallManager/IDT.ns.h>
-#include <Library/String.class.h>
-#include <Library/ByteArray.class.h>
+#include <String.class.h>
+#include <ByteArray.class.h>
 #include <VFS/Part.ns.h>
 #include <FileSystems/RamFS/RamFS.class.h>
 #include <VFS/FileNode.class.h>
@@ -169,7 +169,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	new KernelShell(cwd);	//No need to save that in a var, it is automatically destroyed anyways
 	Log::log(KL_STATUS, "kmain : Kernel shell launched");
-	kvt->unmap();
+	//kvt->unmap();
 
 	while (KernelShell::getInstances() > 0) {
 		Task::currThread()->sleep(100);

@@ -1,5 +1,5 @@
 //This file just contains a few methods required for some C++ things to work
-#include <Core/types.wtf.h>
+#include <types.h>
 
 extern "C" void __cxa_pure_virtual() {}	//Required when using abstract classes
 

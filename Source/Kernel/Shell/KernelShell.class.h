@@ -4,7 +4,7 @@
 #include <VTManager/VirtualTerminal.proto.h>
 #include <VFS/DirectoryNode.class.h>
 #include <TaskManager/Thread.class.h>
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 
 class KernelShell {
 	friend u32int shellRun(void* ks);
@@ -26,6 +26,7 @@ class KernelShell {
 	void mkdir(Vector<String>& args);
 	void rm(Vector<String>& args);
 	void wf(Vector<String>& args);
+	void run(Vector<String>& args);
 
 	//in KernelShell-sys
 	void devices(Vector<String>& args);

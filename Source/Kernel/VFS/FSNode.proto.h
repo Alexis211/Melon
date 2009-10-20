@@ -1,10 +1,13 @@
 #ifndef DEF_FSNODE_PROTO_H
 #define DEF_FSNODE_PROTO_H
 
-#include <Core/common.wtf.h>
-#include <Library/String.class.h>
+#include <common.h>
+#include <String.class.h>
 class FSNode;
 #include <VFS/FileSystem.proto.h>
+#include <SyscallManager/Ressource.class.h>
+
+#include <FSNode.iface.h>
 
 enum {
 	NT_FILE = 1,
@@ -13,18 +16,27 @@ enum {
 	NT_MOUNTPOINT = 4
 };
 
-class FSNode {
+class FSNode : public Ressource {
 	protected:
 	String m_name;
 	u64int m_length;
 	u32int m_permissions, m_uid, m_gid;
 	FileSystem *m_fs;
 	FSNode	*m_parent;
+
+	//Syscall related
+	static call_t m_callTable[];
+	u32int getNameSC();
+	u32int getLengthSC();
+	u32int typeSC();
+	u32int getParentSC();
 	
 	public:
+	static u32int scall(u8int, u32int, u32int, u32int, u32int);
+
 	FSNode(String name, FileSystem* fs, FSNode* parent, u64int length = 0, u32int permissions = 0777, 
 			u32int uid = 0, u32int gid = 0) :
-		m_name(name), m_length(length), m_permissions(permissions),
+		Ressource(FNIF_OBJTYPE, m_callTable), m_name(name), m_length(length), m_permissions(permissions),
 		m_uid(uid), m_gid(gid), m_fs(fs), m_parent(parent) {}
 	virtual ~FSNode() {}
 

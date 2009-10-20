@@ -1,4 +1,4 @@
-#include <Library/WChar.class.h>
+#include <WChar.class.h>
 
 struct melon_keymap_t {
 	WChar normal[128];

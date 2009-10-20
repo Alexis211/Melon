@@ -1,5 +1,5 @@
 #include "VT.ns.h"
-#include <Library/Vector.class.h>
+#include <Vector.class.h>
 #include <DeviceManager/Disp.ns.h>
 
 namespace VT {

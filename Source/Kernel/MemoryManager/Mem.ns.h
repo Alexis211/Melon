@@ -8,8 +8,10 @@ namespace Mem {
 	extern u32int placementAddress;
 
 	void createHeap();
-	void *kalloc(u32int sz, bool align = false);
-	void kfree(void *ptr);
+	void *alloc(u32int sz, bool align = false);
+	void free(void *ptr);
+
+	void* mkXchgSpace(u32int sz);	//This creates a space between userland and kernel land where data can be exchanged
 
 	u32int kheapSize(), kheapFree();
 }

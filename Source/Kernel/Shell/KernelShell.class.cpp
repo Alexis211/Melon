@@ -1,9 +1,10 @@
 #include "KernelShell.class.h"
 #include <VTManager/ScrollableVT.class.h>
 #include <DeviceManager/Kbd.ns.h>
-#include <Library/Rand.ns.h>
-#include <Library/SimpleList.class.h>
+#include <SimpleList.class.h>
+#include <MemoryManager/PhysMem.ns.h>
 #include <VFS/VFS.ns.h>
+#include <TaskManager/Task.ns.h>
 
 u32int KernelShell::m_instances = 0;
 
@@ -18,6 +19,7 @@ u32int shellRun(void* ks) {
 
 void KernelShell::setup(DirectoryNode* cwd, VirtualTerminal *vt) {
 	m_vt = vt;
+	Task::currProcess()->setVirtualTerminal(vt);
 	((ScrollableVT*)m_vt)->map(9);
 	Kbd::setFocus(m_vt);
 	m_cwd = cwd;
@@ -51,6 +53,7 @@ u32int KernelShell::run() {
 		{"mkdir", &KernelShell::mkdir},
 		{"rm",    &KernelShell::rm},
 		{"wf",    &KernelShell::wf},
+		{"run",	  &KernelShell::run},
 
 		{"devices", &KernelShell::devices},
 		{"loadkeys", &KernelShell::loadkeys},

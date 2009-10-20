@@ -1,6 +1,8 @@
 #include "KernelShell.class.h"
 #include <VFS/VFS.ns.h>
 #include <VFS/File.class.h>
+#include <TaskManager/Task.ns.h>
+#include <MemoryManager/PhysMem.ns.h>
 
 void KernelShell::ls(Vector<String>& args) {
 	DirectoryNode* d = m_cwd;
@@ -53,11 +55,11 @@ void KernelShell::cat(Vector<String>& args) {
 	for (u32int i = 1; i < args.size(); i++) {
 		File f(args[i], FM_READ, m_cwd);
 		if (f.valid()) {
-			u8int *buff = (u8int*)Mem::kalloc(f.length() + 1);
+			u8int *buff = (u8int*)Mem::alloc(f.length() + 1);
 			f.read(f.length(), buff);
 			buff[f.length()] = 0;
 			*m_vt << String((const char*) buff);
-			Mem::kfree(buff);
+			Mem::free(buff);
 		} else {
 			*m_vt << "Error reading from file " << args[i] << "\n";
 		}
@@ -99,6 +101,22 @@ void KernelShell::wf(Vector<String>& args) {
 			}
 		} else {
 			*m_vt << "Error openning file.\n";
+		}
+	}
+}
+
+void KernelShell::run(Vector<String>& args) {
+	if (args.size() == 1) {
+		*m_vt << "No app to run !\n";
+	} else {
+		Process* p = Process::run(args[1], m_cwd, 0);
+		if (p == 0) {
+			*m_vt << "Error while launching process.\n";
+		} else {
+			p->setVirtualTerminal(m_vt);
+			p->start();
+			while (p->getState() != P_FINISHED) Task::currThread()->sleep(10);
+			delete p;
 		}
 	}
 }

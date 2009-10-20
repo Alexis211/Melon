@@ -1,4 +1,6 @@
 *.swp
 *.o
+*.uo
+Init.rfs
 Source/Kernel/Map.txt
 Source/Kernel/Melon.ke

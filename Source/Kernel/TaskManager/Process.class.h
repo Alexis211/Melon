@@ -1,19 +1,23 @@
 #ifndef DEF_PROCESS_CLASS_H
 #define DEF_PROCESS_CLASS_H
 
-#include <Library/String.class.h>
-#include <Library/Vector.class.h>
-#include <Library/SimpleList.class.h>
+#include <String.class.h>
+#include <Vector.class.h>
+#include <SimpleList.class.h>
 #include <MemoryManager/PageDirectory.class.h>
-#include <MemoryManager/Heap.class.h>
+#include <Heap.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
+#include <VFS/File.class.h>
+
+#include <SyscallManager/Ressource.class.h>
 
 #define P_ZOMBIE 0
 #define P_RUNNING 1
-#define P_FINISHED 2
+#define P_STARTING 2
+#define P_FINISHED 3
 
 #define E_PAGEFAULT 0x0FFFFF00
-#define E_ABORTED 0x0FFFFF01
+#define E_EXIT 0x0FFFFF01
 #define E_UNHANDLED_EXCEPTION 0x0FFFFF02
 
 #define STACKSIZE 4096	//Could change
@@ -24,7 +28,7 @@
 class Thread;
 class File;
 
-class Process {
+class Process : public Ressource {
 	friend class Thread;
 
 	private:
@@ -42,14 +46,23 @@ class Process {
 
 	Vector<Thread*> m_threads;
 	SimpleList<File*> *m_fileDescriptors;
+
+	//System calls
+	static call_t m_callTable[];
+	u32int exitSC();
+	u32int allocPageSC(u32int);
 	
 	public:
+	static u32int scall(u8int, u32int, u32int, u32int, u32int);
+
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
+	static Process* run(String filename, FSNode* cwd, u32int uid);
 	Process(String cmdline, u32int uid);
 	~Process();
 
 	Heap& heap() { return *m_userHeap; }
 
+	void start();	//Starts thread execution - sets m_state to P_RUNNING if == P_STARTING
 	void exit();	//Exits properly process by killing all threads and deleting file descriptors
 	void registerThread(Thread* t);	//Called when a thread starts
 	void threadFinishes(Thread* thread, u32int retval); //Called when a thread finishes
@@ -61,7 +74,8 @@ class Process {
 
 	VirtualTerminal* getVirtualTerminal();
 	void setVirtualTerminal(VirtualTerminal* vt);
-
+	u32int getState() { return m_state; }
+	u32int freePageSC(u32int);
 };
 
 #endif

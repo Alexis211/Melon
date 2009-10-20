@@ -2,7 +2,7 @@
 #define DEF_DISP_NS_H
 
 #include <Devices/Display/Display.proto.h>
-#include <Library/WChar.class.h>
+#include <WChar.class.h>
 
 namespace Disp {
 	struct mode_t {

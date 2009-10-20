@@ -132,5 +132,5 @@ void SimpleVT::put(WChar c, bool updatecsr) {
 
 void SimpleVT::hexDump(u8int *ptr, u32int sz, bool addnl) {
 	if (m_cols < 76) return;	//Not enough space
-	VirtualTerminal::hexDump(ptr, sz, (m_cols == 76));
+	VirtualTerminal::hexDump(ptr, sz, (m_cols > 76));
 }

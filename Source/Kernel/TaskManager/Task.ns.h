@@ -3,7 +3,7 @@
 
 #include <TaskManager/Thread.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
-#include <Library/SimpleList.class.h>
+#include <SimpleList.class.h>
 
 namespace Task {
 	Thread* currThread();

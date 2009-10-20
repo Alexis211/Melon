@@ -1,5 +1,5 @@
 #include "PhysMem.ns.h"
-#include <Library/Bitset.class.h>
+#include <Bitset.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
 
 PageDirectory* kernelPageDirectory;
@@ -14,12 +14,12 @@ void initPaging(u32int mem_size) {
 	
 	frames = new Bitset(nframes);
 
-	kernelPageDirectory = new (Mem::kalloc(sizeof(PageDirectory), true)) PageDirectory();
+	kernelPageDirectory = new (Mem::alloc(sizeof(PageDirectory), true)) PageDirectory();
 
 	u32int i = 0xC0000000;
 	while (i < Mem::placementAddress) {
 		page_t *p2 = kernelPageDirectory->getPage(i, true);
-		allocFrame(p2, true, false);
+		allocFrame(p2, false, false);
 		i += 0x1000;
 	}
 	//Also map thoses pages at begning of virtual memory
@@ -28,7 +28,6 @@ void initPaging(u32int mem_size) {
 		kernelPageDirectory->tables[i] = kernelPageDirectory->tables[768 + i];
 	}
 	DEBUG_HEX((u32int)kernelPageDirectory->physicalAddr); DEBUG(" is page dir phys addr.");
-	//asm volatile("hlt");
 
 	kernelPageDirectory->switchTo();
 	DEBUG("Paging enabled !");

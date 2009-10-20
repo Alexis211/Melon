@@ -11,7 +11,7 @@
 
 typedef u32int(*thread_entry_t)(void*);
 
-class Thread {
+class Thread : public Ressource {
 	friend class Process;	//This might be useful
 	friend void runThread(Thread*, void*, thread_entry_t);
 
@@ -21,6 +21,8 @@ class Thread {
 	Process *m_process;	//Associated process
 	u32int m_esp, m_ebp, m_eip;
 	u8int m_state;	//Is one of T_* defined above
+
+	void* m_xchgspace;
 
 	union {		//What the thread might be waiting for
 		u32int m_time;
@@ -35,7 +37,14 @@ class Thread {
 
 	void setup(Process* process, thread_entry_t entry_point, void* data, bool isKernel);
 
+	//Syscalls
+	static call_t m_callTable[];
+	u32int sleepSC(u32int msecs);
+	u32int finishSC(u32int errcode);
+
 	public:
+	static u32int scall(u8int, u32int, u32int, u32int, u32int);
+
 	Thread(thread_entry_t entry_point, void* data, bool iskernel = false);	//Assumes process is current process, or is kprocess if isk
 	Thread(Process* process, thread_entry_t entry_point, void* data);
 	~Thread();
@@ -43,10 +52,13 @@ class Thread {
 	void handleException(registers_t regs, int no);
 
 	void setState(u32int esp, u32int ebp, u32int eip);
+	void setKernelStack();
 	u32int getEsp();
 	u32int getEbp();
 	u32int getEip();
 	Process* getProcess();
+
+	void* mkXchgSpace(u32int sz);
 
 	void sleep(u32int msecs);
 	void waitIRQ(u8int irq);
