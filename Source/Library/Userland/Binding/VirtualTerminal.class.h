@@ -37,8 +37,12 @@ class VirtualTerminal : public RessourceCaller {
 	bool isBoxed() {
 		return doCall(VTIF_ISBOXED) != 0;
 	}
-
 	void put(WChar c) {
 		doCall(VTIF_PUT, c);
 	}
+	
+	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }
+	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
+	inline VirtualTerminal& operator<<(s64int i) { writeDec(i); return *this; }
+	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 };

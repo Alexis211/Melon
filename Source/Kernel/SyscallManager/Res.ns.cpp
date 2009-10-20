@@ -3,6 +3,7 @@
 #include <VirtualTerminal.iface.h>
 #include <Process.iface.h>
 #include <Thread.iface.h>
+#include <FSNode.iface.h>
 #include <TaskManager/Task.ns.h>
 
 namespace Res {
@@ -18,6 +19,7 @@ static_call_t staticCalls[] = {
 	{VTIF_OBJTYPE, VirtualTerminal::scall},
 	{PRIF_OBJTYPE, Process::scall},
 	{THIF_OBJTYPE, Thread::scall},
+	{FNIF_OBJTYPE, FSNode::scall},
 	{0, 0}
 };
 

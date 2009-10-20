@@ -60,7 +60,7 @@ String String::unserialize(u32int w) {
 	return ret;
 }
 
-u32int String::serialize() {
+u32int String::serialize() const {
 	u32int* x = (u32int*)Mem::mkXchgSpace((m_length + 1) * sizeof(u32int));
 	x[0] = m_length;
 	for (u32int i = 0; i < m_length; i++) {

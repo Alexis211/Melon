@@ -10,7 +10,7 @@ class String : public BasicString<WChar> {
 	static String number(s32int number);
 
 	static String unserialize(u32int w);
-	u32int serialize();
+	u32int serialize() const;
 
 	String(const char* string, u8int encoding = UE_UTF8);
 	String() : BasicString<WChar>() {}

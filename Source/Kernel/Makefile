@@ -55,6 +55,7 @@ Objects = Core/loader.wtf.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \
 		VFS/VFS.ns.o \
+		VFS/FSNode-sc.proto.o \
 		VFS/File.class.o \
 		VFS/TextFile.class.o \
 		VFS/DirectoryNode.class.o \
