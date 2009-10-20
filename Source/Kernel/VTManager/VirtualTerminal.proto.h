@@ -32,6 +32,8 @@ class VirtualTerminal : public Ressource {
 	u32int isBoxedSC();
 
 	public:
+	static u32int scall(u8int, u32int, u32int, u32int, u32int);
+
 	VirtualTerminal();
 	virtual ~VirtualTerminal();
 

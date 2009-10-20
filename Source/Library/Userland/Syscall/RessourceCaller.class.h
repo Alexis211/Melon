@@ -21,7 +21,10 @@ class RessourceCaller {
 
 	protected:
 	RessourceCaller(u32int id, u32int type);
-	static u32int getObjId(u32int type);
+
+	//Static call -- a call specific to a class and not an object
+	static u32int sCall(u32int type, u8int wat, u32int a = 0, u32int b = 0, u32int c = 0, u32int d = 0);	
+
 	u32int doCall(u8int call, u32int a = 0, u32int b = 0, u32int c = 0, u32int d = 0, u32int e = 0);
 
 	public:

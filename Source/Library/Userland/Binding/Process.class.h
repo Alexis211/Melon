@@ -5,7 +5,7 @@
 class Process : public RessourceCaller {
 	public:
 	static Process get() {
-		u32int id = RessourceCaller::getObjId(PRIF_OBJTYPE);
+		u32int id = RessourceCaller::sCall(PRIF_OBJTYPE, PRIF_SGETCPR);
 		return Process(id);
 	}
 	Process(u32int id) : RessourceCaller(id, PRIF_OBJTYPE) {}

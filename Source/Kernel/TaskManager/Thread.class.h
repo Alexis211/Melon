@@ -43,6 +43,8 @@ class Thread : public Ressource {
 	u32int finishSC(u32int errcode);
 
 	public:
+	static u32int scall(u8int, u32int, u32int, u32int, u32int);
+
 	Thread(thread_entry_t entry_point, void* data, bool iskernel = false);	//Assumes process is current process, or is kprocess if isk
 	Thread(Process* process, thread_entry_t entry_point, void* data);
 	~Thread();

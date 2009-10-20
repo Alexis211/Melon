@@ -8,7 +8,7 @@
 class VirtualTerminal : public RessourceCaller {
 	public:
 	static VirtualTerminal get() {
-		u32int id = RessourceCaller::getObjId(VTIF_OBJTYPE);
+		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPRVT);
 		return VirtualTerminal(id);
 	}
 	VirtualTerminal(u32int id) : RessourceCaller(id, VTIF_OBJTYPE) {}

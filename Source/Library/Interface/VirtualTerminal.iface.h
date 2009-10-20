@@ -2,6 +2,10 @@
 #define DEF_VITRUALTERMINAL_IFACE_H
 
 #define VTIF_OBJTYPE 0x10
+
+//S = static, GET = get, PR = process, VT = virtualterminal
+#define VTIF_SGETPRVT 0
+
 #define VTIF_PUT 0x01
 #define VTIF_WRITEHEX 0x02
 #define VTIF_WRITEDEC 0x03

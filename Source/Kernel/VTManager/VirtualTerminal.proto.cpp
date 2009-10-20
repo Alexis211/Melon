@@ -1,6 +1,7 @@
 #include "VirtualTerminal.proto.h"
 #include <DeviceManager/Disp.ns.h>
 #include <VTManager/VT.ns.h>
+#include <TaskManager/Task.ns.h>
 
 #include <VirtualTerminal.iface.h>
 
@@ -16,6 +17,11 @@ call_t VirtualTerminal::m_callTable[] = {
 	CALL0(VTIF_ISBOXED, &VirtualTerminal::isBoxedSC),
 	CALL0(0, 0)
 };
+
+u32int VirtualTerminal::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
+	if (wat == VTIF_SGETPRVT) return Task::currProcess()->getVirtualTerminal()->resId();
+	return (u32int) - 1;
+}
 
 VirtualTerminal::VirtualTerminal() : 
 	Ressource(VTIF_OBJTYPE, m_callTable), m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {

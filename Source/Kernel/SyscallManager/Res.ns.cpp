@@ -7,6 +7,20 @@
 
 namespace Res {
 
+typedef u32int (*staticcall)(u8int, u32int, u32int, u32int, u32int);
+
+struct static_call_t {
+	u32int id;
+	staticcall call;
+};
+
+static_call_t staticCalls[] = {
+	{VTIF_OBJTYPE, VirtualTerminal::scall},
+	{PRIF_OBJTYPE, Process::scall},
+	{THIF_OBJTYPE, Thread::scall},
+	{0, 0}
+};
+
 Ressource** ressources = 0;
 u32int size = 0;
 
@@ -43,9 +57,9 @@ void unregisterRes(u32int id) {
 
 u32int call(u32int ressource, u8int wat, u32int a, u32int b, u32int c, u32int d, u32int e) {
 	if (ressource == 0xFFFFFE) {	//TODO : return ressource id for some stuff for current process
-		if (a == VTIF_OBJTYPE) return Task::currProcess()->getVirtualTerminal()->resId();
-		if (a == PRIF_OBJTYPE) return Task::currProcess()->resId();
-		if (a == THIF_OBJTYPE) return Task::currThread()->resId();
+		for (u32int i = 0; staticCalls[i].id != 0; i++) {
+			if (staticCalls[i].id == a) return staticCalls[i].call(wat, b, c, d, e);
+		}
 		return 0;
 	} else {
 		if (ressource > size or ressources[ressource] == 0) {

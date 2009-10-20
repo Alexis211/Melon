@@ -5,7 +5,7 @@
 class Thread : public RessourceCaller {
 	public:
 	static Thread get() {
-		u32int id = RessourceCaller::getObjId(THIF_OBJTYPE);
+		u32int id = RessourceCaller::sCall(THIF_OBJTYPE, THIF_SGETCTH);
 		return Thread(id);
 	}
 	Thread(u32int id) : RessourceCaller(id, THIF_OBJTYPE) {}

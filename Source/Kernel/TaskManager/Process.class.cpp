@@ -16,6 +16,11 @@ call_t Process::m_callTable[] = {
 	CALL0(0, 0)
 };
 
+u32int Process::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
+	if (wat == PRIF_SGETCPR) return Task::currProcess()->resId();
+	return (u32int) - 1;
+}
+
 Process::Process() : Ressource(PRIF_OBJTYPE, m_callTable) {	//Private constructor, does nothing
 }
 

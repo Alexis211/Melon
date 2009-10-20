@@ -12,6 +12,11 @@ call_t Thread::m_callTable[] = {
 	CALL0(0, 0)
 };
 
+u32int Thread::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
+	if (wat == THIF_SGETCTH) return Task::currThread()->resId();
+	return (u32int) - 1;
+}
+
 void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
 	if (thread->m_isKernel) {
 		asm volatile("sti");

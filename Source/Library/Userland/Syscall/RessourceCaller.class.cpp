@@ -7,8 +7,8 @@ RessourceCaller::RessourceCaller(u32int id, u32int type) {
 	if (m_type != type) m_type = 0;
 }
 
-u32int RessourceCaller::getObjId(u32int type) {
-	return syscall(0xFFFFFE00, type);
+u32int RessourceCaller::sCall(u32int type, u8int wat, u32int a, u32int b, u32int c, u32int d) {
+	return syscall(0xFFFFFE00 | wat, type, a, b, c, d);
 }
 
 u32int RessourceCaller::doCall(u8int call, u32int a, u32int b, u32int c, u32int d, u32int e) {

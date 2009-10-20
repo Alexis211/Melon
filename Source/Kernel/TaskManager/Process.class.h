@@ -53,6 +53,8 @@ class Process : public Ressource {
 	u32int allocPageSC(u32int);
 	
 	public:
+	static u32int scall(u8int, u32int, u32int, u32int, u32int);
+
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
 	static Process* run(String filename, FSNode* cwd, u32int uid);
 	Process(String cmdline, u32int uid);
