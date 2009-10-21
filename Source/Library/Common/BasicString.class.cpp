@@ -1,8 +1,8 @@
 #include <Vector.class.h>
 
-#define FREE if (m_string != 0) delete m_string;
-#define ALLOC m_string = new T[m_length];
-#define VRFY if (m_length == 0) { m_string = NULL; return; }
+#define BS_FREE if (m_string != 0) delete m_string;
+#define BS_ALLOC m_string = new T[m_length];
+#define BS_VRFY if (m_length == 0) { m_string = NULL; return; }
 
 using namespace CMem;
 
@@ -32,33 +32,33 @@ BasicString<T>::BasicString(const T value, u32int count) {
 
 template <typename T>
 BasicString<T>::~BasicString() {
-	FREE;
+	BS_FREE;
 }
 
 template <typename T>
 void BasicString<T>::affect(const BasicString<T> &other) {
-	FREE;
+	BS_FREE;
 	m_length = other.m_length;
-	VRFY;
-	ALLOC;
+	BS_VRFY;
+	BS_ALLOC;
 	memcpy((u8int*)m_string, (u8int*)(other.m_string), m_length * sizeof(T));
 }
 
 template <typename T>
 void BasicString<T>::affect(const T* string, u32int length) {
-	FREE;
+	BS_FREE;
 	m_length = length;
-	VRFY;
-	ALLOC;
+	BS_VRFY;
+	BS_ALLOC;
 	memcpy((u8int*)string, (u8int*)string, m_length * sizeof(T));
 }
 
 template <typename T>
 void BasicString<T>::affect(const T value, u32int count) {
-	FREE;
+	BS_FREE;
 	m_length = count;
-	VRFY;
-	ALLOC;
+	BS_VRFY;
+	BS_ALLOC;
 	for (u32int i = 0; i < count; i++) {
 		m_string[i] = value;
 	}
@@ -91,7 +91,7 @@ BasicString<T> &BasicString<T>::append(const BasicString<T> &other) {
 	for (u32int i = 0; i < other.m_length; i++) {
 		newdata[i + m_length] = other.m_string[i];
 	}
-	FREE;
+	BS_FREE;
 	m_string = newdata;
 	m_length += other.m_length;
 	return *this;
@@ -106,7 +106,7 @@ BasicString<T> &BasicString<T>::append(const T* string, u32int length) {
 	for (u32int i = 0; i < length; i++) {
 		newdata[i + m_length] = string[i];
 	}
-	FREE;
+	BS_FREE;
 	m_string = newdata;
 	m_length += length;
 	return *this;
@@ -118,7 +118,7 @@ BasicString<T> &BasicString<T>::append(const T other) {
 	for (u32int i = 0; i < m_length; i++) {
 		newdata[i] = m_string[i];
 	}
-	FREE;
+	BS_FREE;
 	m_string = newdata;
 	m_string[m_length] = other;
 	m_length++;
@@ -145,7 +145,7 @@ BasicString<T> BasicString<T>::concat(const T other) const {
 
 template <typename T>
 void BasicString<T>::clear() {
-	FREE;
+	BS_FREE;
 	m_string = 0;
 	m_length = 0;
 }

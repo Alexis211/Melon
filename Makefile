@@ -5,6 +5,8 @@ Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/Sample
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
 RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
+	Source/Kernel/Ressources/Configuration/Users:/System/Configuration/Users \
+	Source/Kernel/Ressources/Configuration/Groups:/System/Configuration/Groups \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
 	Source/Applications/SampleApps/asmdemo:/ad \
@@ -19,6 +21,7 @@ Floppy = Melon.img
 
 all:
 	for p in $(Projects); do \
+		echo "=> Building $$p"; \
 		make -C Source/$$p -s; \
 	done
 
@@ -26,16 +29,19 @@ $(Files): all
 
 rebuild:
 	for p in $(Projects); do \
+		echo "=> Building $$p"; \
 		make -C Source/$$p rebuild -s; \
 	done
 
 clean:
 	for p in $(Projects); do \
+		echo "=> Building $$p"; \
 		make -C Source/$$p clean -s; \
 	done
 
 mrproper:
 	for p in $(Projects); do \
+		echo "=> Building $$p"; \
 		make -C Source/$$p mrproper -s; \
 	done
 

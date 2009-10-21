@@ -34,7 +34,8 @@ class Process : public Ressource {
 	private:
 	Process(); //Creates an empty process, used by creatKernel()
 
-	u32int m_pid;
+	u32int m_pid;	//Process IDentifier
+	u32int m_ppid;	//Parent PID
 	String m_cmdline;
 	s32int m_retval;	//Can be either a standard return value or an E_* (see #defines above)
 	u8int m_state; 	//Is one of P_* defined above
@@ -50,7 +51,9 @@ class Process : public Ressource {
 	//System calls
 	static call_t m_callTable[];
 	u32int exitSC();
+	u32int getCmdlineSC();
 	u32int allocPageSC(u32int);
+	u32int freePageSC(u32int);
 	
 	public:
 	static u32int scall(u8int, u32int, u32int, u32int, u32int);
@@ -71,13 +74,15 @@ class Process : public Ressource {
 	void unregisterFileDescriptor(File* fd);
 
 	PageDirectory* getPagedir();
+	u32int getUid() { return m_uid; }
+	u32int getPid() { return m_pid; }
+	u32int getPpid() { return m_ppid; }
 
 	VirtualTerminal* getInVT();
 	VirtualTerminal* getOutVT();
 	void setInVT(VirtualTerminal* vt);
 	void setOutVT(VirtualTerminal* vt);
 	u32int getState() { return m_state; }
-	u32int freePageSC(u32int);
 };
 
 #endif

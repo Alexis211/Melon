@@ -17,6 +17,7 @@
 #include <MemoryManager/PageAlloc.ns.h>
 #include <MemoryManager/GDT.ns.h>
 #include <TaskManager/Task.ns.h>
+#include <UserManager/Usr.ns.h>
 #include <SyscallManager/IDT.ns.h>
 #include <String.class.h>
 #include <ByteArray.class.h>
@@ -163,6 +164,9 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	FloppyController::detect();
 	Log::log(KL_STATUS, "kmain : Floppy drives detected");
+
+	Usr::load();
+	Log::log(KL_STATUS, "kmain : User list loaded");
 
 	asm volatile("sti");
 	Log::log(KL_STATUS, "kmain : Interrupts enabled.");

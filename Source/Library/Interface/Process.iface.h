@@ -9,5 +9,8 @@
 #define PRIF_EXIT 0x01
 #define PRIF_ALLOCPAGE 0x02
 #define PRIF_FREEPAGE 0x03
+#define PRIF_GETPID 0x04
+#define PRIF_GETPPID 0x05
+#define PRIF_GETCMDLINE 0x06
 
 #endif

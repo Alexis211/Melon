@@ -13,6 +13,9 @@ call_t Process::m_callTable[] = {
 	CALL0(PRIF_EXIT, &Process::exitSC),
 	CALL1(PRIF_ALLOCPAGE, &Process::allocPageSC),
 	CALL1(PRIF_FREEPAGE, &Process::freePageSC),
+	CALL0(PRIF_GETPID, &Process::getPid),
+	CALL0(PRIF_GETPPID, &Process::getPpid),
+	CALL0(PRIF_GETCMDLINE, &Process::getCmdlineSC),
 	CALL0(0, 0)
 };
 
@@ -27,6 +30,7 @@ Process::Process() : Ressource(PRIF_OBJTYPE, m_callTable) {	//Private constructo
 Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	Process* p = new Process();
 	p->m_pid = 0;
+	p->m_ppid = 0;
 	p->m_cmdline = cmdline;
 	p->m_retval = 0;
 	p->m_state = P_RUNNING;
@@ -68,6 +72,7 @@ Process* Process::run(String filename, FSNode* cwd, u32int uid) {
 
 Process::Process(String cmdline, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTable) {
 	m_pid = Task::nextPid();
+	m_ppid = Task::currProcess()->getPid();
 	m_cmdline = cmdline;
 	m_retval = 0;
 	m_state = P_STARTING;
@@ -168,6 +173,11 @@ u32int Process::allocPageSC(u32int pos) {
 	if (pos >= 0xC0000000) return 1;
 	m_pagedir->allocFrame(pos, true, true);
 	return 0;
+}
+
+u32int Process::getCmdlineSC() {
+	if (Task::currProcess()->getPid() == m_pid or Task::currProcess()->getPid() == 0) return m_cmdline.serialize();
+	return (u32int) - 1;
 }
 
 u32int Process::freePageSC(u32int pos) {
