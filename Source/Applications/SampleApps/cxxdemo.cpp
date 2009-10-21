@@ -4,16 +4,15 @@
 #include <Binding/Thread.class.h>
 
 int main() {
-	VirtualTerminal x = VirtualTerminal::get();
-	String s = x.readLine();
-	x.write(s);
+	String s = invt.readLine();
+	outvt << s;
 	Thread t = Thread::get();
 	for (char c = ' '; c <= 'z'; c++) {
 		t.sleep((u32int)c / 4);
-		x.put(c);
+		outvt.put(c);
 	}
-	x.put("\n");
-	x.write("Salut les gens ! c'est le progrès !!!\nLe boeuf mort est juste là : ");
-	x.writeHex(0xDEADBEEF);
-	x.put("\n");
+	outvt << "\n";
+	outvt << "Salut les gens ! c'est le progrès !!!\nLe boeuf mort est juste là : ";
+	outvt << 0xDEADBEEF;
+	outvt << "\n";
 }

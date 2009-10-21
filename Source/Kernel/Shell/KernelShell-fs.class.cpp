@@ -113,7 +113,8 @@ void KernelShell::run(Vector<String>& args) {
 		if (p == 0) {
 			*m_vt << "Error while launching process.\n";
 		} else {
-			p->setVirtualTerminal(m_vt);
+			p->setInVT(m_vt);
+			p->setOutVT(m_vt);
 			p->start();
 			while (p->getState() != P_FINISHED) Task::currThread()->sleep(10);
 			delete p;

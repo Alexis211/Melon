@@ -40,7 +40,7 @@ class Process : public Ressource {
 	u8int m_state; 	//Is one of P_* defined above
 	PageDirectory* m_pagedir;
 	u32int m_uid;	//User ID
-	VirtualTerminal *m_vt;
+	VirtualTerminal *m_inVT, *m_outVT;
 
 	Heap *m_userHeap;
 
@@ -72,8 +72,10 @@ class Process : public Ressource {
 
 	PageDirectory* getPagedir();
 
-	VirtualTerminal* getVirtualTerminal();
-	void setVirtualTerminal(VirtualTerminal* vt);
+	VirtualTerminal* getInVT();
+	VirtualTerminal* getOutVT();
+	void setInVT(VirtualTerminal* vt);
+	void setOutVT(VirtualTerminal* vt);
 	u32int getState() { return m_state; }
 	u32int freePageSC(u32int);
 };

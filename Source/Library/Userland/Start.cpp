@@ -1,4 +1,5 @@
 #include <types.h>
+#include <Binding/VirtualTerminal.class.h>
 
 #include <Heap.class.h>
 
@@ -10,6 +11,8 @@ extern u32int start_ctors, end_ctors, start_dtors, end_dtors;
 
 Heap heap;
 
+VirtualTerminal invt(0), outvt(0);
+
 int main();
 
 extern "C" void start() {
@@ -19,6 +22,8 @@ extern "C" void start() {
     }
 
 	heap.create(0x40000000, 0x00100000, 0x00004000);	//Initially create a 1M heap with 16ko index
+	invt = VirtualTerminal::getIn(); outvt = VirtualTerminal::getOut();
+
 	u32int r = main();
 
 	//Call static destructors 

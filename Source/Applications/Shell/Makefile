@@ -6,7 +6,8 @@ CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I ../../Library/Co
 LD = ld
 LDFLAGS = -T ../../Library/Link.ld
 
-Objects = main.o
+Objects = main.o \
+		  Shell.ns.o
 OutFile = Shell
 
 all: $(OutFile)

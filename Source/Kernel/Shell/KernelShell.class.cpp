@@ -19,7 +19,8 @@ u32int shellRun(void* ks) {
 
 void KernelShell::setup(DirectoryNode* cwd, VirtualTerminal *vt) {
 	m_vt = vt;
-	Task::currProcess()->setVirtualTerminal(vt);
+	Task::currProcess()->setInVT(vt);
+	Task::currProcess()->setOutVT(vt);
 	((ScrollableVT*)m_vt)->map(9);
 	Kbd::setFocus(m_vt);
 	m_cwd = cwd;

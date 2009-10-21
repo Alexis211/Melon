@@ -80,11 +80,11 @@ extern "C" void interrupt_handler(registers_t regs) {
 		u8int wat = (regs.eax & 0xFF);
 		if (res == 0xFFFFFF) {
 			if (regs.eax == 0xFFFFFF01) {
-				Task::currProcess()->getVirtualTerminal()->put(WChar(regs.ebx));
+				Task::currProcess()->getOutVT()->put(WChar(regs.ebx));
 			} else if (regs.eax == 0xFFFFFF02) {
 				Task::currThread()->sleep(regs.ebx);
 			} else if (regs.eax == 0xFFFFFF03) {
-				Task::currProcess()->getVirtualTerminal()->writeHex(regs.ebx);
+				Task::currProcess()->getOutVT()->writeHex(regs.ebx);
 			}
 		} else {
 			regs.eax = Res::call(res, wat, regs.ebx, regs.ecx, regs.edx, regs.edi, regs.esi);
