@@ -152,7 +152,9 @@ void Thread::handleException(registers_t regs, int no) {
 		"", "", "",
 		"", ""};
 
-	*(m_process->m_vt) << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
+	VirtualTerminal &vt = *(m_process->m_outVT);
+
+	vt << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
 		(u32int)regs.eip << "\n:: " << exceptions[no];
 	if (m_isKernel) PANIC_DUMP("Exception in kernel thread", &regs);
 
@@ -163,18 +165,18 @@ void Thread::handleException(registers_t regs, int no) {
 		int rsvd = regs.err_code & 0x8;
 		u32int faddr;
 		asm volatile("mov %%cr2, %0" : "=r"(faddr));
-		*(m_process->m_vt) << "\n   ";
-		if (present) *(m_process->m_vt) << "Present ";
-		if (rw) *(m_process->m_vt) << "R/W ";
-		if (us) *(m_process->m_vt) << "User ";
-		if (rsvd) *(m_process->m_vt) << "Rsvd ";
-		*(m_process->m_vt) << "At:" << (u32int)faddr;
+		vt << "\n   ";
+		if (present) vt << "Present ";
+		if (rw) vt << "R/W ";
+		if (us) vt << "User ";
+		if (rsvd) vt << "Rsvd ";
+		vt << "At:" << (u32int)faddr;
 
-		*(m_process->m_vt) << "\nThread finishing.\n";
+		vt << "\nThread finishing.\n";
 		Task::currentThreadExits(E_PAGEFAULT);	//Calling this will setup a new stack
 		return;
 	}
-	*(m_process->m_vt) << "\nThread finishing.\n";
+	vt << "\nThread finishing.\n";
 	Task::currentThreadExits(E_UNHANDLED_EXCEPTION);
 }
 

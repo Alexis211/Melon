@@ -3,8 +3,9 @@
 
 #define VTIF_OBJTYPE 0x10
 
-//S = static, GET = get, PR = process, VT = virtualterminal
-#define VTIF_SGETPRVT 0
+//S = static, GET = get, PR = process, IN/OUT : in/out, VT = virtualterminal
+#define VTIF_SGETPRINVT 6
+#define VTIF_SGETPROUTVT 7
 
 #define VTIF_PUT 0x01
 #define VTIF_WRITEHEX 0x02

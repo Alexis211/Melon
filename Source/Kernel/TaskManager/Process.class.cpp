@@ -33,7 +33,7 @@ Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	p->m_pagedir = kernelPageDirectory;
 	p->m_uid = 0;
 	p->m_userHeap = &Mem::kheap;
-	p->m_vt = vt;
+	p->m_inVT = p->m_outVT = vt;
 	
 	Thread* t = new Thread();
 	t->m_process = p;
@@ -72,7 +72,8 @@ Process::Process(String cmdline, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 	m_retval = 0;
 	m_state = P_STARTING;
 	m_uid = uid;
-	m_vt = Task::currProcess()->getVirtualTerminal();
+	m_inVT = Task::currProcess()->getInVT();
+	m_outVT = Task::currProcess()->getOutVT();
 	m_fileDescriptors = 0;
 	//Create page directory and user heap
 	m_pagedir = new PageDirectory(kernelPageDirectory);
@@ -139,12 +140,20 @@ PageDirectory* Process::getPagedir() {
 	return m_pagedir;
 }
 
-VirtualTerminal* Process::getVirtualTerminal() {
-	return m_vt;
+VirtualTerminal* Process::getInVT() {
+	return m_inVT;
 }
 
-void Process::setVirtualTerminal(VirtualTerminal* vt) {
-	m_vt = vt;
+VirtualTerminal* Process::getOutVT() {
+	return m_outVT;
+}
+
+void Process::setInVT(VirtualTerminal* vt) {
+	m_inVT = vt;
+}
+
+void Process::setOutVT(VirtualTerminal* vt) {
+	m_outVT = vt;
 }
 
 u32int Process::exitSC() {

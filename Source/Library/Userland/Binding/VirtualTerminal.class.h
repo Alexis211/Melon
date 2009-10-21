@@ -7,8 +7,12 @@
 
 class VirtualTerminal : public RessourceCaller {
 	public:
-	static VirtualTerminal get() {
-		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPRVT);
+	static VirtualTerminal getIn() {
+		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPRINVT);
+		return VirtualTerminal(id);
+	}
+	static VirtualTerminal getOut() {
+		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPROUTVT);
 		return VirtualTerminal(id);
 	}
 	VirtualTerminal(u32int id) : RessourceCaller(id, VTIF_OBJTYPE) {}
@@ -46,3 +50,5 @@ class VirtualTerminal : public RessourceCaller {
 	inline VirtualTerminal& operator<<(s64int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 };
+
+extern VirtualTerminal invt, outvt;

@@ -19,7 +19,8 @@ call_t VirtualTerminal::m_callTable[] = {
 };
 
 u32int VirtualTerminal::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
-	if (wat == VTIF_SGETPRVT) return Task::currProcess()->getVirtualTerminal()->resId();
+	if (wat == VTIF_SGETPRINVT) return Task::currProcess()->getInVT()->resId();
+	if (wat == VTIF_SGETPROUTVT) return Task::currProcess()->getOutVT()->resId();
 	return (u32int) - 1;
 }
 
