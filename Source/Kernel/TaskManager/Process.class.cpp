@@ -4,6 +4,7 @@
 #include <VFS/File.class.h>
 #include <Linker/Binary.proto.h>
 #include <Process.iface.h>
+#include <UserManager/Usr.ns.h>
 
 namespace Mem {
 	extern Heap kheap;
@@ -176,7 +177,7 @@ u32int Process::allocPageSC(u32int pos) {
 }
 
 u32int Process::getCmdlineSC() {
-	if (Task::currProcess()->getPid() == m_pid or Task::currProcess()->getPid() == 0) return m_cmdline.serialize();
+	if (Task::currProcess()->getUid() == m_uid or Usr::uid() == 0) return m_cmdline.serialize();
 	return (u32int) - 1;
 }
 

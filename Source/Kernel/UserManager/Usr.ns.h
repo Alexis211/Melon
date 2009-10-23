@@ -21,3 +21,5 @@ namespace Usr {
 };
 
 #endif
+
+#include <UserManager/User.class.h>
