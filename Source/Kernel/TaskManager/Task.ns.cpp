@@ -70,7 +70,7 @@ SimpleList<Thread*> *nextThread() {
 void doSwitch() {
 	if (currentThread == NULL or currentProcess == NULL) return;
 
-	u32int esp, ebp, eip, cr3;
+	u32int esp, ebp, eip;
 
 	asm volatile("mov %%esp, %0" : "=r"(esp));
 	asm volatile("mov %%ebp, %0" : "=r"(ebp));
@@ -91,7 +91,6 @@ void doSwitch() {
 	esp = t->getEsp();
 	ebp = t->getEbp();
 	eip = t->getEip();
-	cr3 = currentProcess->getPagedir()->physicalAddr;
 
 	asm volatile("cli");
 
@@ -101,10 +100,9 @@ void doSwitch() {
 			mov %0, %%ebp;	\
 			mov %1, %%esp;	\
 			mov %2, %%ecx;	\
-			mov %3, %%cr3;	\
 			mov $0x12345, %%eax;	\
 			jmp *%%ecx;"
-		: : "r"(ebp), "r"(esp), "r"(eip), "r"(cr3));
+		: : "r"(ebp), "r"(esp), "r"(eip));
 }
 
 void triggerSwitch() {

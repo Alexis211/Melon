@@ -4,6 +4,7 @@
 #include <common.h>
 
 struct registers_t {
+	u32int cr3;		//Page directory
 	u32int ds;                  // Data segment selector
 	u32int edi, esi, ebp, esp, ebx, edx, ecx, eax; // Pushed by pusha.
 	u32int int_no, err_code;    // Interrupt number and error code (if applicable)
