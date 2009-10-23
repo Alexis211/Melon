@@ -1,0 +1,16 @@
+Welcome ! It seems you are intrested in my Melon OS...
+
+** HOW TO BUILD MELON : **
+
+If you haven't yet downloaded the source code, then commit the GIT repository :
+$ git clone git://github.com/Alexis211/Melon.git
+
+Then, rebuild everything :
+$ make mrproper
+$ make
+
+Create the floppy image :
+$ make floppy
+
+And run it with Qemu :
+$ make qemu
