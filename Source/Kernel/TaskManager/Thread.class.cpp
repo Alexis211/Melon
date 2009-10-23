@@ -3,6 +3,7 @@
 #include <MemoryManager/PageAlloc.ns.h>
 #include <DeviceManager/Time.ns.h>
 #include <MemoryManager/GDT.ns.h>
+#include <UserManager/Usr.ns.h>
 
 #include <Thread.iface.h>
 
@@ -239,4 +240,6 @@ u32int Thread::finishSC(u32int errcode) {
 	return 0;
 }
 
-
+bool Thread::accessible() {
+	return (Usr::uid() == m_process->m_uid);
+}

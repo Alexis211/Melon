@@ -36,7 +36,7 @@ class Process : public Ressource {
 
 	u32int m_pid;	//Process IDentifier
 	u32int m_ppid;	//Parent PID
-	String m_cmdline;
+	Vector<String> m_arguments;
 	s32int m_retval;	//Can be either a standard return value or an E_* (see #defines above)
 	u8int m_state; 	//Is one of P_* defined above
 	PageDirectory* m_pagedir;
@@ -54,13 +54,14 @@ class Process : public Ressource {
 	u32int getCmdlineSC();
 	u32int allocPageSC(u32int);
 	u32int freePageSC(u32int);
+	bool accessible();
 	
 	public:
 	static u32int scall(u8int, u32int, u32int, u32int, u32int);
 
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
 	static Process* run(String filename, FSNode* cwd, u32int uid);
-	Process(String cmdline, u32int uid);
+	Process(String binfile, u32int uid);
 	~Process();
 
 	Heap& heap() { return *m_userHeap; }

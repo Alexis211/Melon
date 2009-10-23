@@ -83,7 +83,7 @@ struct WChar {
 		return v;
 	}
 
-	inline operator u32int () { return value; }
+	inline operator u32int () const { return value; }
 };
 
 #endif

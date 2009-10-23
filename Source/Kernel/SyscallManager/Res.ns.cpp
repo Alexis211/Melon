@@ -4,6 +4,7 @@
 #include <Process.iface.h>
 #include <Thread.iface.h>
 #include <FSNode.iface.h>
+#include <Sys.iface.h>
 #include <TaskManager/Task.ns.h>
 
 namespace Res {
@@ -20,6 +21,7 @@ static_call_t staticCalls[] = {
 	{PRIF_OBJTYPE, Process::scall},
 	{THIF_OBJTYPE, Thread::scall},
 	{FNIF_OBJTYPE, FSNode::scall},
+	{SYIF_IFID, Sys::scall},
 	{0, 0}
 };
 
@@ -67,7 +69,7 @@ u32int call(u32int ressource, u8int wat, u32int a, u32int b, u32int c, u32int d,
 		if (ressource > size or ressources[ressource] == 0) {
 			return (u32int) - 1;
 		} else {
-			return ressources[ressource]->doCall(wat, a, b, c, d, e);
+			return ressources[ressource]->call(wat, a, b, c, d, e);
 		}
 	}
 }

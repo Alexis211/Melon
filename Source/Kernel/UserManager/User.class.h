@@ -28,16 +28,19 @@ class User {
 	u32int getUid() { return m_uid; }
 	Group* getGroup() { return m_group; }
 	bool isInGroup(u32int gid) {
+		if (m_group->getGid() == gid) return true;
 		for (u32int i = 0; i < m_extraGroups.size(); i++)
 			if (m_extraGroups[i]->getGid() == gid) return true;
 		return false;
 	}
 	bool isInGroup(String name) {
+		if (m_group->getName() == name) return true;
 		for (u32int i = 0; i < m_extraGroups.size(); i++)
 			if (m_extraGroups[i]->getName() == name) return true;
 		return false;
 	}
 	bool isInGroup(Group* g) {
+		if (g == m_group) return true;
 		for (u32int i = 0; i < m_extraGroups.size(); i++)
 			if (m_extraGroups[i] == g) return true;
 		return false;

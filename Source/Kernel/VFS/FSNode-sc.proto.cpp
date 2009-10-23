@@ -1,11 +1,16 @@
 #include "FSNode.proto.h"
 #include <VFS/VFS.ns.h>
+#include <UserManager/Usr.ns.h>
 
 call_t FSNode::m_callTable[] = {
 	CALL0(FNIF_GETNAME, &FSNode::getNameSC),
 	CALL0(FNIF_TYPE, &FSNode::typeSC),
 	CALL0(FNIF_GETPARENT, &FSNode::getParentSC),
 	CALL0(FNIF_GETLENGTH, &FSNode::getLengthSC),
+	CALL0(FNIF_GETUID, &FSNode::getUid),
+	CALL0(FNIF_GETGID, &FSNode::getGid),
+	CALL0(FNIF_GETPERM, &FSNode::getPermissions),
+	CALL0(FNIF_GETPATH, &FSNode::getPathSC),
 	CALL0(0, 0)
 };
 
@@ -31,4 +36,39 @@ u32int FSNode::getLengthSC() {
 u32int FSNode::getParentSC() {
 	if (m_parent != 0) return m_parent->resId();
 	return (u32int) - 1;
+}
+
+u32int FSNode::getPathSC() {
+	return VFS::path(this).serialize();
+}
+
+bool FSNode::readable(User* user) {
+	if (user == 0) user = Usr::user();
+	if (user->getUid() == m_uid)
+		return ((m_permissions >> 6) & 4) != 0;
+	if (user->isInGroup(m_gid))
+		return ((m_permissions >> 3) & 4) != 0;
+	return (m_permissions & 4) != 0;
+}
+
+bool FSNode::writable(User* user) {
+	if (user == 0) user = Usr::user();
+	if (user->getUid() == m_uid)
+		return ((m_permissions >> 6) & 2) != 0;
+	if (user->isInGroup(m_gid))
+		return ((m_permissions >> 3) & 2) != 0;
+	return (m_permissions & 2) != 0;
+}
+
+bool FSNode::runnable(User* user) {
+	if (user == 0) user = Usr::user();
+	if (user->getUid() == m_uid)
+		return ((m_permissions >> 6) & 1) != 0;
+	if (user->isInGroup(m_gid))
+		return ((m_permissions >> 3) & 1) != 0;
+	return (m_permissions & 1) != 0;
+}
+
+bool FSNode::accessible() {
+	return readable();
 }

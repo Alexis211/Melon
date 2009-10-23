@@ -16,7 +16,7 @@ all: $(OutFile)
 rebuild: mrproper all
 
 $(OutFile): $(Objects)
-	echo "* Linking $@.o..."
+	echo "* Linking $@..."
 	$(LD) $(LDFLAGS) ../../Library/Melon.o $^ -o $@
 
 %.o: %.cpp

@@ -3,6 +3,8 @@
 #include <Core/Log.ns.h>
 #include <VTManager/SimpleVT.class.h>
 #include <SyscallManager/IDT.ns.h>
+#include <Sys.iface.h>
+#include <UserManager/Usr.ns.h>
 
 #define DEBUGVT(x) SimpleVT *x = new SimpleVT(4, 56, 0, 15); x->map(); x->put('\n');
 
@@ -122,20 +124,29 @@ void panic_assert(char *file, u32int line, char *desc) {
 	while (1) asm volatile("hlt"); //Enter infinite loop for halt
 }
 
-void reboot() {
+void shutdown_cleanup() {
 	asm volatile("cli");
 	Log::close();
+}
+
+void reboot() {
+	shutdown_cleanup();
 	outb(0x64, 0xFE);
 }
 
 void halt() {
-	asm volatile("cli");
-	Log::close();
+	shutdown_cleanup();
 	String message("MELON SEZ : KTHXBYE, U CAN NAOW TURNZ OFF UR COMPUTER.");
 	SimpleVT vt(3, message.size() + 16, 7, 6);
 	vt.map();
 	vt << "\n\t" << message;
 	while (1) asm volatile("cli");
+}
+
+u32int scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
+	if (wat == SYIF_HALT && ISROOT) halt();
+	if (wat == SYIF_REBOOT && ISROOT) reboot();
+	return (u32int) - 1;
 }
 
 }

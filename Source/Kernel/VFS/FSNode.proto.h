@@ -3,18 +3,13 @@
 
 #include <common.h>
 #include <String.class.h>
+
 class FSNode;
 #include <VFS/FileSystem.proto.h>
 #include <SyscallManager/Ressource.class.h>
 
 #include <FSNode.iface.h>
-
-enum {
-	NT_FILE = 1,
-	NT_DIRECTORY = 2,
-	NT_SYMLINK = 3,
-	NT_MOUNTPOINT = 4
-};
+#include <UserManager/User.class.h>
 
 class FSNode : public Ressource {
 	protected:
@@ -30,6 +25,8 @@ class FSNode : public Ressource {
 	u32int getLengthSC();
 	u32int typeSC();
 	u32int getParentSC();
+	u32int getPathSC();
+	bool accessible();
 	
 	public:
 	static u32int scall(u8int, u32int, u32int, u32int, u32int);
@@ -51,6 +48,11 @@ class FSNode : public Ressource {
 	u32int getGid() { return m_gid; }
 	FileSystem *getFS() { return m_fs; }
 	FSNode* getParent() { return m_parent; }
+
+	//Helper functions
+	bool readable(User* user = 0);
+	bool writable(User* user = 0);
+	bool runnable(User* user = 0);
 
 	public:
 	bool setName(String name) { 

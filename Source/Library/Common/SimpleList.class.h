@@ -48,6 +48,7 @@ class SimpleList {
 	}
 
 	SimpleList<T>* removeOnce(const T& value) {
+		if (this == 0) return 0;
 		if (value == m_value) return delThis();
 		for (SimpleList<T> *iter = this; iter->next() != 0; iter = iter->next()) {
 			if (iter->next()->v() == value) {

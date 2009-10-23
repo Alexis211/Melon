@@ -32,6 +32,7 @@ namespace Sys {
 	void bochs_output_hex(u32int i);
 	void reboot();
 	void halt();
+	u32int scall(u8int, u32int, u32int, u32int, u32int);	//System call handler
 }
 
 #endif

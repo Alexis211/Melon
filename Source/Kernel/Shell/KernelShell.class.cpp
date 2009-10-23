@@ -67,7 +67,7 @@ u32int KernelShell::run() {
 	
 	while (1) {
 		m_vt->setColor(SHELL_LIGHTCOLOR);
-		*m_vt << VFS::path(m_cwd) << " : ";
+		*m_vt << VFS::path(m_cwd) << " # ";
 		m_vt->setColor(SHELL_ENTRYCOLOR);
 		Vector<String> tokens = m_vt->readLine().split(" ");
 		m_vt->setColor(SHELL_FGCOLOR);
@@ -99,7 +99,7 @@ u32int KernelShell::run() {
 			while (commands[i].name != 0) {
 				if (tokens[0] == (const char*)commands[i].name) {
 					found = true;
-					if (commands[i].name != 0) {
+					if (commands[i].cmd != 0) {
 						(this->*(commands[i].cmd))(tokens);	//Call command
 					} else {
 						*m_vt << "This command isn't enabled... yet !\n";

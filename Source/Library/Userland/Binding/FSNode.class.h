@@ -20,4 +20,16 @@ class FSNode : public RessourceCaller {
 	u64int getLength() {
 		return *((u64int*)doCall(FNIF_GETLENGTH));
 	}
+	u32int getUid() {
+		return doCall(FNIF_GETUID);
+	}
+	u32int getGid() {
+		return doCall(FNIF_GETGID);
+	}
+	u32int getPerm() {
+		return doCall(FNIF_GETPERM);
+	}
+	String path() {
+		return String::unserialize(doCall(FNIF_GETPATH));
+	}
 };

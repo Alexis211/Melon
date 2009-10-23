@@ -151,6 +151,14 @@ void BasicString<T>::clear() {
 }
 
 template <typename T>
+bool BasicString<T>::contains(const T& chr) const {
+	for (u32int i = 0; i < m_length; i++) {
+		if (m_string[i] == chr) return true;
+	}
+	return false;
+}
+
+template <typename T>
 Vector< BasicString<T> > BasicString<T>::split(T sep) const {
 	Vector< BasicString<T> > ret;
 	ret.push(BasicString<T>());

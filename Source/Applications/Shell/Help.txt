@@ -1,0 +1,16 @@
+	** Command list for Melon's shell **
+
+  Command   Description                 Required groups
+ - help     shows this
+ - reboot   reboots your computer       root
+ - halt     shuts down your computer    root
+ - loadkeys loads a new keymap          root
+ - free     shows free amount of RAM
+ - uptime   shows computer's uptime
+ - run      runs a binary file
+ - wf       writes text to a file
+
+The shell also supports basic UNIX-like commands :
+ ls, cd, cat, pwd, rm, mkdir
+
+The terminal supports scrolling with shift+{up,pgdown,pgup}

@@ -32,7 +32,7 @@ Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
 	Process* p = new Process();
 	p->m_pid = 0;
 	p->m_ppid = 0;
-	p->m_cmdline = cmdline;
+	p->m_arguments = cmdline.split(" ");
 	p->m_retval = 0;
 	p->m_state = P_RUNNING;
 	p->m_pagedir = kernelPageDirectory;
@@ -71,10 +71,10 @@ Process* Process::run(String filename, FSNode* cwd, u32int uid) {
 	}
 }
 
-Process::Process(String cmdline, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTable) {
+Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTable), m_arguments() {
 	m_pid = Task::nextPid();
 	m_ppid = Task::currProcess()->getPid();
-	m_cmdline = cmdline;
+	m_arguments.push(binfile);
 	m_retval = 0;
 	m_state = P_STARTING;
 	m_uid = uid;
@@ -177,7 +177,20 @@ u32int Process::allocPageSC(u32int pos) {
 }
 
 u32int Process::getCmdlineSC() {
-	if (Task::currProcess()->getUid() == m_uid or Usr::uid() == 0) return m_cmdline.serialize();
+	if (Usr::uid() == m_uid or ISROOT) {
+		String cmdline;
+		for (u32int i = 0; i < m_arguments.size(); i++) {
+			if (i != 0) cmdline += " ";
+			if (m_arguments[i].contains(" ")) {
+				cmdline += "'";
+				cmdline += m_arguments[i];
+				cmdline += "'";
+			} else {
+				cmdline += m_arguments[i];
+			}
+		}
+		return cmdline.serialize();
+	}
 	return (u32int) - 1;
 }
 
@@ -187,4 +200,7 @@ u32int Process::freePageSC(u32int pos) {
 	if (pos >= 0xC0000000) return 1;
 	m_pagedir->freeFrame(pos);
 	return 0;
+}
+bool Process::accessible() {
+	return (m_uid == Usr::uid());
 }

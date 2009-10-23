@@ -76,6 +76,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
 	if (regs.int_no == 64) {
+		asm volatile("sti");	//Make syscalls preemtible
 		u32int res = (regs.eax >> 8);
 		u8int wat = (regs.eax & 0xFF);
 		if (res == 0xFFFFFF) {
@@ -91,6 +92,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 		}
 		//Some syscalls have maybee modified current page directory, set it back to one for current process
 		Task::currProcess()->getPagedir()->switchTo();
+		asm volatile("cli");
 	}
 	if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
 		Task::currentThreadExits(regs.eax);	//DO NOT COUNT ON COMMING BACK FROM HERE

@@ -5,6 +5,9 @@
 class Group;
 class User;
 
+#define INGRP(group) Usr::user()->isInGroup(group)
+#define ISROOT Usr::user()->isInGroup("root")
+
 namespace Usr {
 	void load();	//Loads users into memory, from /System/Configuration/{Users,Groups}
 	void save();	//Saves config from mem to filesystem

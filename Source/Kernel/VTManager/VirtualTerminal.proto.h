@@ -30,6 +30,7 @@ class VirtualTerminal : public Ressource {
 	u32int setCursorLineSC(u32int);
 	u32int setCursorColSC(u32int);
 	u32int isBoxedSC();
+	bool accessible() { return true; }
 
 	public:
 	static u32int scall(u8int, u32int, u32int, u32int, u32int);

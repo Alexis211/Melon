@@ -2,6 +2,7 @@
 #define DEF_RESSOURCE_CLASS_H
 
 #include <SimpleList.class.h>
+#include <Mutex.class.h>
 
 class Ressource;
 
@@ -37,18 +38,25 @@ class Ressource {
 	Ressource(const Ressource&);
 	Ressource& operator=(const Ressource&);
 	
+	Mutex m_lock;
+
 	u32int m_id;
 	u32int m_type;
 	SimpleList<call_t*> *m_callTables;
+
+	u32int doCall(u8int id, u32int a, u32int b, u32int c, u32int d, u32int e);
 
 	protected:
 	Ressource(u8int type, call_t* callTable = 0);
 	~Ressource();
 
+	//This function's role is to tell the Ressource if it is supposed to be accesible from current user or not
+	virtual bool accessible() = 0;	//This function should be overloaded by all derivated classes
+
 	void addCallTable(call_t* callTable);
 
 	public:
-	u32int doCall(u8int id, u32int a, u32int b, u32int c, u32int d, u32int e);
+	u32int call(u8int id, u32int a, u32int b, u32int c, u32int d, u32int e);
 	u32int resId() { return m_id; }
 	u32int resType() { return m_type; }
 };

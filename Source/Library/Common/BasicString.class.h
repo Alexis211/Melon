@@ -43,6 +43,7 @@ class BasicString {
 	u32int size() const { return m_length; }
 	void clear();
 	bool empty() const { return m_length == 0; }
+	bool contains(const T& chr) const;
 
 	Vector< BasicString<T> > split(T sep) const;
 	BasicString<T> substr(s32int start, u32int size);

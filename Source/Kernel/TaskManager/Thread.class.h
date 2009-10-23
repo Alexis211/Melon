@@ -41,6 +41,7 @@ class Thread : public Ressource {
 	static call_t m_callTable[];
 	u32int sleepSC(u32int msecs);
 	u32int finishSC(u32int errcode);
+	bool accessible();
 
 	public:
 	static u32int scall(u8int, u32int, u32int, u32int, u32int);
