@@ -18,6 +18,7 @@ u32int Thread::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 }
 
 void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
+	thread->m_process->getPagedir()->switchTo();
 	if (thread->m_isKernel) {
 		asm volatile("sti");
 		u32int ret = entry_point(data);	//Run !

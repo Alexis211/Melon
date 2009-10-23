@@ -116,7 +116,13 @@ interrupt_common_stub:
    mov fs, ax
    mov gs, ax
 
+   mov eax, cr3
+   push eax
+
    call interrupt_handler
+
+   pop eax
+   mov cr3, eax
 
    pop eax        ; reload the original data segment descriptor
    mov ds, ax
