@@ -148,6 +148,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	FileSystem* fs = RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
 	DirectoryNode* cwd;
 	cwd = fs->getRootNode();
+	Task::currProcess()->setCwd(cwd);
 	VFS::setRootNode(cwd); OK(kvt);
 
 	PROCESSING(kvt, "Setting up logs...");

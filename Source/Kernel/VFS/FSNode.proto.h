@@ -26,6 +26,7 @@ class FSNode : public Ressource {
 	u32int typeSC();
 	u32int getParentSC();
 	u32int getPathSC();
+	u32int setCwdSC();
 	bool accessible();
 	
 	public:

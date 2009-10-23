@@ -5,7 +5,7 @@ CXX = g++
 LD = ld
 LDFLAGS = -T Link.ld -Map Map.txt --oformat=elf32-i386
 CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I .
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -I ../Library/Interface -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL -g
+CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -I ../Library/Interface -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL
 ASM = nasm
 ASMFLAGS = -f elf
  

@@ -1,6 +1,8 @@
 #include "FSNode.proto.h"
 #include <VFS/VFS.ns.h>
+#include <SyscallManager/Res.ns.h>
 #include <UserManager/Usr.ns.h>
+#include <TaskManager/Task.ns.h>
 
 call_t FSNode::m_callTable[] = {
 	CALL0(FNIF_GETNAME, &FSNode::getNameSC),
@@ -11,11 +13,21 @@ call_t FSNode::m_callTable[] = {
 	CALL0(FNIF_GETGID, &FSNode::getGid),
 	CALL0(FNIF_GETPERM, &FSNode::getPermissions),
 	CALL0(FNIF_GETPATH, &FSNode::getPathSC),
+	CALL0(FNIF_SETCWD, &FSNode::setCwdSC),
 	CALL0(0, 0)
 };
 
 u32int FSNode::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 	if (wat == FNIF_SGETRFN) return VFS::getRootNode()->resId();
+	if (wat == FNIF_SGETCWD) return Task::currProcess()->getCwd()->resId();
+	if (wat == FNIF_SFIND) {
+		String* path = (String*)a;
+		if (b == 0) {
+			return VFS::find(*path)->resId();
+		} else {
+			return VFS::find(*path, Res::get<DirectoryNode>(b, FNIF_OBJTYPE))->resId();
+		}
+	}
 	return (u32int) - 1;
 }
 
@@ -40,6 +52,13 @@ u32int FSNode::getParentSC() {
 
 u32int FSNode::getPathSC() {
 	return VFS::path(this).serialize();
+}
+
+u32int FSNode::setCwdSC() {
+	if (type() == NT_DIRECTORY) {
+		Task::currProcess()->setCwd((DirectoryNode*)this);
+	}
+	return 0;
 }
 
 bool FSNode::readable(User* user) {

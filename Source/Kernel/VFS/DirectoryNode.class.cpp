@@ -1,5 +1,24 @@
 #include "DirectoryNode.class.h"
 
+call_t DirectoryNode::m_callTable[] = {
+	CALL1(FNIF_GETIDXCHILD, &DirectoryNode::getIdxChildSC),
+	CALL1(FNIF_GETNAMECHILD, &DirectoryNode::getNameChildSC),
+	CALL0(0, 0)
+};
+
+u32int DirectoryNode::getIdxChildSC(u32int idx) {
+	FSNode* n = getChild(idx);
+	if (n != NULL) return n->resId();
+	return (u32int) - 1;
+}
+
+u32int DirectoryNode::getNameChildSC(u32int name) {
+	String* w = (String*)name;
+	FSNode* n = getChild(*w);
+	if (n != NULL) return n->resId();
+	return (u32int) - 1;
+}
+
 bool DirectoryNode::removable() {
 	if (!m_contentLoaded)
 		if (!loadContent())

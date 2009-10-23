@@ -78,6 +78,7 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 	m_retval = 0;
 	m_state = P_STARTING;
 	m_uid = uid;
+	m_cwd = Task::currProcess()->getCwd();
 	m_inVT = Task::currProcess()->getInVT();
 	m_outVT = Task::currProcess()->getOutVT();
 	m_fileDescriptors = 0;

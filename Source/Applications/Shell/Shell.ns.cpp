@@ -3,12 +3,23 @@
 
 namespace Shell {
 
-FSNode node(0);
+FSNode cwd(0);
+
 
 u32int run() {
-	node = FSNode::getRoot();
+	struct {	//Command list
+		String name;
+		void (*cmd)(Vector<String>&);
+	} commands[] = {
+		{"ls",		ls},
+		{"cd",		cd},
+		{"pwd",		pwd},
+		{"",		0}
+	};
+
+	cwd = FSNode::getCwd();
 	while (1) {
-		outvt << node.getName() << " : ";
+		outvt << "{" << cwd.getName() << "}: ";
 		String s = invt.readLine();
 		while (s[0] == WChar(" ") or s[0] == WChar("\t")) {
 			s = s.substr(1, s.size() - 1);
@@ -44,6 +55,21 @@ u32int run() {
 			Sys::reboot();
 			outvt << "Something went wrong.\n";
 		} else {
+			u32int i = 0;
+			bool found = false;
+			while (!commands[i].name.empty()) {
+				if (commands[i].name == cmd[0]) {
+					found = true;
+					if (commands[i].cmd == 0) {
+						outvt << "Not implemented yet.\n";
+					} else {
+						commands[i].cmd(cmd);
+					}
+					break;
+				}
+				i++;
+			}
+			if (!found) outvt << "Unknown command : " << cmd[0] << "\n";
 		}
 	}
 }

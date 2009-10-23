@@ -8,8 +8,6 @@
 
 u32int KernelShell::m_instances = 0;
 
-#define COMMAND(name, wat) {(void*)name, (void*)(&KernelShell::wat)},
-
 u32int shellRun(void* ks) {
 	KernelShell* sh = (KernelShell*)ks;
 	u32int ret = sh->run();

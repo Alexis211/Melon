@@ -8,6 +8,7 @@
 #include <Heap.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
 #include <VFS/File.class.h>
+class DirectoryNode;
 
 #include <SyscallManager/Ressource.class.h>
 
@@ -42,6 +43,7 @@ class Process : public Ressource {
 	PageDirectory* m_pagedir;
 	u32int m_uid;	//User ID
 	VirtualTerminal *m_inVT, *m_outVT;
+	DirectoryNode *m_cwd;
 
 	Heap *m_userHeap;
 
@@ -78,6 +80,9 @@ class Process : public Ressource {
 	u32int getUid() { return m_uid; }
 	u32int getPid() { return m_pid; }
 	u32int getPpid() { return m_ppid; }
+
+	void setCwd(DirectoryNode *cwd) { m_cwd = cwd; }
+	DirectoryNode *getCwd() { return m_cwd; }
 
 	VirtualTerminal* getInVT();
 	VirtualTerminal* getOutVT();

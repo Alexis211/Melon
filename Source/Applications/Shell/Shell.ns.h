@@ -7,4 +7,7 @@ namespace Shell {
 
 	extern FSNode cwd;
 
+	extern void ls(Vector<String>& args);
+	extern void cd(Vector<String>& args);
+	extern void pwd(Vector<String>& args);
 }

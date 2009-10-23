@@ -1,4 +1,4 @@
-.PHONY: clean, mrproper, Init.rfs
+.PHONY: clean, mrproper, Init.rfs, commit
 
 Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/SampleApps
 
@@ -44,6 +44,10 @@ mrproper:
 		echo "=> Building $$p"; \
 		make -C Source/$$p mrproper -s; \
 	done
+
+commit: mrproper
+	git add .
+	git commit -a
 
 $(RamFS):
 	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)

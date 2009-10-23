@@ -7,7 +7,8 @@ LD = ld
 LDFLAGS = -T ../../Library/Link.ld
 
 Objects = main.o \
-		  Shell.ns.o
+		  Shell.ns.o \
+		  Shell-fs.ns.o
 OutFile = Shell
 
 all: $(OutFile)

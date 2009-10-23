@@ -9,10 +9,17 @@ class DirectoryNode : public FSNode {
 	Vector<FSNode*> m_children;
 	bool m_contentLoaded;
 
+	//Syscalls
+	static call_t m_callTable[];
+	u32int getIdxChildSC(u32int index);
+	u32int getNameChildSC(u32int name);
+
 	public:
 	DirectoryNode(String name, FileSystem* fs, FSNode* parent, u32int permissions = 0777,
 			u32int uid = 0, u32int gid = 0) : 
-			FSNode(name, fs, parent, 0, permissions, uid, gid), m_children(), m_contentLoaded(false) {}
+			FSNode(name, fs, parent, 0, permissions, uid, gid), m_children(), m_contentLoaded(false) {
+		addCallTable(m_callTable);
+	}
 	virtual ~DirectoryNode() {
 		if (m_contentLoaded) {
 			for (u32int i = 0; i < m_children.size(); i++) {
