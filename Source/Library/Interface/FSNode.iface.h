@@ -24,6 +24,7 @@ enum {
 #define FNIF_GETPERM 0x16
 #define FNIF_GETPATH 0x17
 #define FNIF_SETCWD 0x18		//Sets node as current working directory
+#define FNIF_REMOVE 0x19
 
 #define FNIF_GETIDXCHILD 0x20	//Get child node from index
 #define FNIF_GETNAMECHILD 0x21	//Get child node from name

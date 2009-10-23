@@ -81,8 +81,8 @@ void KernelShell::rm(Vector<String>& args) {
 	if (args.size() == 1) *m_vt << "Error : no argument specified.\n";
 	for (u32int i = 1; i < args.size(); i++) {
 		if (!VFS::remove(args[i], m_cwd)) {
-				*m_vt << "Error while removing file " << args[i] << "\n";
-			}
+			*m_vt << "Error while removing file " << args[i] << "\n";
+		}
 	}
 }
 

@@ -14,6 +14,7 @@ call_t FSNode::m_callTable[] = {
 	CALL0(FNIF_GETPERM, &FSNode::getPermissions),
 	CALL0(FNIF_GETPATH, &FSNode::getPathSC),
 	CALL0(FNIF_SETCWD, &FSNode::setCwdSC),
+	CALL0(FNIF_REMOVE, &FSNode::removeSC),
 	CALL0(0, 0)
 };
 
@@ -22,11 +23,13 @@ u32int FSNode::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 	if (wat == FNIF_SGETCWD) return Task::currProcess()->getCwd()->resId();
 	if (wat == FNIF_SFIND) {
 		String* path = (String*)a;
+		FSNode* n;
 		if (b == 0) {
-			return VFS::find(*path)->resId();
+			n = VFS::find(*path);
 		} else {
-			return VFS::find(*path, Res::get<DirectoryNode>(b, FNIF_OBJTYPE))->resId();
+			n = VFS::find(*path, Res::get<DirectoryNode>(b, FNIF_OBJTYPE));
 		}
+		if (n != 0) return n->resId();
 	}
 	return (u32int) - 1;
 }
@@ -59,6 +62,11 @@ u32int FSNode::setCwdSC() {
 		Task::currProcess()->setCwd((DirectoryNode*)this);
 	}
 	return 0;
+}
+
+u32int FSNode::removeSC() {
+	if (!writable()) return 0;
+	return (VFS::remove(this) ? 1 : 0);
 }
 
 bool FSNode::readable(User* user) {

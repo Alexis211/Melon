@@ -7,12 +7,14 @@ call_t DirectoryNode::m_callTable[] = {
 };
 
 u32int DirectoryNode::getIdxChildSC(u32int idx) {
+	if (!runnable()) return (u32int) - 1;
 	FSNode* n = getChild(idx);
 	if (n != NULL) return n->resId();
 	return (u32int) - 1;
 }
 
 u32int DirectoryNode::getNameChildSC(u32int name) {
+	if (!runnable()) return (u32int) - 1;
 	String* w = (String*)name;
 	FSNode* n = getChild(*w);
 	if (n != NULL) return n->resId();

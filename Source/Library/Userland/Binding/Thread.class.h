@@ -1,3 +1,6 @@
+#ifndef DEF_THREAD_CLASS_H
+#define DEF_THREAD_CLASS_H
+
 #include <Syscall/RessourceCaller.class.h>
 
 #include <Thread.iface.h>
@@ -17,3 +20,5 @@ class Thread : public RessourceCaller {
 		doCall(THIF_FINISH, errcode);
 	}
 };
+
+#endif

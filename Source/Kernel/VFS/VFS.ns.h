@@ -15,6 +15,7 @@ namespace VFS {
 	FSNode* find(const String& path, FSNode* start = 0);
 	FSNode* createFile(const String& path, FSNode* start = 0);
 	FSNode* createDirectory(const String& path, FSNode* start = 0);
+	bool remove(FSNode* node);
 	bool remove(const String& path, FSNode* start = 0);	//Returns false for non-empty directories
 	String path(FSNode* node);	//Returns complete path for a node
 }

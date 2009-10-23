@@ -4,6 +4,7 @@
 #include <Binding/Thread.class.h>
 
 int main() {
+	outvt << "Enter some text plz : ";
 	String s = invt.readLine();
 	outvt << s;
 	Thread t = Thread::get();

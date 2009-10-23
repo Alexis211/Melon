@@ -17,7 +17,7 @@ class FSNode : public Ressource {
 	u64int m_length;
 	u32int m_permissions, m_uid, m_gid;
 	FileSystem *m_fs;
-	FSNode	*m_parent;
+	FSNode *m_parent;
 
 	//Syscall related
 	static call_t m_callTable[];
@@ -27,6 +27,7 @@ class FSNode : public Ressource {
 	u32int getParentSC();
 	u32int getPathSC();
 	u32int setCwdSC();
+	u32int removeSC();
 	bool accessible();
 	
 	public:

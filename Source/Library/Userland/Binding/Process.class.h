@@ -1,3 +1,6 @@
+#ifndef DEF_PROCESS_CLASS_H
+#define DEF_PROCESS_CLASS_H
+
 #include <Syscall/RessourceCaller.class.h>
 
 #include <Process.iface.h>
@@ -30,3 +33,5 @@ class Process : public RessourceCaller {
 		return String::unserialize(doCall(PRIF_GETCMDLINE));
 	}
 };
+
+#endif

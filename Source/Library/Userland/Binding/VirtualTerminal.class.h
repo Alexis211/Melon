@@ -1,3 +1,6 @@
+#ifndef DEF_VIRTUALTERMINAL_CLASS_H
+#define DEF_VIRTUALTERMINAL_CLASS_H
+
 #include <Syscall/RessourceCaller.class.h>
 
 #include <VirtualTerminal.iface.h>
@@ -52,3 +55,5 @@ class VirtualTerminal : public RessourceCaller {
 };
 
 extern VirtualTerminal invt, outvt;
+
+#endif

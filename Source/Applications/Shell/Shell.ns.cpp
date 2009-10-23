@@ -14,10 +14,11 @@ u32int run() {
 		{"ls",		ls},
 		{"cd",		cd},
 		{"pwd",		pwd},
+		{"rm",		rm},
 		{"",		0}
 	};
 
-	cwd = FSNode::getCwd();
+	cwd = FS::cwdNode();
 	while (1) {
 		outvt << "{" << cwd.getName() << "}: ";
 		String s = invt.readLine();

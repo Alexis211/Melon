@@ -10,4 +10,5 @@ namespace Shell {
 	extern void ls(Vector<String>& args);
 	extern void cd(Vector<String>& args);
 	extern void pwd(Vector<String>& args);
+	extern void rm(Vector<String>& args);
 }

@@ -103,9 +103,7 @@ FSNode* createDirectory(const String& path, FSNode* start) {
 	}
 }
 
-bool remove(const String& path, FSNode* start) {
-	FSNode* node = find(path, start);
-	if (node == NULL) return false;
+bool remove(FSNode* node) {
 	FSNode* parent = node->getParent();
 	if (parent == NULL) return false;
 
@@ -114,6 +112,12 @@ bool remove(const String& path, FSNode* start) {
 	} else {
 		return false;	//Something wierd happenned
 	}
+}
+
+bool remove(const String& path, FSNode* start) {
+	FSNode* node = find(path, start);
+	if (node == NULL) return false;
+	return remove(node);
 }
 
 String path(FSNode* node) {

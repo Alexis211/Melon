@@ -1,17 +1,11 @@
+#ifndef DEF_FSNODE_CLASS_H
+#define DEF_FSNODE_CLASS_H
+
 #include <Syscall/RessourceCaller.class.h>
 #include <FSNode.iface.h>
 
 class FSNode : public RessourceCaller {
 	public:
-	static FSNode getRoot() {
-		return FSNode(sCall(FNIF_OBJTYPE, FNIF_SGETRFN));
-	}
-	static FSNode getCwd() {
-		return FSNode(sCall(FNIF_OBJTYPE, FNIF_SGETCWD));
-	}
-	static FSNode find(String path) {	//Finds a node starting from root node
-		return FSNode(sCall(FNIF_OBJTYPE, FNIF_SFIND, (u32int)&path, 0));
-	}
 	FSNode(u32int id) : RessourceCaller(id, FNIF_OBJTYPE) {}
 
 	String getName() {
@@ -41,13 +35,32 @@ class FSNode : public RessourceCaller {
 	void setCwd() {
 		doCall(FNIF_SETCWD);
 	}
+	bool remove() {
+		return doCall(FNIF_REMOVE) != 0;
+	}
 	FSNode getChild(u32int idx) {
 		return FSNode(doCall(FNIF_GETIDXCHILD, idx));
 	}
 	FSNode getChild(String name) {
 		return FSNode(doCall(FNIF_GETNAMECHILD, (u32int)&name));
 	}
-	FSNode findFrom(String path) {		//Search a filesystem node starting from here
-		return FSNode(sCall(FNIF_OBJTYPE, FNIF_SFIND, (u32int)&path, resId()));
-	}
 };
+
+namespace FS {
+
+inline FSNode rootNode() {
+	return FSNode(RessourceCaller::sCall(FNIF_OBJTYPE, FNIF_SGETRFN));
+}
+
+inline FSNode cwdNode() {
+	return FSNode(RessourceCaller::sCall(FNIF_OBJTYPE, FNIF_SGETCWD));
+}
+
+inline FSNode find(String name, FSNode cwd = FSNode(0)) {
+	if (!cwd.valid()) cwd = rootNode();
+	return FSNode(RessourceCaller::sCall(FNIF_OBJTYPE, FNIF_SFIND, (u32int)&name, cwd.resId()));
+}
+
+}
+
+#endif
