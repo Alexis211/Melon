@@ -103,6 +103,37 @@ FSNode* createDirectory(const String& path, FSNode* start) {
 	}
 }
 
+//Same as createDirectory but checks for parent directory permissions for current process
+FSNode* mkdir(const String& path, FSNode* start) {
+	if (find(path, start) != NULL) return NULL;	//Something already has that name.
+	if (start == 0) start = rootNode;
+
+	Vector<String> p = path.split("/");
+	String name = p.back();
+	p.pop();
+
+	FSNode* node = start;
+	if (!path.empty()) {
+		if (p[0].empty()) node = rootNode;
+		for (u32int i = 0; i < p.size(); i++) {
+			if (p[i] == "..") {
+				node = node->getParent();
+			} else if (!p[i].empty() and p[i] != ".") {
+				if (node->type() == NT_DIRECTORY) {
+					node = ((DirectoryNode*)node)->getChild(p[i]);
+				} else {
+					node = NULL;
+				}
+			}
+			if (node == NULL) return node;
+		}
+	}
+
+	if (node->type() == NT_DIRECTORY)
+		if (node->writable()) return ((DirectoryNode*)node)->createDirectory(name);
+	return NULL;
+}
+
 bool remove(FSNode* node) {
 	FSNode* parent = node->getParent();
 	if (parent == NULL) return false;

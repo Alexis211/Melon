@@ -15,6 +15,7 @@ namespace VFS {
 	FSNode* find(const String& path, FSNode* start = 0);
 	FSNode* createFile(const String& path, FSNode* start = 0);
 	FSNode* createDirectory(const String& path, FSNode* start = 0);
+	FSNode* mkdir(const String& path, FSNode* start = 0);	//Same as createDirectory, except it checks for parent directory writablilty by current process
 	bool remove(FSNode* node);
 	bool remove(const String& path, FSNode* start = 0);	//Returns false for non-empty directories
 	String path(FSNode* node);	//Returns complete path for a node

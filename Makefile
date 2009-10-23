@@ -5,15 +5,15 @@ Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/Sample
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
 RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
+	:/Applications :/Applications/Demos \
 	Source/Kernel/Ressources/Configuration/Users:/System/Configuration/Users \
 	Source/Kernel/Ressources/Configuration/Groups:/System/Configuration/Groups \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
-	Source/Applications/SampleApps/asmdemo:/ad \
-	Source/Applications/SampleApps/cxxdemo:/cd \
-	Source/Applications/Shell/Shell:/shell \
+	Source/Applications/SampleApps/asmdemo:/Applications/Demos/ASMDemo.app \
+	Source/Applications/SampleApps/cxxdemo:/Applications/Demos/CPPDemo.app \
+	Source/Applications/Shell/Shell:/Applications/Shell.app \
 	:/Useless \
-	Source/Kernel/Ressources/Texts/Info.txt:/Useless/Info.txt \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 
 
 Files = $(Kernel) $(RamFS)
@@ -48,6 +48,7 @@ mrproper:
 commit: mrproper
 	git add .
 	git commit -a
+	git push origin
 
 $(RamFS):
 	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)

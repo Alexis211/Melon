@@ -61,6 +61,11 @@ inline FSNode find(String name, FSNode cwd = FSNode(0)) {
 	return FSNode(RessourceCaller::sCall(FNIF_OBJTYPE, FNIF_SFIND, (u32int)&name, cwd.resId()));
 }
 
+inline FSNode mkdir(String name, FSNode cwd = FSNode(0)) {
+	if (!cwd.valid()) cwd = rootNode();
+	return FSNode(RessourceCaller::sCall(FNIF_OBJTYPE, FNIF_SMKDIR, (u32int)&name, cwd.resId()));
+}
+
 }
 
 #endif

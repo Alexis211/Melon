@@ -15,8 +15,13 @@ void ls(Vector<String>& args) {
 			d = n;
 	}	
 	if (d.valid()) outvt << "Contents of directory " << d.path() << " :\n";
+	if (!d.valid()) return;
 	for (u32int i = 0; i < d.getLength(); i++) {
 		FSNode n = d.getChild(i);
+		if (!n.valid()) {
+			outvt << " [inacessible file]\n";	//This is a file we are not supposed to be able to read
+			continue;
+		}
 		String perm = "rwxrwxrwx";
 		u32int p = n.getPerm();
 		for (u32int i = 0; i < 9; i++) {
@@ -59,6 +64,15 @@ void rm(Vector<String>& args) {
 	for (u32int i = 1; i < args.size(); i++) {
 		if (!FS::find(args[i], cwd).remove()) {
 			outvt << "Error while removing file " << args[i] << "\n";
+		}
+	}
+}
+
+void mkdir(Vector<String>& args) {
+	if (args.size() == 1) outvt << "No directory to create.\n";
+	for (u32int i = 1; i < args.size(); i++) {
+		if (!FS::mkdir(args[i], cwd).valid()) {
+			outvt << "Error while creating directory " << args[i] << "\n";
 		}
 	}
 }

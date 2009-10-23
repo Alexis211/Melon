@@ -31,6 +31,16 @@ u32int FSNode::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 		}
 		if (n != 0) return n->resId();
 	}
+	if (wat == FNIF_SMKDIR) {
+		String* path = (String*)a;
+		FSNode* n;
+		if (b == 0) {
+			n = VFS::mkdir(*path);
+		} else {
+			n = VFS::mkdir(*path, Res::get<DirectoryNode>(b, FNIF_OBJTYPE));
+		}
+		if (n != 0) return n->resId();
+	}
 	return (u32int) - 1;
 }
 
@@ -70,6 +80,7 @@ u32int FSNode::removeSC() {
 }
 
 bool FSNode::readable(User* user) {
+	if (ISROOT) return true;
 	if (user == 0) user = Usr::user();
 	if (user->getUid() == m_uid)
 		return ((m_permissions >> 6) & 4) != 0;
@@ -79,6 +90,7 @@ bool FSNode::readable(User* user) {
 }
 
 bool FSNode::writable(User* user) {
+	if (ISROOT) return true;
 	if (user == 0) user = Usr::user();
 	if (user->getUid() == m_uid)
 		return ((m_permissions >> 6) & 2) != 0;
@@ -88,6 +100,7 @@ bool FSNode::writable(User* user) {
 }
 
 bool FSNode::runnable(User* user) {
+	if (ISROOT) return true;
 	if (user == 0) user = Usr::user();
 	if (user->getUid() == m_uid)
 		return ((m_permissions >> 6) & 1) != 0;

@@ -1,5 +1,0 @@
-These files were just added here for fun.
-
-Oh, you wanted to know what the wf command meant ?
-Simple : it means Write File. Type 'wf filename' and then enter the
-file's contents, ending with <CR>.<CR>

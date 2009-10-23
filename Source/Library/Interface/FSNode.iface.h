@@ -1,6 +1,14 @@
 #ifndef DEF_FSNODE_IFACE_H
 #define DEF_FSNODE_IFACE_H
 
+/*
+ * The FSNode interface handles all this :
+ * - Navigating in the filesystem
+ * - Listing contents of directories
+ * - Creating/removing/truncating files and directories
+ * - Getting/Setting current working directory (CWD)
+ */
+
 enum {
 	NT_FILE = 1,
 	NT_DIRECTORY = 2,
@@ -14,6 +22,7 @@ enum {
 #define FNIF_SGETRFN 0
 #define FNIF_SGETCWD 1	//Get current working directory
 #define FNIF_SFIND 2	//Find a node following a path from a node
+#define FNIF_SMKDIR 3	//Makes a directory
 
 #define FNIF_GETNAME 0x10
 #define FNIF_TYPE 0x11

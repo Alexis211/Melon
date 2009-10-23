@@ -15,6 +15,7 @@ u32int run() {
 		{"cd",		cd},
 		{"pwd",		pwd},
 		{"rm",		rm},
+		{"mkdir",	mkdir},
 		{"",		0}
 	};
 
