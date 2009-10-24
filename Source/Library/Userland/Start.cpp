@@ -13,7 +13,7 @@ Heap heap;
 
 VirtualTerminal invt(0), outvt(0);
 
-int main();
+int main(const Vector<String>& args);
 
 extern "C" void start() {
 	//Call static constructors
@@ -24,7 +24,11 @@ extern "C" void start() {
 	heap.create(0x40000000, 0x00100000, 0x00004000);	//Initially create a 1M heap with 16ko index
 	invt = VirtualTerminal::getIn(); outvt = VirtualTerminal::getOut();
 
-	u32int r = main();
+	u32int argc = Process::get().argc();
+	Vector<String> args(argc);
+	for (u32int i = 0; i < argc; i++) args[i] = Process::get().argv(i);
+
+	u32int r = main(args);
 
 	//Call static destructors 
     for(u32int * call = &start_dtors; call < &end_dtors; call++) {

@@ -6,6 +6,7 @@
 #include <FSNode.iface.h>
 #include <Sys.iface.h>
 #include <TaskManager/Task.ns.h>
+#include <VFS/File.class.h>
 
 namespace Res {
 
@@ -21,6 +22,7 @@ static_call_t staticCalls[] = {
 	{PRIF_OBJTYPE, Process::scall},
 	{THIF_OBJTYPE, Thread::scall},
 	{FNIF_OBJTYPE, FSNode::scall},
+	{FLIF_OBJTYPE, File::scall},
 	{SYIF_IFID, Sys::scall},
 	{0, 0}
 };

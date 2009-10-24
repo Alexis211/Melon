@@ -1,7 +1,7 @@
 #ifndef DEF_FILEVT_CLASS_H
 #define DEF_FILEVT_CLASS_H
 
-#include <VFS/TextFile.class.h>
+#include <TextFile.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
 
 class FileVT : public VirtualTerminal {

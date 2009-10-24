@@ -11,6 +11,8 @@
 #define PRIF_FREEPAGE 0x03
 #define PRIF_GETPID 0x04
 #define PRIF_GETPPID 0x05
-#define PRIF_GETCMDLINE 0x06
+
+#define PRIF_ARGC 0x10
+#define PRIF_ARGV 0x11
 
 #endif

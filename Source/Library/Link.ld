@@ -1,4 +1,5 @@
 ENTRY (start)
+INPUT (Melon.o)
 
 SECTIONS{
     . = 0x10000000;

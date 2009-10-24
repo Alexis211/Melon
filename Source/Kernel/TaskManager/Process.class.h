@@ -53,7 +53,8 @@ class Process : public Ressource {
 	//System calls
 	static call_t m_callTable[];
 	u32int exitSC();
-	u32int getCmdlineSC();
+	u32int argcSC();
+	u32int argvSC(u32int);
 	u32int allocPageSC(u32int);
 	u32int freePageSC(u32int);
 	bool accessible();
@@ -69,6 +70,7 @@ class Process : public Ressource {
 	Heap& heap() { return *m_userHeap; }
 
 	void start();	//Starts thread execution - sets m_state to P_RUNNING if == P_STARTING
+	void pushArg(const String& arg);
 	void exit();	//Exits properly process by killing all threads and deleting file descriptors
 	void registerThread(Thread* t);	//Called when a thread starts
 	void threadFinishes(Thread* thread, u32int retval); //Called when a thread finishes

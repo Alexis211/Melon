@@ -16,6 +16,8 @@ u32int run() {
 		{"pwd",		pwd},
 		{"rm",		rm},
 		{"mkdir",	mkdir},
+		{"cat", cat},
+		{"wf", wf},
 		{"",		0}
 	};
 
@@ -56,6 +58,14 @@ u32int run() {
 		} else if (cmd[0] == "reboot") {
 			Sys::reboot();
 			outvt << "Something went wrong.\n";
+		} else if (cmd[0] == "uptime") {
+			outvt << "Uptime : " << (s64int)Sys::uptime() << "s\n";
+		} else if (cmd[0] == "free") {
+			outvt << "Free RAM : " << (s64int)Sys::freeRam() << " Kio of " << (s64int)Sys::totalRam() << " Kio\n"; 
+		} else if (cmd[0] == "help") {
+			while (cmd.size() > 1) cmd.pop();
+			cmd.push("/Applications/Shell/Help.txt");
+			cat(cmd);
 		} else {
 			u32int i = 0;
 			bool found = false;

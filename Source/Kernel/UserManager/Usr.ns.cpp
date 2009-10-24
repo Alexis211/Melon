@@ -1,9 +1,10 @@
 #include "Usr.ns.h"
 
+#include <Core/Log.ns.h>
 #include <UserManager/User.class.h>
 #include <SimpleList.class.h>
 #include <TaskManager/Task.ns.h>
-#include <VFS/TextFile.class.h>
+#include <TextFile.class.h>
 
 /*
  * Syntax for Users and Groups configuration files : one entry per line
@@ -29,6 +30,10 @@ void load() {
 			m_groups = m_groups->cons(Group(data[1], data[0].toInt()));
 		}
 	}
+	if (m_groups == 0) {
+		m_groups = m_groups->cons(Group("root", 0));	//In case, add a default group
+		Log::log(KL_WARNING, "Usr.ns : group file invalid, had to add default group.");
+	}
 
 	TextFile users("/System/Configuration/Users", FM_READ);
 	while (!users.eof()) {
@@ -37,6 +42,10 @@ void load() {
 		if (data.size() == 5 and !(s[0] == WChar("#"))) {
 			m_users = m_users->cons(User(data[1], data[4], group(data[2].toInt()), data[3], data[0].toInt()));
 		}
+	}
+	if (m_users == 0) {
+		m_users = m_users->cons(User("melon", "MelOS", group(0), "", 0));
+		Log::log(KL_WARNING, "Usr.ns : users file invalid, had to add default users.");
 	}
 }
 

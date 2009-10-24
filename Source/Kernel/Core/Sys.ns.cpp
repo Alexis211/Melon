@@ -5,6 +5,8 @@
 #include <SyscallManager/IDT.ns.h>
 #include <Sys.iface.h>
 #include <UserManager/Usr.ns.h>
+#include <MemoryManager/PhysMem.ns.h>
+#include <DeviceManager/Time.ns.h>
 
 #define DEBUGVT(x) SimpleVT *x = new SimpleVT(4, 56, 0, 15); x->map(); x->put('\n');
 
@@ -146,6 +148,9 @@ void halt() {
 u32int scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 	if (wat == SYIF_HALT && ISROOT) halt();
 	if (wat == SYIF_REBOOT && ISROOT) reboot();
+	if (wat == SYIF_UPTIME) return Time::uptime();
+	if (wat == SYIF_TOTALRAM) return PhysMem::total() * 4;
+	if (wat == SYIF_FREERAM) return PhysMem::free() * 4;
 	return (u32int) - 1;
 }
 

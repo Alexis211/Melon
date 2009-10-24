@@ -5,14 +5,15 @@ Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/Sample
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
 RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
-	:/Applications :/Applications/Demos \
+	:/Applications :/Applications/Demos :/Applications/Shell \
 	Source/Kernel/Ressources/Configuration/Users:/System/Configuration/Users \
 	Source/Kernel/Ressources/Configuration/Groups:/System/Configuration/Groups \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
 	Source/Applications/SampleApps/asmdemo:/Applications/Demos/ASMDemo.app \
 	Source/Applications/SampleApps/cxxdemo:/Applications/Demos/CPPDemo.app \
-	Source/Applications/Shell/Shell:/Applications/Shell.app \
+	Source/Applications/Shell/Shell:/Applications/Shell/Shell.app \
+	Source/Applications/Shell/Help.txt:/Applications/Shell/Help.txt \
 	:/Useless \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 
 

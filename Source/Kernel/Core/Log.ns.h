@@ -1,7 +1,7 @@
 #ifndef DEF_LOG_NS_H
 #define DEF_LOG_NS_H
 
-#include <VFS/TextFile.class.h>
+#include <TextFile.class.h>
 
 #define KL_PANIC 0
 #define KL_CRITICAL 1

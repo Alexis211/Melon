@@ -115,6 +115,9 @@ void KernelShell::run(Vector<String>& args) {
 		} else {
 			p->setInVT(m_vt);
 			p->setOutVT(m_vt);
+			for (u32int i = 2; i < args.size(); i++) {
+				p->pushArg(args[i]);
+			}
 			p->start();
 			while (p->getState() != P_FINISHED) Task::currThread()->sleep(10);
 			delete p;

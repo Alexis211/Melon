@@ -1,9 +1,10 @@
 #include <Syscall/Syscall.wtf.h>
-#include <WChar.class.h>
+#include <String.class.h>
 #include <Binding/VirtualTerminal.class.h>
 #include <Binding/Thread.class.h>
+#include <Binding/File.class.h>
 
-int main() {
+int main(const Vector<String>& args) {
 	outvt << "Enter some text plz : ";
 	String s = invt.readLine();
 	outvt << s;

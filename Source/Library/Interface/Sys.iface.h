@@ -5,5 +5,8 @@
 
 #define SYIF_HALT 0x1
 #define SYIF_REBOOT 0x2
+#define SYIF_UPTIME 0x3
+#define SYIF_TOTALRAM 0x4
+#define SYIF_FREERAM 0x5
 
 #endif

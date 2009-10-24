@@ -2,11 +2,23 @@
 #include <VFS/VFS.ns.h>
 #include <TaskManager/Task.ns.h>
 
-File::File() : m_file(NULL), m_valid(false), m_writable(false), m_position(0) {
+call_t File::m_callTable[] = {
+	CALL0(FLIF_CLOSE, &File::closeSC),
+	CALL0(FLIF_VALID, &File::validSC),
+	CALL2(FLIF_READ, &File::readSC),
+	CALL2(FLIF_WRITE, &File::writeSC),
+	CALL3(FLIF_SEEK, &File::seekSC),
+	CALL0(FLIF_POSITION, &File::positionSC),
+	CALL0(FLIF_LENGTH, &File::lengthSC),
+	CALL0(FLIF_EOF, &File::eofSC),
+	CALL0(0, 0)
+};
+
+File::File() : Ressource(FLIF_OBJTYPE, m_callTable), m_file(NULL), m_valid(false), m_writable(false), m_position(0) {
 }
 
 File::File(String filename, u8int mode, FSNode* start) :
-	m_file(NULL), m_valid(false), m_writable(false), m_position(0) {
+	Ressource(FLIF_OBJTYPE, m_callTable), m_file(NULL), m_valid(false), m_writable(false), m_position(0) {
 	open(filename, mode, start);
 }
 
@@ -14,13 +26,13 @@ File::~File() {
 	close();
 }
 
-bool File::open(String filename, u8int mode, FSNode* start) {
+bool File::open(String filename, u8int mode, FSNode* start, bool vrfyperm) {
 	if (m_valid) return false;
 
 	FSNode* node = VFS::find(filename, start);
 	if (node == NULL){
 	   	if (mode == FM_READ) return false;
-		node = VFS::createFile(filename, start);
+		node = VFS::createFile(filename, start, vrfyperm);
 		if (node == 0) return false;
 	}
 	if (node->type() != NT_FILE) return false;
@@ -28,7 +40,9 @@ bool File::open(String filename, u8int mode, FSNode* start) {
 	m_file = (FileNode*) node;
 
 	m_writable = (mode != FM_READ);
-	if (!m_file->writable() and m_writable) return false;
+	if (vrfyperm and m_writable and !m_file->writable()) return false;
+	if (vrfyperm and !m_file->readable()) return false;
+	if (!m_file->fsWritable() and m_writable) return false;
 
 	if (mode == FM_READ or mode == FM_REPLACE) {
 		m_position = 0;
@@ -44,7 +58,8 @@ bool File::open(String filename, u8int mode, FSNode* start) {
 	else
 		m_file->m_writers++;
 
-	Task::currProcess()->registerFileDescriptor(this);
+	m_process = Task::currProcess();
+	m_process->registerFileDescriptor(this);
 	m_valid = true;
 	return true;
 }
@@ -135,5 +150,5 @@ void File::close(bool unregisterFD) {
 	m_file = NULL;
 	m_position = 0;
 	m_writable = false;
-	if (unregisterFD) Task::currProcess()->unregisterFileDescriptor(this);
+	if (unregisterFD) m_process->unregisterFileDescriptor(this);
 }

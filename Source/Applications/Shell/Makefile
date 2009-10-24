@@ -1,10 +1,10 @@
 .PHONY: clean, mrproper
 
 CXX = g++
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
+CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
 
 LD = ld
-LDFLAGS = -T ../../Library/Link.ld
+LDFLAGS = -T ../../Library/Link.ld -L ../../Library
 
 Objects = main.o \
 		  Shell.ns.o \
@@ -18,7 +18,7 @@ rebuild: mrproper all
 
 $(OutFile): $(Objects)
 	echo "* Linking $@..."
-	$(LD) $(LDFLAGS) ../../Library/Melon.o $^ -o $@
+	$(LD) $(LDFLAGS) $^ -o $@
 
 %.o: %.cpp
 	echo "* Compiling $<..."

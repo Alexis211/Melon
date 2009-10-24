@@ -39,7 +39,7 @@ FSNode* find(const String& path, FSNode* start) {
 	return node;
 }
 
-FSNode* createFile(const String& path, FSNode* start) {
+FSNode* createFile(const String& path, FSNode* start, bool vrfyperm) {
 	if (find(path, start) != NULL) return NULL;	//Something already has that name.
 	if (start == 0) start = rootNode;
 
@@ -65,13 +65,12 @@ FSNode* createFile(const String& path, FSNode* start) {
 	}
 
 	if (node->type() == NT_DIRECTORY) {
-		return ((DirectoryNode*)node)->createFile(name);
-	} else {
-		return NULL;
+		if ((vrfyperm && node->writable()) or !vrfyperm) return ((DirectoryNode*)node)->createFile(name);
 	}
+	return NULL;
 }
 
-FSNode* createDirectory(const String& path, FSNode* start) {
+FSNode* createDirectory(const String& path, FSNode* start, bool vrfyperm) {
 	if (find(path, start) != NULL) return NULL;	//Something already has that name.
 	if (start == 0) start = rootNode;
 
@@ -97,40 +96,8 @@ FSNode* createDirectory(const String& path, FSNode* start) {
 	}
 
 	if (node->type() == NT_DIRECTORY) {
-		return ((DirectoryNode*)node)->createDirectory(name);
-	} else {
-		return NULL;
+		if ((vrfyperm && node->writable()) or !vrfyperm) return ((DirectoryNode*)node)->createDirectory(name);
 	}
-}
-
-//Same as createDirectory but checks for parent directory permissions for current process
-FSNode* mkdir(const String& path, FSNode* start) {
-	if (find(path, start) != NULL) return NULL;	//Something already has that name.
-	if (start == 0) start = rootNode;
-
-	Vector<String> p = path.split("/");
-	String name = p.back();
-	p.pop();
-
-	FSNode* node = start;
-	if (!path.empty()) {
-		if (p[0].empty()) node = rootNode;
-		for (u32int i = 0; i < p.size(); i++) {
-			if (p[i] == "..") {
-				node = node->getParent();
-			} else if (!p[i].empty() and p[i] != ".") {
-				if (node->type() == NT_DIRECTORY) {
-					node = ((DirectoryNode*)node)->getChild(p[i]);
-				} else {
-					node = NULL;
-				}
-			}
-			if (node == NULL) return node;
-		}
-	}
-
-	if (node->type() == NT_DIRECTORY)
-		if (node->writable()) return ((DirectoryNode*)node)->createDirectory(name);
 	return NULL;
 }
 

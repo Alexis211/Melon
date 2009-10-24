@@ -52,12 +52,13 @@ Objects = Core/loader.wtf.o \
 		../Library/Common/Heap.class.o \
 		../Library/Common/Heap-index.class.o \
 		../Library/Common/Mutex.class.o \
+		../Library/Common/TextFile.class.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \
 		VFS/VFS.ns.o \
 		VFS/FSNode-sc.proto.o \
 		VFS/File.class.o \
-		VFS/TextFile.class.o \
+		VFS/File-sc.class.o \
 		VFS/DirectoryNode.class.o \
 		UserManager/Usr.ns.o \
 		FileSystems/RamFS/RamFS.class.o \
@@ -94,6 +95,7 @@ $(OutFile): $(Objects)
  
 clean:
 	echo "* Removing object files..."
+	rm -rf $(Objects)
 	rm -rf *.o
 	rm -rf */*.o
 	rm -rf */*/*.o

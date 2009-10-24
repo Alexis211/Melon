@@ -35,9 +35,9 @@ u32int FSNode::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 		String* path = (String*)a;
 		FSNode* n;
 		if (b == 0) {
-			n = VFS::mkdir(*path);
+			n = VFS::createDirectory(*path, 0, true);
 		} else {
-			n = VFS::mkdir(*path, Res::get<DirectoryNode>(b, FNIF_OBJTYPE));
+			n = VFS::createDirectory(*path, Res::get<DirectoryNode>(b, FNIF_OBJTYPE), true);
 		}
 		if (n != 0) return n->resId();
 	}

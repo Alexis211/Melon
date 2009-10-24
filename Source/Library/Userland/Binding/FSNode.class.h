@@ -2,6 +2,7 @@
 #define DEF_FSNODE_CLASS_H
 
 #include <Syscall/RessourceCaller.class.h>
+#include <String.class.h>
 #include <FSNode.iface.h>
 
 class FSNode : public RessourceCaller {

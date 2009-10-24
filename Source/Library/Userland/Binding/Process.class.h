@@ -29,8 +29,11 @@ class Process : public RessourceCaller {
 	u32int getPpid() {
 		return doCall(PRIF_GETPPID);
 	}
-	String getCmdline() {
-		return String::unserialize(doCall(PRIF_GETCMDLINE));
+	u32int argc() {
+		return doCall(PRIF_ARGC);
+	}
+	String argv(u32int idx) {
+		return String::unserialize(doCall(PRIF_ARGV, idx));
 	}
 };
 

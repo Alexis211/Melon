@@ -1,4 +1,5 @@
 #include "Shell.ns.h"
+#include <TextFile.class.h>
 
 namespace Shell {
 
@@ -73,6 +74,40 @@ void mkdir(Vector<String>& args) {
 	for (u32int i = 1; i < args.size(); i++) {
 		if (!FS::mkdir(args[i], cwd).valid()) {
 			outvt << "Error while creating directory " << args[i] << "\n";
+		}
+	}
+}
+
+void cat(Vector<String>& args) {
+	if (args.size() == 1) outvt << "Meow.\n";
+	for (u32int i = 1; i < args.size(); i++) {
+		TextFile f(args[i], FM_READ, cwd);
+		if (f.valid() && f.validOpened()) {
+			while (!f.eof()) {
+				outvt << f.readLine() << "\n";
+			}
+			f.close();
+		} else {
+			outvt << "Error while reading from file " << args[i] << "\n";
+		}
+	}
+}
+
+void wf(Vector<String>& args) {
+	if (args.size() == 1) {
+		outvt << "No file to write !\n";
+	} else {
+		TextFile f(args[1], FM_TRUNCATE, cwd);
+		if (f.valid() && f.validOpened()) {
+			outvt << "Enter contents for file " << args[1] << " and end your entry with <CR>.<CR>\n";
+			String t = invt.readLine();
+			while (t != ".") {
+				f.write(t, true);
+				t = invt.readLine();
+			}
+			f.close();
+		} else {
+			outvt << "Error opening file.\n";
 		}
 	}
 }

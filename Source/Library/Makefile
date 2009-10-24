@@ -1,7 +1,7 @@
 .PHONY: clean, mrproper
 
 CXX = g++
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I Common -I Userland -I Interface -D THIS_IS_MELON_USERLAND
+CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I Common -I Userland -I Interface -D THIS_IS_MELON_USERLAND
 
 ASM = nasm
 ASMFLAGS = -f elf
@@ -16,7 +16,8 @@ Objects = Common/WChar.class.uo \
 		  Common/Heap.class.uo \
 		  Common/Heap-index.class.uo \
 		  Common/String.class.uo \
-		  Userland/Binding/Sys.ns.uo \
+		  Common/TextFile.class.uo \
+		  Common/ByteArray.class.uo \
 		  Userland/Syscall/Syscall.wtf.uo \
 		  Userland/Syscall/RessourceCaller.class.uo \
 		  Userland/Start.uo

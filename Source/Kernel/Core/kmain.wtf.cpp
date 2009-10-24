@@ -26,7 +26,6 @@
 #include <VFS/FileNode.class.h>
 #include <VFS/VFS.ns.h>
 #include <VFS/DirectoryNode.class.h>
-#include <VFS/TextFile.class.h>
 #include <Core/Log.ns.h>
 #include <Shell/KernelShell.class.h>
 

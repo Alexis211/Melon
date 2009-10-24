@@ -4,7 +4,7 @@
  - help     shows this
  - reboot   reboots your computer       root
  - halt     shuts down your computer    root
- - loadkeys loads a new keymap          root
+ - loadkeys loads a keymap              root
  - free     shows free amount of RAM
  - uptime   shows computer's uptime
  - run      runs a binary file

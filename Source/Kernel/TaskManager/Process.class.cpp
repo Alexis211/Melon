@@ -6,6 +6,8 @@
 #include <Process.iface.h>
 #include <UserManager/Usr.ns.h>
 
+#define ISPARENT Task::currProcess()->getPid() == m_ppid
+
 namespace Mem {
 	extern Heap kheap;
 }
@@ -16,7 +18,8 @@ call_t Process::m_callTable[] = {
 	CALL1(PRIF_FREEPAGE, &Process::freePageSC),
 	CALL0(PRIF_GETPID, &Process::getPid),
 	CALL0(PRIF_GETPPID, &Process::getPpid),
-	CALL0(PRIF_GETCMDLINE, &Process::getCmdlineSC),
+	CALL0(PRIF_ARGC, &Process::argcSC),
+	CALL1(PRIF_ARGV, &Process::argvSC),
 	CALL0(0, 0)
 };
 
@@ -100,16 +103,20 @@ void Process::start() {
 	if (m_state == P_STARTING) m_state = P_RUNNING;
 }
 
+void Process::pushArg(const String& arg) {
+	m_arguments.push(arg);
+}
+
 void Process::exit() {
 	for (u32int i = 0; i < m_threads.size(); i++) {
 		delete m_threads[i];
 	}
 	m_threads.clear();
-	for (SimpleList<File*> *iter = m_fileDescriptors; iter != 0; iter = iter->next()) {
-		iter->v()->close(false);
-		delete iter->v();
+	while (m_fileDescriptors != 0) {
+		m_fileDescriptors->v()->close(false);
+		delete m_fileDescriptors->v();
+		m_fileDescriptors = m_fileDescriptors->delThis();
 	}
-	if (m_fileDescriptors != 0) delete m_fileDescriptors; //Will recursively delete whole list
 	m_state = P_FINISHED;
 }
 
@@ -177,20 +184,17 @@ u32int Process::allocPageSC(u32int pos) {
 	return 0;
 }
 
-u32int Process::getCmdlineSC() {
-	if (Usr::uid() == m_uid or ISROOT) {
-		String cmdline;
-		for (u32int i = 0; i < m_arguments.size(); i++) {
-			if (i != 0) cmdline += " ";
-			if (m_arguments[i].contains(" ")) {
-				cmdline += "'";
-				cmdline += m_arguments[i];
-				cmdline += "'";
-			} else {
-				cmdline += m_arguments[i];
-			}
-		}
-		return cmdline.serialize();
+u32int Process::argcSC() {
+	if (Usr::uid() == m_uid or ISROOT or ISPARENT) {
+		return (m_arguments.size());
+	}
+	return (u32int) - 1;
+}
+
+u32int Process::argvSC(u32int idx) {
+	if (idx >= m_arguments.size()) return (u32int) - 1;
+	if (Usr::uid() == m_uid or ISROOT or ISPARENT) {
+		return m_arguments[idx].serialize();
 	}
 	return (u32int) - 1;
 }
