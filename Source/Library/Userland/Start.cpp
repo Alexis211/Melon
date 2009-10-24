@@ -1,4 +1,5 @@
 #include <types.h>
+#include <Syscall/Syscall.wtf.h>
 #include <Binding/VirtualTerminal.class.h>
 
 #include <Heap.class.h>
@@ -15,14 +16,21 @@ VirtualTerminal invt(0), outvt(0);
 
 int main(const Vector<String>& args);
 
+void doExit(u32int v) {
+	asm volatile("int $66" : : "a"(v));
+}
+
 extern "C" void start() {
 	//Call static constructors
+	u32int i = 0;
     for(u32int * call = &start_ctors; call < &end_ctors; call++) {
         ((void (*)(void))*call)();
     }
 
-	heap.create(0x40000000, 0x00100000, 0x00004000);	//Initially create a 1M heap with 16ko index
+	heap.create(0x40000000, 0x00040000, 0x00004000);	//Initially create a 256ko heap with 16ko index
 	invt = VirtualTerminal::getIn(); outvt = VirtualTerminal::getOut();
+	if (!invt.valid()) doExit(1);
+	if (!outvt.valid()) doExit(2);
 
 	u32int argc = Process::get().argc();
 	Vector<String> args(argc);
@@ -35,7 +43,7 @@ extern "C" void start() {
         ((void (*)(void))*call)();
     }
 
-	asm volatile("int $66" : : "a"(r));
+	doExit(r);
 }
 
 namespace Mem {

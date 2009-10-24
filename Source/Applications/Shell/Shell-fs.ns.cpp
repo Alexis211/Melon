@@ -1,5 +1,6 @@
 #include "Shell.ns.h"
 #include <TextFile.class.h>
+#include <Binding/Process.class.h>
 
 namespace Shell {
 
@@ -108,6 +109,26 @@ void wf(Vector<String>& args) {
 			f.close();
 		} else {
 			outvt << "Error opening file.\n";
+		}
+	}
+}
+
+void run(Vector<String>& args) {
+	if (args.size() == 1) {
+		outvt << "Nothing to run...\n";
+	} else {
+		Process p = Process::run(args[1]);
+		if (p.valid()) {
+			p.setInVT(invt);
+			p.setOutVT(outvt);
+			for (u32int i = 2; i < args.size(); i++) {
+				p.pushArg(args[i]);
+			}
+			p.start();
+			s32int v = p.wait();
+			outvt << "Return value : " << (s64int)v << "\n";
+		} else {
+			outvt << "Error while launching process.\n";
 		}
 	}
 }

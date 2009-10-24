@@ -45,6 +45,8 @@ class Process : public Ressource {
 	VirtualTerminal *m_inVT, *m_outVT;
 	DirectoryNode *m_cwd;
 
+	bool m_autodelete;
+
 	Heap *m_userHeap;
 
 	Vector<Thread*> m_threads;
@@ -57,13 +59,18 @@ class Process : public Ressource {
 	u32int argvSC(u32int);
 	u32int allocPageSC(u32int);
 	u32int freePageSC(u32int);
+	u32int startSC();	//Permits parent process to start run of process
+	u32int autoDeleteSC(u32int);	//If true, process will auto-delete when it finishes. Else, it must be deleted by parent, while waiting for it.
+	u32int pushArgSC(u32int);
+	u32int setOutVTSC(u32int);
+	u32int setInVTSC(u32int);
 	bool accessible();
 	
 	public:
 	static u32int scall(u8int, u32int, u32int, u32int, u32int);
 
 	static Process* createKernel(String cmdline, VirtualTerminal *vt);	//Also creates a Thread for what's curently happening
-	static Process* run(String filename, FSNode* cwd, u32int uid);
+	static Process* run(String filename, u32int uid);
 	Process(String binfile, u32int uid);
 	~Process();
 

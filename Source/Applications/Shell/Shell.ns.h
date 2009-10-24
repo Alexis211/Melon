@@ -14,4 +14,5 @@ namespace Shell {
 	extern void mkdir(Vector<String>& args);
 	extern void cat(Vector<String>& args);
 	extern void wf(Vector<String>& args);
+	extern void run(Vector<String>& args);
 }

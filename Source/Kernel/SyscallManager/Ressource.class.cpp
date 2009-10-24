@@ -1,6 +1,7 @@
 #include "Ressource.class.h"
 #include <SyscallManager/Res.ns.h>
 #include <UserManager/Usr.ns.h>
+#include <TaskManager/Task.ns.h>
 
 Ressource::Ressource(u8int type, call_t* callTable) : m_lock(MUTEX_FALSE) {
 	m_id = Res::registerRes(this);
@@ -20,8 +21,6 @@ void Ressource::addCallTable(call_t* callTable) {
 }
 
 u32int Ressource::doCall(u8int id, u32int a, u32int b, u32int c, u32int d, u32int e) {
-	if (id == 0) return m_type;
-
 	for (SimpleList<call_t*> *iter = m_callTables; iter != 0; iter = iter->next()) {
 		call_t* ct = iter->v();
 		u32int i = 0;
@@ -43,6 +42,7 @@ u32int Ressource::doCall(u8int id, u32int a, u32int b, u32int c, u32int d, u32in
 
 u32int Ressource::call(u8int id, u32int a, u32int b, u32int c, u32int d, u32int e) {
 	if (!ISROOT && !accessible()) return (u32int) - 1;
+	if (id == 0) return m_type;
 	m_lock.waitLock();
 	u32int r = doCall(id, a, b, c, d, e);
 	m_lock.unlock();

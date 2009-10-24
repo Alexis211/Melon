@@ -109,7 +109,8 @@ void KernelShell::run(Vector<String>& args) {
 	if (args.size() == 1) {
 		*m_vt << "No app to run !\n";
 	} else {
-		Process* p = Process::run(args[1], m_cwd, 0);
+		Task::currProcess()->setCwd(m_cwd);
+		Process* p = Process::run(args[1], 0);
 		if (p == 0) {
 			*m_vt << "Error while launching process.\n";
 		} else {
