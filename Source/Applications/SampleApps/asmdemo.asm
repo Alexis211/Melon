@@ -8,7 +8,7 @@ start:			; label used for calculating app size
  mov eax, SC_PUTCH
  mov ebx, 10
  int 64
- loop:
+lblloop:
   inc ecx
   mov eax, SC_PUTCH	;temporarily defined for writing one char to screen
   mov ebx, ecx	
@@ -17,7 +17,7 @@ start:			; label used for calculating app size
   mov ebx, 30			;20ms
   int 64
   cmp ecx, 127
-  jnz loop
+  jnz lblloop
  mov eax, 0
  mov eax, SC_PUTCH
  mov ebx, 10	;newline

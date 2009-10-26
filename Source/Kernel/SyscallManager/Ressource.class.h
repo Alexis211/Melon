@@ -48,7 +48,7 @@ class Ressource {
 
 	protected:
 	Ressource(u8int type, call_t* callTable = 0);
-	~Ressource();
+	virtual ~Ressource();
 
 	//This function's role is to tell the Ressource if it is supposed to be accesible from current user or not
 	virtual bool accessible() = 0;	//This function should be overloaded by all derivated classes

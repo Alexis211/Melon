@@ -14,13 +14,13 @@ namespace Mem {
 }
 
 //Standard implemenations of operator new/delete
-inline void* operator new(u32int, void *p) { return p; }
-inline void* operator new[](u32int, void *p) { return p; }
+inline void* operator new(size_t, void *p) { return p; }
+inline void* operator new[](size_t, void *p) { return p; }
 inline void operator delete(void*, void*) { }
 inline void operator delete[](void*, void*) { }
 
-inline void* operator new(u32int sz) { return Mem::alloc(sz); }
-inline void* operator new[](u32int sz) { return Mem::alloc(sz); }
+inline void* operator new(size_t sz) { return Mem::alloc(sz); }
+inline void* operator new[](size_t sz) { return Mem::alloc(sz); }
 inline void operator delete(void *ptr) { Mem::free(ptr); }
 inline void operator delete[](void *ptr) { Mem::free(ptr); }
 

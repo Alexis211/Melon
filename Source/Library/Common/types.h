@@ -12,6 +12,7 @@ typedef long long	s64int;
 typedef int 		s32int;
 typedef short		s16int;
 typedef char		s8int;
+typedef unsigned long size_t;
 
 #define U64 unsigned long long
 #define S64 long long

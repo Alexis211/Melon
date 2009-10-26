@@ -9,6 +9,7 @@ class DirectoryNode;
 //This abstract class describes a filesystem
 class FileSystem {
 	protected:
+	virtual ~FileSystem() {}
 	bool m_isWritable;	//false = read only
 	DirectoryNode* m_rootNode;
 
