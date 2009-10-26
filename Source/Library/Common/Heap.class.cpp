@@ -137,7 +137,7 @@ void Heap::contract() {	//Automatically work out how much we can contract
 	m_end = newEnd;
 }
 
-void *Heap::alloc(u32int sz, bool no_expand) {
+void *Heap::alloc(size_t sz, bool no_expand) {
 	m_mutex.waitLock();
 
 	u32int newsize = sz + sizeof(heap_header_t) + sizeof(heap_footer_t);

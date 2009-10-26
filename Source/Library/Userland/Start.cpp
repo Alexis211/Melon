@@ -47,7 +47,7 @@ extern "C" void start() {
 }
 
 namespace Mem {
-	void* alloc (u32int sz) { return heap.alloc(sz); }
+	void* alloc (size_t sz) { return heap.alloc(sz); }
 	void free(void* ptr) { heap.free(ptr); }
-	void* mkXchgSpace (u32int sz) { return alloc(sz); }
+	void* mkXchgSpace (size_t sz) { return alloc(sz); }
 }

@@ -8,9 +8,9 @@
 #include <CMem.ns.h>
 
 namespace Mem {
-	void* alloc(u32int);
+	void* alloc(size_t);
 	void free(void*);
-	void* mkXchgSpace(u32int sz);
+	void* mkXchgSpace(size_t sz);
 }
 
 //Standard implemenations of operator new/delete

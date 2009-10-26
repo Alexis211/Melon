@@ -5,13 +5,13 @@
 
 namespace Mem {
 	extern bool pagingEnabled;
-	extern u32int placementAddress;
+	extern size_t placementAddress;
 
 	void createHeap();
-	void *alloc(u32int sz, bool align = false);
+	void *alloc(size_t sz, bool align = false);
 	void free(void *ptr);
 
-	void* mkXchgSpace(u32int sz);	//This creates a space between userland and kernel land where data can be exchanged
+	void* mkXchgSpace(size_t sz);	//This creates a space between userland and kernel land where data can be exchanged
 
 	u32int kheapSize(), kheapFree();
 }

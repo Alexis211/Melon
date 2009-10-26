@@ -12,7 +12,7 @@
 struct heap_header_t {
 	u32int magic;
 	bool is_hole;
-	u32int size;
+	size_t size;
 };
 
 struct heap_footer_t {
@@ -22,7 +22,7 @@ struct heap_footer_t {
 
 struct heap_index_t {
 	heap_header_t **data;
-	u32int size;
+	size_t size;
 };
 
 #ifdef THIS_IS_MELON_KERNEL
@@ -63,7 +63,7 @@ class Heap {
 	void create(u32int start, u32int size, u32int idxsize);
 #endif
 
-	void* alloc(u32int sz, bool no_expand = false);
+	void* alloc(size_t sz, bool no_expand = false);
 	void free(void* ptr);
 
 	bool usable() { 

@@ -6,12 +6,12 @@
 namespace Mem {
 
 bool pagingEnabled = false;
-u32int placementAddress;
+size_t placementAddress;
 
 Heap kheap;
 
 //Placement malloc, used while heap is not initialized
-void *kallocInternal(u32int sz, bool align) {
+void *kallocInternal(size_t sz, bool align) {
 	if (kheap.usable()) return 0;
 	if (align && (placementAddress & 0xFFFFF000)) {
 		placementAddress &= 0xFFFFF000;
@@ -40,7 +40,7 @@ void createHeap() {
 	kheap.create(heapStart, heapSize, heapIndexSize, kernelPageDirectory, false, false);
 }
 
-void *alloc(u32int sz, bool align) {
+void *alloc(size_t sz, bool align) {
 	if (!kheap.usable()) return kallocInternal(sz, align);
 	if (align) return 0;
 
@@ -51,7 +51,7 @@ void free(void *ptr) {
 	kheap.free(ptr);
 }
 
-void* mkXchgSpace(u32int sz) {
+void* mkXchgSpace(size_t sz) {
 	return Task::currThread()->mkXchgSpace(sz);
 }
 
