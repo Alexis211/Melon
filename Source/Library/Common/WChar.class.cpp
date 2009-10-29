@@ -59,8 +59,9 @@ u32int WChar::utfLen(const char* c, u8int encoding) {
 }
 
 void WChar::affectAscii(char c) {
-	if (c >= 0)	value = c;
-	else value = CP437[c + 128];
+	s32int a = c;
+	if (a >= 0)	value = a;
+	else value = CP437[a + 128];
 }
 
 u32int WChar::affectUtf8(const char* c) {	//Returns the number of bytes for the character

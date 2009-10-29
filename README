@@ -3,6 +3,11 @@ Welcome ! It seems you are intrested in my Melon OS...
 ** HOW TO BUILD MELON : **
 This is supposed to work in a Linux environment. Maybee it could work on *BSD, or Cygwin, but that wasn't tested.
 
+You need :
+- GCC
+- Nasm
+- Qemu or Bochs for testing (Qemu works better, debugging is planned for bochs)
+
 If you haven't yet downloaded the source code, then commit the GIT repository :
 $ git clone git://github.com/Alexis211/Melon.git
 

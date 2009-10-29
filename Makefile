@@ -55,6 +55,7 @@ $(RamFS):
 	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)
 
 floppy: $(Files)
+	mkdir Mount
 	sudo mount $(Floppy) Mount -o loop
 	sudo cp Grub-menu.cfg Mount/boot/menu.cfg
 	for f in $(Files); do \
