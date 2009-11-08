@@ -1,17 +1,7 @@
 #include "V86Thread.class.h"
 #include <TaskManager/Task.ns.h>
 
-u16int V86Thread::allocSeg = V86_ALLOC_START;
-
-u16int V86Thread::alloc(u16int length) {
-	if (length & 0xF) length = (length & 0xFFFF0) + 0x10;
-	u16int segments = length / 16;
-	if (allocSeg < V86_ALLOC_START) allocSeg = V86_ALLOC_START;
-	if (allocSeg + segments > V86_ALLOC_END) allocSeg = V86_ALLOC_START;
-	u16int ret = allocSeg;
-	allocSeg += segments;
-	return ret;
-}
+#include <TaskManager/V86/V86.ns.h>
 
 void V86Thread::runV86(V86Thread* thread, u32int data, u32int ss, u32int cs) {
 	thread->m_process->getPagedir()->switchTo();
@@ -75,14 +65,14 @@ V86Thread::V86Thread(v86_function_t* entry, v86_retval_t* ret, u32int data) : Th
 		m_process->getPagedir()->allocFrame(i, true, true);
 	}
 
-	u16int cs = alloc(entry->size);	//Alocate segments for the code to run in
+	u16int cs = V86::allocSeg(entry->size);	//Alocate segments for the code to run in
 	u8int* codeptr = (u8int*)(FP_TO_LINEAR(cs, 0));
 	for (u32int i = ((u32int)(codeptr) & 0xFFFFF000); i < (u32int)(codeptr) + entry->size; i += 0x1000) {
 		m_process->getPagedir()->allocFrame(i, true, true);
 	}
 	memcpy(codeptr, entry->data, entry->size);	//Copy the code there
 
-	u16int ss = alloc(V86_STACKSIZE);
+	u16int ss = V86::allocSeg(V86_STACKSIZE);
 	u8int* stackptr = (u8int*)(FP_TO_LINEAR(ss, 0));
 	for (u32int i = ((u32int)stackptr & 0xFFFFF000); i < (u32int)stackptr + V86_STACKSIZE; i += 0x1000) {
 		m_process->getPagedir()->allocFrame(i, true, true);
@@ -154,6 +144,16 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 				return true;
 			case 0xCD:		// INT N
 				if (ip[1] == 3) return false;	//Breakpoint exception, here used for telling that thread has ended
+				if (ip[1] == 60) {		//INT 60 is used so that the real mode code can retrieve some regs from caller
+					regs->eax = m_ret->regs->eax;
+					regs->ebx = m_ret->regs->ebx;
+					regs->ecx = m_ret->regs->ecx;
+					regs->edx = m_ret->regs->edx;
+					regs->edi = m_ret->regs->edi;
+					regs->esi = m_ret->regs->esi;
+					regs->eip = (u16int)(regs->eip + 2);
+					return true;
+				}
 
 				stack -= 3;
 				regs->useresp = ((regs->useresp & 0xFFFF) - 6) & 0xFFFF;
@@ -190,7 +190,7 @@ void V86Thread::handleException(registers_t *regs, int no) {
 	if (no == 13) {			//General protection fault
 		if (!handleV86GPF(regs)) {
 			m_ret->finished = true;
-			m_ret->regs = *regs;
+			*(m_ret->regs) = *regs;
 			Task::currentThreadExits(0);
 			return;
 		}

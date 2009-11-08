@@ -29,6 +29,7 @@ Objects = Core/loader.wtf.o \
 		TaskManager/Process-sc.class.o \
 		TaskManager/Thread.class.o \
 		TaskManager/V86/V86Thread.class.o \
+		TaskManager/V86/V86.ns.o \
 		TaskManager/V86/v86.wtf.o \
 		TaskManager/Task.ns.o \
 		TaskManager/Task.wtf.o \
