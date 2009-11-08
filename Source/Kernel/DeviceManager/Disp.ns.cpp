@@ -1,8 +1,10 @@
 #include "Disp.ns.h"
+#include <DeviceManager/Dev.ns.h>
 
 namespace Disp {
 
 mode_t mode;
+Vector<mode_t> modes;
 
 u16int textCols() {
 	return mode.textCols;
@@ -26,11 +28,27 @@ void clear() {
 	mode.device->clear();
 }
 
-void setDisplay(Display* disp) {
-	mode.device = disp;
-	disp->clear();
-	mode.textCols = disp->textCols();
-	mode.textRows = disp->textRows();
+void getModes() {
+	modes.clear();
+	Vector<Device*> disps = Dev::findDevices("display");
+	for (u32int i = 0; i < disps.size(); i++) {
+		((Display*)(disps[i]))->getModes(modes);
+	}
+}
+
+bool setMode(mode_t& newmode) {
+	if (newmode.device->setMode(newmode)) {
+		mode = newmode;
+		return true;
+	}
+	return false;
+}
+
+void setText(VGATextOutput* o) {
+	mode.device = o;
+	o->clear();
+	mode.textCols = 80;
+	mode.textRows = 25;
 }
 
 }

@@ -35,11 +35,6 @@ extern u32int end;	//Placement address
 
 extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
 
-#define INFO(vt) vt->setColor(KVT_FGCOLOR); *vt << " - "; vt->setColor(KVT_LIGHTCOLOR);
-#define PROCESSING(vt, m) vt->setColor(KVT_BLECOLOR); *vt << " > "; vt->setColor(KVT_FGCOLOR); *vt << m; \
-	vt->setCursorCol(60); vt->setColor(KVT_LIGHTCOLOR); *vt << ": ";
-#define OK(vt) vt->setColor(KVT_FGCOLOR); *vt << "[ "; vt->setColor(KVT_OKCOLOR); *vt << "OK"; vt->setColor(KVT_FGCOLOR); *vt << " ]\n";
-
 u32int logoAnimation(void* p) {
 	SimpleVT& vt = *((SimpleVT*)p);
 	vt.setColor(8);
@@ -84,13 +79,41 @@ u32int logoAnimation(void* p) {
 	return 0;
 }
 
+void selectVideoMode(SimpleVT& v) {
+	Disp::getModes();
+	v << "\n\nPlease select a graphic mode in the list below:\n";
+
+	for (u32int i = 0; i < Disp::modes.size(); i++) {
+		Disp::mode_t& m = Disp::modes[i];
+		v << (s32int)i << ":\t" << "Text " << m.textRows << "x" << m.textCols << "\t";
+		if (m.graphWidth != 0 and m.graphHeight != 0) {
+			v << "Graphics " << m.graphWidth << "x" << m.graphHeight << "x" << m.graphDepth << "\t";
+		} else {
+			v << "No graphics";
+		}
+		v.setCursorCol(40);
+		v << m.device->getName() << "\n";
+	}
+
+	while (1) {
+		v << "\nYour selection: ";
+		String answer = v.readLine();
+		u32int n = answer.toInt();
+		if (n >= 0 and n < Disp::modes.size() and Disp::setMode(Disp::modes[n])) {
+			return;
+		} else {
+			v << "Error while switching video mode, please select another one.\n";
+		}
+	}
+}
+
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
 
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
 		Mem::placementAddress = (u32int)&end;	//Setup basic stuff so that PANIC will work
 		VGATextOutput *vgaout = new VGATextOutput();
-		Disp::setDisplay(vgaout);
+		Disp::setText(vgaout);
 		PANIC("Error with multiboot header.");
 	}
 	
@@ -107,52 +130,34 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	//Create text output
 	VGATextOutput *vgaout = new VGATextOutput();
-	Disp::setDisplay(vgaout);
-
-	//Create a VT for handling the Melon bootup logo
-	SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
-	melonLogoVT->map(1);
+	Disp::setText(vgaout);
 
 	//Create a VT for logging what kernel does
-	SimpleVT *kvt = new ScrollableVT(3, 69, 10, KVT_FGCOLOR, KVT_BGCOLOR);
-	kvt->map(15);
+	SimpleVT *kvt = new ScrollableVT(25, 80, 10, KVT_FGCOLOR, KVT_BGCOLOR);
+	kvt->map(0, 0);
+	*kvt << "Melon is loading...";
 
-	INFO(kvt); *kvt << "Lower ram : " << (s32int)mbd->mem_lower << "k, upper : " << (s32int)mbd->mem_upper << "k.\n";
-	INFO(kvt); *kvt << "Placement address : " << (u32int)Mem::placementAddress << "\n";
+	IDT::init();		//Setup interrupts 
 
-	PROCESSING(kvt, "Loading IDT...");
-	IDT::init(); OK(kvt);
-
-	PROCESSING(kvt, "Initializing paging...");
 	u32int totalRam = ((mbd->mem_upper + mbd->mem_lower) * 1024);
-	PhysMem::initPaging(totalRam); OK(kvt);
+	PhysMem::initPaging(totalRam);		//Setup paging 
 
-	INFO(kvt); *kvt << "Total ram : " << (s32int)(totalRam / 1024) << "k (" << (s32int)(totalRam / (1024 * 1024)) << "M).\n";
-	PROCESSING(kvt, "Initializing real GDT and cleaning page directory...");
-	GDT::init();
-	PhysMem::removeTemporaryPages(); OK(kvt);
+	GDT::init();		//Initialize real GDT, not fake one from loader.wtf.asm
+	PhysMem::removeTemporaryPages(); 	//Remove useless page mapping
 
-	PROCESSING(kvt, "Creating kernel heap...");
-	Mem::createHeap(); OK(kvt);
-	INFO(kvt); *kvt << "Free frames : " << (s32int)PhysMem::free() << "/" << (s32int)PhysMem::total() << "\n";
+	Mem::createHeap();		//Create kernel heap 
 
-	PROCESSING(kvt,"Initializing PIT...");
-	Dev::registerDevice(new Timer()); OK(kvt);
+	Dev::registerDevice(new Timer()); 	//Initialize timer
+	Task::initialize(String((char*)mbd->cmdline), kvt);	//Initialize multitasking 
 
-	PROCESSING(kvt, "Initializing multitasking...");
-	Task::initialize(String((char*)mbd->cmdline), kvt); 
-	new Thread(logoAnimation, (void*)melonLogoVT, true); OK(kvt);
-
-	PROCESSING(kvt, "Mounting first module as ramfs on root directory...");
 	FileSystem* fs = RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
 	DirectoryNode* cwd;
 	cwd = fs->getRootNode();
 	Task::currProcess()->setCwd(cwd);
-	VFS::setRootNode(cwd); OK(kvt);
+	VFS::setRootNode(cwd);
 
-	PROCESSING(kvt, "Setting up logs...");
-	Log::init(KL_STATUS); OK(kvt);
-	INFO(kvt); *kvt << "Logs are now going to files in /System/Logs/\n";
+	Log::init(KL_STATUS);	//Setup logging
+	Log::log(KL_STATUS, "kmail : Melon booting.");
 
 	Dev::registerDevice(vgaout);
 	Log::log(KL_STATUS, "kmain : Registered textual VGA output");
@@ -162,34 +167,29 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
 	Log::log(KL_STATUS, "kmain : Keyboard set up");
 
+	asm volatile("sti");
+
+	selectVideoMode(*kvt);
+	kvt->unmap();
+
+	//Create a VT for handling the Melon bootup logo
+	SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
+	melonLogoVT->map(1);
+	new Thread(logoAnimation, (void*)melonLogoVT, true);
+
 	FloppyController::detect();
 	Log::log(KL_STATUS, "kmain : Floppy drives detected");
 
 	Usr::load();
 	Log::log(KL_STATUS, "kmain : User list loaded");
 
-	asm volatile("sti");
-	Log::log(KL_STATUS, "kmain : Interrupts enabled.");
-
-	/*
-	new KernelShell(cwd);	//No need to save that in a var, it is automatically destroyed anyways
-	Log::log(KL_STATUS, "kmain : Kernel shell launched");
-	//kvt->unmap();
-
-	while (KernelShell::getInstances() > 0) {
-		Task::currThread()->sleep(100);
-	}
-
-	Log::log(KL_STATUS, "kmain : All kernel shells finished. Halting.");
-	Sys::halt();
-	*/
-
 	Process* p = Process::run("/System/Applications/PaperWork.app", 0);
 	if (p == 0) {
 		PANIC("Could not launch PaperWork !");
 	} else {
 		Log::log(KL_STATUS, "kmain : Starting PaperWork (init)");
-		VirtualTerminal* vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+		VirtualTerminal* vt = new ScrollableVT(Disp::textRows() - 10, Disp::textCols() - 4,
+			   	200, SHELL_FGCOLOR, SHELL_BGCOLOR);
 		Kbd::setFocus(vt);
 		((ScrollableVT*)vt)->map(9);
 		p->setInVT(vt);

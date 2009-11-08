@@ -1,9 +1,11 @@
 #include "VGATextOutput.class.h"
+#include <DeviceManager/Disp.ns.h>
 
 //Virtual address in higher half
 #define RAM_ADDR 0xC00B8000
 
 using namespace Sys;	//For outb
+using namespace Disp;
 
 String VGATextOutput::getClass() {
 	return "display.text";
@@ -13,12 +15,24 @@ String VGATextOutput::getName() {
 	return "Standard mode0 VGA text display";
 }
 
-u16int VGATextOutput::textCols() {
-	return 80;
+void VGATextOutput::getModes(Vector<mode_t> &to) {
+	mode_t m;
+	m.textCols = 80;
+	m.textRows = 25;
+	m.identifier = 0;
+	m.graphWidth = 0;
+	m.graphHeight = 0;
+	m.device = this;
+	to.push(m);
 }
 
-u16int VGATextOutput::textRows() {
-	return 25;
+bool VGATextOutput::setMode(mode_t& mode) {
+	if (mode.device == this && mode.identifier == 0) {
+		//TODO : switch for real to mode 0.
+		clear();
+		return true;
+	}
+	return false;
 }
 
 void VGATextOutput::putChar(u16int line, u16int col, WChar c, u8int color) {

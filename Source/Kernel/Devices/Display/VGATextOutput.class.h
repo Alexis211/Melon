@@ -8,6 +8,9 @@ class VGATextOutput : public Display {
 	String getClass();
 	String getName();
 
+	void getModes(Vector<Disp::mode_t> &to);
+	bool setMode(Disp::mode_t& mode);
+
 	u16int textCols();
 	u16int textRows();
 	void putChar(u16int line, u16int col, WChar c, u8int color);

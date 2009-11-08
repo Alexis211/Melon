@@ -28,9 +28,9 @@ int main(Vector<String> args) {
 		outvt << "Logging in to Melon\n";
 		String user, pw;
 		while (1) {
-			outvt << "Username : ";
+			outvt << "Username: ";
 			user = invt.readLine();
-			outvt << "Password : ";
+			outvt << "Password: ";
 			pw = invt.readLine(false);
 			if (!Process::get().authenticatePW(user, pw)) {
 				outvt << "Authentication failed.\n\n";

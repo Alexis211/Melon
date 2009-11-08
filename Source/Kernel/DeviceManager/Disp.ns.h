@@ -1,14 +1,20 @@
 #ifndef DEF_DISP_NS_H
 #define DEF_DISP_NS_H
 
-#include <Devices/Display/Display.proto.h>
+#include <Devices/Display/VGATextOutput.class.h>
 #include <WChar.class.h>
+#include <Vector.class.h>
 
 namespace Disp {
 	struct mode_t {
 		int textCols, textRows;
+		int graphWidth, graphHeight, graphDepth;
+		int identifier;	//Used by video devices
 		Display *device;
 	};
+
+	extern Vector<mode_t> modes;
+	extern mode_t mode;
 
 	u16int textCols();
 	u16int textRows();
@@ -16,7 +22,10 @@ namespace Disp {
 	void moveCursor(u16int line, u16int col);
 	void clear();
 
-	void setDisplay(Display* disp);
+	void getModes();
+	bool setMode(mode_t& mode);
+
+	void setText(VGATextOutput* o);	//To use only once : when display is initializing
 }
 
 #endif
