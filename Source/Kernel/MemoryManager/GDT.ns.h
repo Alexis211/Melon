@@ -42,6 +42,7 @@ namespace GDT {
 		u32int ldt;        // Unused...
 		u16int trap;
 		u16int iomap_base;
+		u8int ioports[8192];
 	} __attribute__((packed));
 
 	struct gdt_ptr_t {

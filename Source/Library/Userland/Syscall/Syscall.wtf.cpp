@@ -11,6 +11,10 @@ void threadFinishedSyscall(u32int v) {
 	asm volatile("int $66" : : "a"(v));
 }
 
+void breakPoint() {
+	asm volatile("int $3");
+}
+
 void putch(char c) {
 	u32int x = c;
 	syscall(0xFFFFFF01, x);

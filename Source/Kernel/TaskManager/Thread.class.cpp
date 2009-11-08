@@ -18,7 +18,7 @@ u32int Thread::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 	return (u32int) - 1;
 }
 
-void runThread(Thread* thread, void* data, thread_entry_t entry_point) {
+void Thread::run(Thread* thread, void* data, thread_entry_t entry_point) {
 	thread->m_process->getPagedir()->switchTo();
 	if (thread->m_isKernel) {
 		asm volatile("sti");
@@ -84,7 +84,7 @@ Thread::~Thread() {
 	Task::unregisterThread(this);
 	Mem::free(m_kernelStack.addr);
 	m_process->getPagedir()->switchTo();
-	if (m_userStack.addr != 0) {
+	if (m_userStack.addr != 0 && !m_isKernel) {
 		m_process->heap().free(m_userStack.addr);
 	}
 	if (m_xchgspace != 0) {
@@ -109,7 +109,7 @@ void Thread::setup(Process* process, thread_entry_t entry_point, void* data, boo
 	}
 	u32int* stack = (u32int*)((u32int)(m_kernelStack.addr) + m_kernelStack.size);
 
-	//Pass function parameters for runThread()
+	//Pass function parameters for run()
 	stack--;
 	*stack = (u32int)entry_point;	//Push entry point (function parameter)
 	stack--;
@@ -120,7 +120,7 @@ void Thread::setup(Process* process, thread_entry_t entry_point, void* data, boo
 	*stack = 0;	//Null return address
 	m_esp = (u32int)stack;
 	m_ebp = m_esp + 8;
-	m_eip = (u32int)runThread;
+	m_eip = (u32int)run;
 
 	m_state = T_RUNNING;
 	m_process->registerThread(this);
@@ -140,7 +140,7 @@ void Thread::finish(u32int errcode) {
 	m_process->threadFinishes(this, errcode);
 } 
 
-void Thread::handleException(registers_t regs, int no) {
+void Thread::handleException(registers_t *regs, int no) {
 	char* exceptions[] = {
 		"Division by zero", "Debug exception", "Non maskable interrupt", 
 		"Breakpoint exception", "'Into detected overflow'", "Out of bounds exception",
@@ -156,15 +156,23 @@ void Thread::handleException(registers_t regs, int no) {
 
 	VirtualTerminal &vt = *(m_process->m_outVT);
 
-	vt << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs.cs << ":" <<
-		(u32int)regs.eip << "\n:: " << exceptions[no];
-	if (m_isKernel) PANIC_DUMP("Exception in kernel thread", &regs);
+	vt << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs->cs << ":" <<
+		(u32int)regs->eip << "\n:: " << exceptions[no];
+	if (no == 3) {
+		vt << "\n\nBreakpoint data :\n";
+		Sys::dumpRegs(regs, vt);
+		vt << "Press any key to continue execution of program...";
+		m_process->m_inVT->getKeypress(false);
+		vt << "\n";
+		return;
+	}
+	if (m_isKernel) PANIC_DUMP("Exception in kernel thread", regs);
 
 	if (no == 14) {	//Page fault
-		int present = !(regs.err_code & 0x1);
-		int rw = regs.err_code & 0x2;
-		int us = regs.err_code & 0x4;
-		int rsvd = regs.err_code & 0x8;
+		int present = !(regs->err_code & 0x1);
+		int rw = regs->err_code & 0x2;
+		int us = regs->err_code & 0x4;
+		int rsvd = regs->err_code & 0x8;
 		u32int faddr;
 		asm volatile("mov %%cr2, %0" : "=r"(faddr));
 		vt << "\n   ";

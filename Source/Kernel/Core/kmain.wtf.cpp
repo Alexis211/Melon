@@ -31,6 +31,18 @@
 
 #include <Ressources/Graphics/logo.text.cxd>
 
+#include <TaskManager/V86/V86Thread.class.h>
+extern v86_function_t v86test;
+
+void testV86() {
+	VirtualTerminal* vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+	Task::currProcess()->setOutVT(vt);
+	v86_retval_t r;
+	new V86Thread(&v86test, &r, 0);
+	while (!r.finished);
+	PANIC("V86 TEST END");
+}
+
 extern u32int end;	//Placement address
 
 extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
@@ -184,10 +196,13 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Sys::halt();
 	*/
 
+	testV86();
+
 	Process* p = Process::run("/System/Applications/PaperWork.app", 0);
 	if (p == 0) {
 		PANIC("Could not launch PaperWork !");
 	} else {
+		Log::log(KL_STATUS, "kmain : Starting PaperWork (init)");
 		VirtualTerminal* vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
 		Kbd::setFocus(vt);
 		((ScrollableVT*)vt)->map(9);

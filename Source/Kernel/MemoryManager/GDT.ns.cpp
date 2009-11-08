@@ -34,6 +34,7 @@ void writeTSS(s32int num, u16int ss0, u32int esp0) {
 
 	tss_entry.ss0 = ss0;
 	tss_entry.esp0 = esp0;
+	tss_entry.iomap_base = sizeof(tss_entry_t) - 8192;
 
 	tss_entry.cs = 0x0B;	//0x0B = Kernel code segment + RPL=3 (meaning it is supposed to be called from user mode)
 	//0x13 = Kernel data segment + RPL=3 (meaning to be called from ring3)

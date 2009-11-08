@@ -26,11 +26,12 @@ u32int run() {
 	while (1) {
 		outvt << "{" << cwd.getName() << "}: ";
 		String s = invt.readLine();
+		if (s.empty()) continue;
 		while (s[0] == WChar(" ") or s[0] == WChar("\t")) {
 			s = s.substr(1, s.size() - 1);
 		}
-		if (s[0] == WChar("#")) continue;
 		if (s.empty()) continue;
+		if (s[0] == WChar("#")) continue;
 
 		//Parse string
 		Vector<String> cmd;

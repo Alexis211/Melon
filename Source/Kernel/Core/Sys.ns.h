@@ -18,12 +18,14 @@
 
 //This file contains system-relative functions
 class String;
+class VirtualTerminal;
 struct registers_t;
 
 namespace Sys {
 	void outb(u16int port, u8int value);
 	u8int inb(u16int port);
 	u16int inw(u16int port);
+	void dumpRegs(registers_t *regs, VirtualTerminal& vt);
 	void panic(char* message, char *file, u32int line);
 	void panic(char* message, registers_t *regs, char *file, u32int line);
 	void panic_assert(char* file, u32int line, char *desc);

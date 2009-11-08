@@ -23,6 +23,7 @@ PageDirectory::PageDirectory(PageDirectory* other) {
 			for (u32int j = 0; j < 1024; j++) {
 				if (!(other->tables[i]->pages[j].frame))
 					continue;
+				if (i == 0 and j < 256) continue;	//Frame is below 1M, probably used by some V86 stuff. Ignore it.
 				PhysMem::allocFrame(&tables[i]->pages[j], true, true);
 				tables[i]->pages[j].present = other->tables[i]->pages[j].present;
 				tables[i]->pages[j].rw = other->tables[i]->pages[j].rw;
@@ -46,6 +47,7 @@ PageDirectory::~PageDirectory() {
 	for (int i = 0; i < 768; i++) {		//Only free addresses below 0xC0000000, upper is kernel space
 		if (tables[i] != 0) {
 			for (int j = 0; j < 1024; j++) {
+				if (i == 0 and j < 256) continue;	//Frame is below 1M, probably used by some V86 stuff. Ignore it.
 				PhysMem::freeFrame(&(tables[i]->pages[j]));
 			}
 			PageAlloc::free((void*)tables[i]);
@@ -74,13 +76,25 @@ page_t *PageDirectory::getPage(u32int address, bool make) {
 
 void PageDirectory::allocFrame(u32int address, bool is_user, bool is_writable) {
 	page_t *p = getPage(address, true);
-	if (p != 0) PhysMem::allocFrame(p, is_user, is_writable);
+	if (address < 0x100000) {
+		p->present = 1;
+		p->user = (is_user ? 1 : 0);
+		p->rw = (is_writable ? 1 : 0);
+		p->frame = (address / 0x1000);
+	} else {
+		if (p != 0) PhysMem::allocFrame(p, is_user, is_writable);
+	}
 }
 
 void PageDirectory::freeFrame(u32int address) {
 	page_t *p = getPage(address, false);
 	if (p == 0) return;
-	PhysMem::freeFrame(p);
+	if (address < 0x100000) {
+		p->frame = 0;
+		p->present = 0;
+	} else {
+		PhysMem::freeFrame(p);
+	}
 }
 
 void PageDirectory::switchTo() {

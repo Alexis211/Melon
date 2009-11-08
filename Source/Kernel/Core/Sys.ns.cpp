@@ -71,6 +71,16 @@ void bochs_output_hex(u32int i) {
 	}
 }
 
+void dumpRegs(registers_t *regs, VirtualTerminal& vt) {
+	vt << "ds=" << (u32int)regs->ds << ", eip=" << (u32int)regs->eip << ", cs=" << (u32int)regs->cs << "\n";
+	vt << "edi=" << (u32int)regs->edi << ", esi=" << (u32int)regs->esi << ", ebp=" << (u32int)regs->ebp <<
+		", esp=" << (u32int)regs->esp << "\n";
+	vt << "eax=" << (u32int)regs->eax << ", ebx=" << (u32int)regs->ebx << ", ecx=" << (u32int)regs->ecx <<
+		", edx=" << (u32int)regs->edx << "\n";
+	vt << "int_no=" << (s32int)regs->int_no << ", err_code=" << (u32int)regs->err_code << "\n";
+	vt << "eflags=" << (u32int)regs->eflags << ", useresp=" << (u32int)regs->useresp << ", ss=" << (u32int)regs->ss << "\n";
+}
+
 //Used by PANIC() macro (see common.wtf.h)
 void panic(char *message, char *file, u32int line) {
 	asm volatile("cli");
@@ -91,19 +101,14 @@ void panic(char *message, registers_t *regs, char *file, u32int line) {
 	vt.write("\n");
 
 	vt << "PANIC : " << message << "\n => in " << file << " at " << (s32int)line << "\n\n";
-	vt << "ds=" << (u32int)regs->ds << ", eip=" << (u32int)regs->eip << ", cs=" << (u32int)regs->cs << "\n";
-	vt << "edi=" << (u32int)regs->edi << ", esi=" << (u32int)regs->esi << ", ebp=" << (u32int)regs->ebp <<
-		", esp=" << (u32int)regs->esp << "\n";
-	vt << "eax=" << (u32int)regs->eax << ", ebx=" << (u32int)regs->ebx << ", ecx=" << (u32int)regs->ecx <<
-		", edx=" << (u32int)regs->edx << "\n";
-	vt << "int_no=" << (s32int)regs->int_no << ", err_code=" << (u32int)regs->err_code << "\n";
-	vt << "eflags=" << (u32int)regs->eflags << ", useresp=" << (u32int)regs->useresp << ", ss=" << (u32int)regs->ss << "\n";
+	dumpRegs(regs, vt);
+
 	if (regs->int_no == 14) {
 		u32int cr2;
 		asm volatile("mov %%cr2, %0" : "=r"(cr2));
 		vt << "cr2=" << (u32int)cr2 << "\n";
 	}
-	vt << "\n";
+	vt << "\n\n";
 
 	while (1) asm volatile("cli; hlt");
 

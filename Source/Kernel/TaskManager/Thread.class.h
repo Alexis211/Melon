@@ -13,9 +13,10 @@ typedef u32int(*thread_entry_t)(void*);
 
 class Thread : public Ressource {
 	friend class Process;	//This might be useful
-	friend void runThread(Thread*, void*, thread_entry_t);
 
-	private:
+	protected:
+	static void run(Thread* thread, void* data, thread_entry_t entry_point);
+
 	Thread();	//Creates a thread without initializing anything. Used by Process::createKernel();
 
 	Process *m_process;	//Associated process
@@ -50,7 +51,7 @@ class Thread : public Ressource {
 	Thread(Process* process, thread_entry_t entry_point, void* data);
 	~Thread();
 	void finish(u32int errcode);	//Called by run() when thread returns, and by exception handler. Can also be called by the thread itself
-	void handleException(registers_t regs, int no);
+	virtual void handleException(registers_t *regs, int no);
 
 	void setState(u32int esp, u32int ebp, u32int eip);
 	void setKernelStack();
