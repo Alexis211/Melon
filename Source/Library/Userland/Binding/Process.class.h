@@ -57,6 +57,12 @@ class Process : public RessourceCaller {
 	void setOutVT(VirtualTerminal vt) {
 		doCall(PRIF_SETOUTVT, vt.resId());
 	}
+	bool authenticatePW(String user, String pw) {
+		return (doCall(PRIF_AUTHPW, (u32int)&user, (u32int)&pw) == 1);
+	}
+	bool authenticateNoPW(String user) {
+		return (doCall(PRIF_AUTHNOPW, (u32int)&user) == 1);
+	}
 };
 
 #endif

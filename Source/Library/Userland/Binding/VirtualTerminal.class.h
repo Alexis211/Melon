@@ -29,8 +29,8 @@ class VirtualTerminal : public RessourceCaller {
 	void write(String s) {
 		doCall(VTIF_WRITE, (u32int)&s);
 	}
-	String readLine() {
-		return String::unserialize(doCall(VTIF_READLINE));
+	String readLine(bool show = true) {
+		return String::unserialize(doCall(VTIF_READLINE, (show ? 1 : 0)));
 	}
 	void setColor(u8int fg, u8int bg = 0xFF) {
 		doCall(VTIF_SETCOLOR, (fg << 8) | bg);

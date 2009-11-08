@@ -64,6 +64,8 @@ class Process : public Ressource {
 	u32int pushArgSC(u32int);
 	u32int setOutVTSC(u32int);
 	u32int setInVTSC(u32int);
+	u32int authPWSC(u32int, u32int);
+	u32int authNoPWSC(u32int);
 	bool accessible();
 	
 	public:

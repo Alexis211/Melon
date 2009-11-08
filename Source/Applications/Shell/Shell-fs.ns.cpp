@@ -27,7 +27,7 @@ void ls(Vector<String>& args) {
 		String perm = "rwxrwxrwx";
 		u32int p = n.getPerm();
 		for (u32int i = 0; i < 9; i++) {
-			if (((p >> i) & 1) == 0) perm[9 - i] = "-";
+			if (((p >> i) & 1) == 0) perm[8 - i] = "-";
 		}
 		if (n.type() == NT_FILE) {
 			outvt << " FILE " << perm << " " << n.getName();

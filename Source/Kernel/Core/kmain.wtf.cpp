@@ -171,6 +171,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	asm volatile("sti");
 	Log::log(KL_STATUS, "kmain : Interrupts enabled.");
 
+	/*
 	new KernelShell(cwd);	//No need to save that in a var, it is automatically destroyed anyways
 	Log::log(KL_STATUS, "kmain : Kernel shell launched");
 	//kvt->unmap();
@@ -181,6 +182,21 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	Log::log(KL_STATUS, "kmain : All kernel shells finished. Halting.");
 	Sys::halt();
+	*/
+
+	Process* p = Process::run("/System/Applications/PaperWork.app", 0);
+	if (p == 0) {
+		PANIC("Could not launch PaperWork !");
+	} else {
+		VirtualTerminal* vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+		Kbd::setFocus(vt);
+		((ScrollableVT*)vt)->map(9);
+		p->setInVT(vt);
+		p->setOutVT(vt);
+		p->start();
+		while (p->getState() != P_FINISHED) Task::currThread()->sleep(100);
+		PANIC("PaperWork finished.");
+	}
 
 	PANIC("END OF KMAIN");
 }

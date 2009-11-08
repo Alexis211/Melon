@@ -26,6 +26,7 @@ Objects = Core/loader.wtf.o \
 		DeviceManager/Time.ns.o \
 		DeviceManager/Kbd.ns.o \
 		TaskManager/Process.class.o \
+		TaskManager/Process-sc.class.o \
 		TaskManager/Thread.class.o \
 		TaskManager/Task.ns.o \
 		TaskManager/Task.wtf.o \

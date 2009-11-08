@@ -25,7 +25,7 @@ class VirtualTerminal : public Ressource {
 	u32int writeDecSC(u32int, u32int);
 	u32int writeSC(u32int);
 	u32int putSC(u32int);
-	u32int readLineSC();
+	u32int readLineSC(u32int);
 	u32int setColorSC(u32int);
 	u32int setCursorLineSC(u32int);
 	u32int setCursorColSC(u32int);

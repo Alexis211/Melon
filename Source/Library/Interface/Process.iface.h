@@ -25,4 +25,8 @@
 #define PRIF_SETOUTVT 0x29
 #define PRIF_SETINVT 0x30
 
+//Authenticate with password/without password (being in group root)
+#define PRIF_AUTHPW 0x40
+#define PRIF_AUTHNOPW 0x41
+
 #endif

@@ -1,6 +1,6 @@
 .PHONY: clean, mrproper, Init.rfs, commit
 
-Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/SampleApps
+Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/SampleApps
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
@@ -14,6 +14,7 @@ RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keym
 	Source/Applications/SampleApps/cxxdemo:/Applications/Demos/CPPDemo.app \
 	Source/Applications/Shell/Shell:/Applications/Shell/Shell.app \
 	Source/Applications/Shell/Help.txt:/Applications/Shell/Help.txt \
+	Source/Applications/PaperWork/PaperWork:/System/Applications/PaperWork.app \
 	:/Useless \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 
 
@@ -55,7 +56,7 @@ $(RamFS):
 	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)
 
 floppy: $(Files)
-	mkdir Mount
+	mkdir Mount; exit 0
 	sudo mount $(Floppy) Mount -o loop
 	sudo cp Grub-menu.cfg Mount/boot/menu.cfg
 	for f in $(Files); do \
@@ -76,7 +77,7 @@ qemu_debug:
 stats:
 	echo; echo " ** Statistics for project O3S ** "; \
 	echo -n "Lines of code : "; \
-	cat Source/*/{*,*/*,*/*/*}.{c,asm,cpp,h} 2> /dev/null | wc -l; \
+	cat Source/*/{*,*/*,*/*/*,*/*/*/*}.{c,asm,cpp,h} 2> /dev/null | wc -l; \
 	echo "TODOs : "; \
-	git grep TODO
+	git grep TODO \
 	#cat Source/*/{*,*/*,*/*/*}.{c,asm,cpp,h} 2> /dev/null | grep TODO;
