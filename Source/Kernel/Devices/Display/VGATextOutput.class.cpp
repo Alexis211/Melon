@@ -1,6 +1,10 @@
 #include "VGATextOutput.class.h"
 #include <DeviceManager/Disp.ns.h>
 
+#include <TaskManager/V86/V86.ns.h>
+
+extern v86_function_t setvgamode;
+
 //Virtual address in higher half
 #define RAM_ADDR 0xC00B8000
 
@@ -19,7 +23,7 @@ void VGATextOutput::getModes(Vector<mode_t> &to) {
 	mode_t m;
 	m.textCols = 80;
 	m.textRows = 25;
-	m.identifier = 0;
+	m.identifier = 3;
 	m.graphWidth = 0;
 	m.graphHeight = 0;
 	m.device = this;
@@ -27,8 +31,10 @@ void VGATextOutput::getModes(Vector<mode_t> &to) {
 }
 
 bool VGATextOutput::setMode(mode_t& mode) {
-	if (mode.device == this && mode.identifier == 0) {
-		//TODO : switch for real to mode 0.
+	if (mode.device == this && mode.identifier == 3) {
+		registers_t r;
+		r.eax = 3;	//3 = text 80x25 16color, just what we want
+		V86::run(setvgamode, r, 0);
 		clear();
 		return true;
 	}

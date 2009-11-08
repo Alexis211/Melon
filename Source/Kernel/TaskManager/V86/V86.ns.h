@@ -22,10 +22,6 @@ inline FARPTR LINEAR_TO_FP(void* ptr) {
 #define V86_ALLOC_START 0x1000
 #define V86_ALLOC_END 0x9000
 
-
-//This sample V86 function switches to graphical mode 13. Useless.
-extern "C" v86_function_t v86test;
-
 namespace V86 {
 	void run(v86_function_t& entry, registers_t &regs, u32int data);
 

@@ -30,7 +30,6 @@ Objects = Core/loader.wtf.o \
 		TaskManager/Thread.class.o \
 		TaskManager/V86/V86Thread.class.o \
 		TaskManager/V86/V86.ns.o \
-		TaskManager/V86/v86.wtf.o \
 		TaskManager/Task.ns.o \
 		TaskManager/Task.wtf.o \
 		VTManager/VirtualTerminal.proto.o \
@@ -71,6 +70,7 @@ Objects = Core/loader.wtf.o \
 		SyscallManager/Res.ns.o \
 		SyscallManager/IDT.wtf.o \
 		Devices/Display/VGATextOutput.class.o \
+		Devices/Display/vga-vesa.wtf.o \
 		Devices/Keyboard/PS2Keyboard.class.o \
 		Devices/Floppy/FloppyController.class.o \
 		Devices/Floppy/FloppyDrive.class.o \
