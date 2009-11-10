@@ -1,10 +1,21 @@
 //This file just contains a few methods required for some C++ things to work
 #include <types.h>
 
+namespace CMem {
+	u8int* memcpy(u8int*, const u8int*, int);
+};
+
+using namespace CMem;
+
 extern "C" void __cxa_pure_virtual() {}	//Required when using abstract classes
 
 void *__dso_handle;		//Required when using global objects
 extern "C" int __cxa_atexit(void (*f)(void*), void *p, void *d) { return 0; }
+
+extern "C" void * memmove(void* dst, const void* src, size_t len) {
+	memcpy((u8int*)dst, (const u8int*)src, len);
+	return dst;
+}
 
 //Functions for quad divisions/modulo. Taken and arranged from klibc include/asm/div64.h
 //These only work with 32-bit divisors and only return 32-bit remainder.

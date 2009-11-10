@@ -70,6 +70,8 @@ Objects = Core/loader.wtf.o \
 		SyscallManager/Res.ns.o \
 		SyscallManager/IDT.wtf.o \
 		Devices/Display/VGATextOutput.class.o \
+		Devices/Display/GraphicDisplay.proto.o \
+		Devices/Display/VESADisplay.class.o \
 		Devices/Display/vga-vesa.wtf.o \
 		Devices/Keyboard/PS2Keyboard.class.o \
 		Devices/Floppy/FloppyController.class.o \

@@ -92,9 +92,8 @@ void selectVideoMode(SimpleVT& v) {
 		} else {
 			v << "No graphics";
 		}
-		//v.setCursorCol(40);
-		//v << m.device->getName() << "\n";
-		v << "\n";
+		v.setCursorCol(40);
+		v << m.device->getName() << "\n";
 	}
 
 	while (1) {
@@ -186,8 +185,6 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	Usr::load();
 	Log::log(KL_STATUS, "kmain : User list loaded");
-
-	//PANIC("Good, this works !");
 
 	Process* p = Process::run("/System/Applications/PaperWork.app", 0);
 	if (p == 0) {

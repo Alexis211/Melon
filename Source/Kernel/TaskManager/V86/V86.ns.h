@@ -8,7 +8,7 @@ typedef u32int FARPTR;
 #define MK_FP(seg, off) ((FARPTR)(((u32int)(seg) << 16) | (u16int) (off)))
 #define FP_SEG(fp) (((FARPTR)fp) >> 16)
 #define FP_OFF(fp) (((FARPTR)fp) & 0xFFFF)
-#define LIN_SEG(ptr) (((size_t) ptr - ((size_t) ptr & 0xF)) / 16)
+#define LIN_SEG(ptr) (((size_t) ptr >> 4) & 0xFFFF)
 #define LIN_OFF(ptr) (((size_t) ptr) & 0xF)
 #define FP_TO_LINEAR(seg, off) ((void*)((((u16int)(seg)) << 4) + ((u16int)(off))))
 inline FARPTR LINEAR_TO_FP(void* ptr) {
@@ -25,8 +25,8 @@ inline FARPTR LINEAR_TO_FP(void* ptr) {
 namespace V86 {
 	void run(v86_function_t& entry, registers_t &regs, u32int data);
 
-	u16int allocSeg(u16int size);
-	void* alloc(u16int size);
+	u16int allocSeg(u16int size, Process* p = 0);
+	void* alloc(u16int size, Process* p = 0);
 }
 
 #endif

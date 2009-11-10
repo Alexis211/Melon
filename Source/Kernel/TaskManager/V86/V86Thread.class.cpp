@@ -60,23 +60,16 @@ V86Thread::V86Thread(v86_function_t* entry, v86_retval_t* ret, u32int data) : Th
 
 	m_process->getPagedir()->switchTo();
 
-	m_process->getPagedir()->allocFrame(0, true, true);	//Map IVT frame
-	for (u32int i = 0xA0000; i < 0xFFFFF; i += 0x1000) {		//Map BDA frames
+	//Map all lower memory
+	for (u32int i = 0x00000; i < 0xFFFFF; i += 0x1000) {
 		m_process->getPagedir()->allocFrame(i, true, true);
 	}
 
 	u16int cs = V86::allocSeg(entry->size);	//Alocate segments for the code to run in
 	u8int* codeptr = (u8int*)(FP_TO_LINEAR(cs, 0));
-	for (u32int i = ((u32int)(codeptr) & 0xFFFFF000); i < (u32int)(codeptr) + entry->size; i += 0x1000) {
-		m_process->getPagedir()->allocFrame(i, true, true);
-	}
 	memcpy(codeptr, entry->data, entry->size);	//Copy the code there
 
 	u16int ss = V86::allocSeg(V86_STACKSIZE);
-	u8int* stackptr = (u8int*)(FP_TO_LINEAR(ss, 0));
-	for (u32int i = ((u32int)stackptr & 0xFFFFF000); i < (u32int)stackptr + V86_STACKSIZE; i += 0x1000) {
-		m_process->getPagedir()->allocFrame(i, true, true);
-	}
 
 	u32int* stack = (u32int*)((u32int)m_kernelStack.addr + m_kernelStack.size);
 	stack--; *stack = cs;	//Pass code segment (ip = 0)
@@ -96,7 +89,7 @@ V86Thread::V86Thread(v86_function_t* entry, v86_retval_t* ret, u32int data) : Th
 bool V86Thread::handleV86GPF(registers_t *regs) {
 	u8int* ip = (u8int*)FP_TO_LINEAR(regs->cs, regs->eip);
 	u16int *ivt = 0;
-	u16int *stack = (u16int*)FP_TO_LINEAR(regs->ss, regs->useresp);
+	u16int *stack = (u16int*)FP_TO_LINEAR(regs->ss, (regs->useresp & 0xFFFF));
 	u32int *stack32 = (u32int*)stack;
 	bool is_operand32 = false, is_address32 = false;
 
@@ -112,7 +105,7 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 				break;
 			case 0x9C:		// PUSHF
 				if (is_operand32) {
-					regs->esp = ((regs->esp & 0xFFFF) - 4) & 0xFFFF;
+					regs->useresp = ((regs->useresp & 0xFFFF) - 4) & 0xFFFF;
 					stack32--;
 					*stack32 = regs->eflags & VALID_FLAGS;
 					if (m_if)
@@ -120,7 +113,7 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 					else
 						*stack32 &= ~EFLAGS_IF;
 				} else {
-					regs->esp = ((regs->esp & 0xFFFF) - 2) & 0xFFFF;
+					regs->useresp = ((regs->useresp & 0xFFFF) - 2) & 0xFFFF;
 					stack--;
 					*stack = regs->eflags;
 					if (m_if)
@@ -134,11 +127,11 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 				if (is_operand32) {
 					regs->eflags = EFLAGS_IF | EFLAGS_VM | (stack32[0] & VALID_FLAGS);
 					m_if = (stack32[0] & EFLAGS_IF) != 0;
-					regs->esp = ((regs->esp & 0xFFFF) + 4) & 0xFFFF;
+					regs->useresp = ((regs->useresp & 0xFFFF) + 4) & 0xFFFF;
 				} else {
 					regs->eflags = EFLAGS_IF | EFLAGS_VM | stack[0];
 					m_if = (stack[0] & EFLAGS_IF) != 0;
-					regs->esp = ((regs->esp & 0xFFFF) + 2) & 0xFFFF;
+					regs->useresp = ((regs->useresp & 0xFFFF) + 2) & 0xFFFF;
 				}
 				regs->eip = (u16int)(regs->eip + 1);
 				return true;
@@ -170,8 +163,8 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 				regs->cs = stack[1];
 				regs->eflags = EFLAGS_IF | EFLAGS_VM | stack[2];
 				m_if = (stack[2] & EFLAGS_IF) != 0;
-				regs->esp = (u16int)(regs->esp + 6);
-				return true;
+				regs->useresp = ((regs->useresp & 0xFFFF) + 6) & 0xFFFF;
+				return false;
 			case 0xFA:		// CLI
 				m_if = false;
 				regs->eip = (u16int)(regs->eip + 1);

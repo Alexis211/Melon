@@ -96,7 +96,7 @@ void panic(char *message, char *file, u32int line) {
 void panic(char *message, registers_t *regs, char *file, u32int line) {
 	asm volatile("cli");
 
-	SimpleVT vt(21, 70, 7, 1);
+	SimpleVT vt(12, 70, 7, 1);
 	vt.map();
 	vt.write("\n");
 
