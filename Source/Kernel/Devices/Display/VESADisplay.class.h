@@ -48,12 +48,20 @@ class VESADisplay : public GraphicDisplay {
 
 	int b, m_pixWidth;
 
+	struct {
+		u32int pixels;
+		u16int color;
+	} m_8bitPalette[256];
+
 	u8int *m_fb;
 
 	u8int* memPos(u16int x, u16int y) {
 		u32int addr = y * m_currMode.pitch + x * m_pixWidth;
 		return ((u8int*)m_fb) + addr;
 	}
+
+	u8int get8Bit(u32int color);
+	void setPalette(u8int id, u32int color);
 
 	public:
 	String getClass();

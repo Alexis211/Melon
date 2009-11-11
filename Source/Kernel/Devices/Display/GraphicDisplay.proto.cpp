@@ -10,7 +10,7 @@ u32int consoleColor[16] = {
 	0x00AA0000,		// 4 == dark red
 	0x00AA00AA,		// 5 == dark magenta
 	0x00AA5500,		// 6 == dark orange
-	0x00999999,		// 7 == light grey
+	0x00A0A0A0,		// 7 == light grey
 	0x00555555,		// 8 == dark grey
 	0x005555FF,		// 9 == bright blue
 	0x0055FF55,		// A == bright green

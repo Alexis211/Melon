@@ -87,7 +87,7 @@ void VESADisplay::getModes(Vector<mode_t> &to) {
 
 		if ((mode.attributes & 0x90) != 0x90) continue;
 		if (mode.memory_model != 4 and mode.memory_model != 6) continue;
-		if (mode.bpp != 24 and mode.bpp != 16 and mode.bpp != 15) continue;
+		if (mode.bpp != 24 and mode.bpp != 16 and mode.bpp != 15 and mode.bpp != 8) continue;
 		mode_t m; m.device = this;
 		m.textCols = mode.Xres / C_FONT_WIDTH; m.textRows = mode.Yres / C_FONT_HEIGHT;
 		m.identifier = modes[i];
@@ -104,10 +104,30 @@ bool VESADisplay::setMode(mode_t &mode) {
 	if (mode.device != this) return false;
 	m_currMode = getModeInfo(mode.identifier);
 	v86_regs_t regs;
-	regs.ax = 0x00004F02;
+
+	//Set mode
+	regs.ax = 0x4F02;
 	regs.bx = mode.identifier | 0x4000;
 	V86::biosInt(0x10, regs);
 	if (regs.ax != 0x004F) return false;
+
+	if (m_currMode.bpp == 8) {
+		//Set palette to 8 bit
+		regs.ax = 0x4F08;
+		regs.bx = 0x0800;
+		V86::biosInt(0x10, regs);
+		if ((regs.ax & 0xFF) != 0x4F or regs.bx != 0x0800) return false;
+		//Set palette data
+		for (int i = 0; i < 16; i++) {
+			m_8bitPalette[i].pixels = 0;
+			m_8bitPalette[i].color = rgbTo15(consoleColor[i]);
+			setPalette(i, consoleColor[i]);
+		}
+		for (int i = 16; i < 256; i++) {
+			m_8bitPalette[i].pixels = 0;
+			m_8bitPalette[i].color = 0;
+		}
+	}
 
 	m_fb = (u8int*)0xF0000000;
 	for (u32int i = 0; i < (u32int)(m_currMode.Yres * m_currMode.pitch); i += 0x1000) {
@@ -116,6 +136,7 @@ bool VESADisplay::setMode(mode_t &mode) {
 			   	(m_currMode.physbase + i) / 0x1000, false, false);
 	}
 	m_pixWidth = (m_currMode.bpp + 1) / 8;
+	clear();
 	return true;
 }
 
@@ -128,8 +149,37 @@ void VESADisplay::unsetMode() {
 
 void VESADisplay::clear() {
 	for (u32int* i = (u32int*)(memPos(0, 0)); i < (u32int*)(memPos(m_currMode.Xres, 0)); i++) {
-		*i = 0x77777777;
+		*i = 0;
 	}
+}
+/****************************************
+ * 					8BIT PALLET HANDLING
+ * 					*********************************************/
+
+void VESADisplay::setPalette(u8int id, u32int color) {
+		Sys::outb(0x03C6, 0xFF);
+		Sys::outb(0x03C8, id);
+		Sys::outb(0x03C9, ((color >> 16) & 0xFF) / 4);
+		Sys::outb(0x03C9, ((color >> 8) & 0xFF) / 4);
+		Sys::outb(0x03C9, (color & 0xFF) / 4);
+}
+
+u8int VESADisplay::get8Bit(u32int color) {
+	u16int c = rgbTo15(color);
+	c &= ~0x0C63;	//Make the color very approximate (keep only 3bits per primary color)
+	for (u16int i = 0; i < 256; i++) {
+		if (m_8bitPalette[i].color == c) {
+			return i;
+		}
+	}
+	for (u16int i = 16; i < 256; i++) {
+		if (m_8bitPalette[i].pixels == 0) {
+			m_8bitPalette[i].color = c;
+			setPalette(i, rgbFrom15(c));
+			return i;
+		}
+	}
+	return 0;
 }
 
 /****************************************
@@ -149,6 +199,10 @@ void VESADisplay::putPix(u16int x, u16int y, u32int c) {
 		*p.w = rgbTo15(c); 
 	} else if (m_currMode.bpp == 16) {
 		*p.w = rgbTo16(c);
+	} else if (m_currMode.bpp == 8) {
+		m_8bitPalette[*p.c].pixels--;
+		*p.c = get8Bit(c);
+		m_8bitPalette[*p.c].pixels++;
 	}
 }
 
@@ -166,6 +220,8 @@ u32int VESADisplay::getPix(u16int x, u16int y) {
 		ret = rgbFrom15(*p.w);
 	} else if (m_currMode.bpp == 16) {
 		ret = rgbFrom16(*p.w);
+	} else if (m_currMode.bpp == 8) {
+		ret = rgbFrom15(m_8bitPalette[*p.c].color); 
 	}
 	return ret;
 }
@@ -185,6 +241,9 @@ void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 	} else if (m_currMode.bpp == 16) {
 		fgcolor = rgbTo16(consoleColor[color & 0xF]);
 		bgcolor = rgbTo16(consoleColor[(color >> 4) & 0xF]);
+	} else if (m_currMode.bpp == 8) {
+		fgcolor = color & 0xF;
+		bgcolor = (color >> 4) & 0xF;
 	}
 		
 
@@ -208,6 +267,15 @@ void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 			for (int x = 0; x < 8; x++) {
 				pos.c -= m_pixWidth;
 				*pos.w = ((pixs & 1) != 0 ? fgcolor : bgcolor);
+				pixs = pixs >> 1;
+			}
+		} else if (m_pixWidth == 1) {
+			m_8bitPalette[*pos.c].pixels--;
+			*pos.c = bgcolor;
+			for (int x = 0; x < 8; x++) {
+				pos.c--;
+				m_8bitPalette[*pos.c].pixels--;
+				*pos.c = ((pixs & 1) != 0 ? fgcolor : bgcolor);
 				pixs = pixs >> 1;
 			}
 		}

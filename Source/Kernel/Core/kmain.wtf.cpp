@@ -22,6 +22,7 @@
 #include <SyscallManager/IDT.ns.h>
 #include <String.class.h>
 #include <ByteArray.class.h>
+#include <Rand.ns.h>
 #include <VFS/Part.ns.h>
 #include <FileSystems/RamFS/RamFS.class.h>
 #include <VFS/FileNode.class.h>
@@ -100,10 +101,13 @@ void selectVideoMode(SimpleVT& v) {
 		v << "\nYour selection: ";
 		String answer = v.readLine();
 		u32int n = answer.toInt();
+		v.unmap();
 		if (n >= 0 and n < Disp::modes.size() and Disp::setMode(Disp::modes[n])) {
 			return;
 		} else {
-			v << "Error while switching video mode, please select another one.\n";
+			Disp::setMode(Disp::modes[1]);
+			v.map();
+			v << "Error while switching video mode, please select another one.";
 		}
 	}
 }
@@ -173,7 +177,6 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	asm volatile("sti");
 
 	selectVideoMode(*kvt);		//////////////////////// SETUP VIDEO MODE
-	kvt->unmap();
 
 	//Create a VT for handling the Melon bootup logo
 	SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);

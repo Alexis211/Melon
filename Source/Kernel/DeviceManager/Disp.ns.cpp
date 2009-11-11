@@ -1,5 +1,6 @@
 #include "Disp.ns.h"
 #include <DeviceManager/Dev.ns.h>
+#include <VTManager/VT.ns.h>
 
 namespace Disp {
 
@@ -45,6 +46,7 @@ bool setMode(mode_t& newmode) {
 
 	if (newmode.device->setMode(newmode)) {
 		mode = newmode;
+		VT::redrawScreen();
 		return true;
 	}
 	return false;
