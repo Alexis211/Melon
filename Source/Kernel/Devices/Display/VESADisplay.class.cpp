@@ -5,6 +5,42 @@
 
 using namespace Disp;
 
+/****************************************
+ * 					COLOR HANDLING FUNCTIONS
+ * 					*********************************************/
+
+inline u16int rgbTo15(u32int color) {
+	return (
+			(((color >> 16 & 0xFF) / 8) << 10) |
+			(((color >> 8 & 0xFF) / 8) << 5) |
+			((color & 0xFF) / 8));
+}
+
+inline u32int rgbFrom15(u16int color) {
+	return (
+			(((color >> 10 & 0x1F) * 8) << 16) |
+			(((color >> 5 & 0x1F) * 8) << 8) |
+			((color & 0x1F) * 8));
+}
+
+inline u16int rgbTo16(u32int color) {
+	return (
+			(((color >> 16 & 0xFF) / 8) << 11) |
+			(((color >> 8 & 0xFF) / 4) << 5) |
+			((color & 0xFF) / 8));
+}
+
+inline u32int rgbFrom16(u16int color) {
+	return (
+			(((color >> 11 & 0x1F) * 8) << 16) |
+			(((color >> 5 & 0x3F) * 4) << 8) |
+			((color & 0x1F) * 8));
+}
+
+/****************************************
+ * 					DEVICE INFORMATION RELATED FUNCTIONS
+ * 					*********************************************/
+
 String VESADisplay::getClass() {
 	return "display.vesa";
 }
@@ -51,7 +87,7 @@ void VESADisplay::getModes(Vector<mode_t> &to) {
 
 		if ((mode.attributes & 0x90) != 0x90) continue;
 		if (mode.memory_model != 4 and mode.memory_model != 6) continue;
-		//if (mode.bpp != 24) continue;
+		if (mode.bpp != 24 and mode.bpp != 16 and mode.bpp != 15) continue;
 		mode_t m; m.device = this;
 		m.textCols = mode.Xres / C_FONT_WIDTH; m.textRows = mode.Yres / C_FONT_HEIGHT;
 		m.identifier = modes[i];
@@ -60,6 +96,10 @@ void VESADisplay::getModes(Vector<mode_t> &to) {
 	}
 }
 
+/****************************************
+ * 					MODE SELECTION FUNCTIONS
+ * 					*********************************************/
+
 bool VESADisplay::setMode(mode_t &mode) {
 	if (mode.device != this) return false;
 	m_currMode = getModeInfo(mode.identifier);
@@ -67,6 +107,7 @@ bool VESADisplay::setMode(mode_t &mode) {
 	regs.ax = 0x00004F02;
 	regs.bx = mode.identifier | 0x4000;
 	V86::biosInt(0x10, regs);
+	if (regs.ax != 0x004F) return false;
 
 	m_fb = (u8int*)0xF0000000;
 	for (u32int i = 0; i < (u32int)(m_currMode.Yres * m_currMode.pitch); i += 0x1000) {
@@ -78,11 +119,22 @@ bool VESADisplay::setMode(mode_t &mode) {
 	return true;
 }
 
+void VESADisplay::unsetMode() {
+	for (u32int i = 0; i < (u32int)(m_currMode.Yres * m_currMode.pitch); i += 0x1000) {
+		page_t* p = kernelPageDirectory->getPage((u32int)(m_fb + i), false);
+		if (p != 0) p->present = 0, p->frame = 0;
+	}
+}
+
 void VESADisplay::clear() {
 	for (u32int* i = (u32int*)(memPos(0, 0)); i < (u32int*)(memPos(m_currMode.Xres, 0)); i++) {
 		*i = 0x77777777;
 	}
 }
+
+/****************************************
+ * 					DRAWING FUNCTIONS
+ * 					*********************************************/
 
 void VESADisplay::putPix(u16int x, u16int y, u32int c) {
 	if (x >= m_currMode.Xres or y >= m_currMode.Yres) return;
@@ -94,10 +146,9 @@ void VESADisplay::putPix(u16int x, u16int y, u32int c) {
 	if (m_currMode.bpp == 24) {
 		*p.d = (*p.d & 0xFF000000) | c;
 	} else if (m_currMode.bpp == 15) {
-		u32int r = (c & 0x00FF0000 >> 16) * 32 / 256,
-			   g = (c & 0x0000FF00 >> 8) * 32 / 256,
-			   b = (c & 0x000000FF) * 32 / 256;
-		*p.w = (r << 10) | (g << 5) | b; 
+		*p.w = rgbTo15(c); 
+	} else if (m_currMode.bpp == 16) {
+		*p.w = rgbTo16(c);
 	}
 }
 
@@ -112,30 +163,28 @@ u32int VESADisplay::getPix(u16int x, u16int y) {
 	if (m_currMode.bpp == 24) {
 		ret = *p.d & 0x00FFFFFF;
 	} else if (m_currMode.bpp == 15) {
-		u32int r = ((*p.w >> 10) & 0x1F) * 256 / 32,
-			   g = ((*p.w >> 5) & 0x1F) * 256 / 32,
-			   b = (*p.w & 0x1F) * 256 / 32;
-		return (r << 16) | (g << 8) | b;
+		ret = rgbFrom15(*p.w);
+	} else if (m_currMode.bpp == 16) {
+		ret = rgbFrom16(*p.w);
 	}
 	return ret;
 }
 
-//Advanced functions
 void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 	u8int ch = c.toAscii();
 	if (ch == 0) return;
 	u16int sx = col * C_FONT_WIDTH, sy = line * C_FONT_HEIGHT;
-	u32int fgcolor = consoleColor[color & 0xF], bgcolor = consoleColor[(color >> 4) & 0xF];
+	u32int fgcolor = 1, bgcolor = 0;
 
-	if (m_pixWidth == 2) {
-		u32int r = (fgcolor & 0x00FF0000 >> 16) * 32 / 256,
-			   g = (fgcolor & 0x0000FF00 >> 8) * 32 / 256,
-			   b = (fgcolor & 0x000000FF) * 32 / 256;
-		fgcolor = (r << 10) | (g << 5) | b;
-		r = (bgcolor & 0x00FF0000 >> 16) * 32 / 256,
-		g = (bgcolor & 0x0000FF00 >> 8) * 32 / 256,
-		b = (bgcolor & 0x000000FF) * 32 / 256;
-		bgcolor = (r << 10) | (g << 5) | b;
+	if (m_currMode.bpp == 24) {
+		fgcolor = consoleColor[color & 0xF];
+		bgcolor = consoleColor[(color >> 4) & 0xF];
+	} else if (m_currMode.bpp == 15) {
+		fgcolor = rgbTo15(consoleColor[color & 0xF]);
+		bgcolor = rgbTo15(consoleColor[(color >> 4) & 0xF]);
+	} else if (m_currMode.bpp == 16) {
+		fgcolor = rgbTo16(consoleColor[color & 0xF]);
+		bgcolor = rgbTo16(consoleColor[(color >> 4) & 0xF]);
 	}
 		
 

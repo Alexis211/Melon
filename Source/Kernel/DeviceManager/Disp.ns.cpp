@@ -41,6 +41,8 @@ void getModes() {
 }
 
 bool setMode(mode_t& newmode) {
+	mode.device->unsetMode();
+
 	if (newmode.device->setMode(newmode)) {
 		mode = newmode;
 		return true;

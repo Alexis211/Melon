@@ -13,6 +13,7 @@ class Display : public Device {
 
 	virtual void getModes(Vector<Disp::mode_t> &to) = 0;
 	virtual bool setMode(Disp::mode_t& mode) = 0;
+	virtual void unsetMode() {}	//To be overloaded if driver has to do some cleaning-up
 	virtual void clear() = 0;
 
 	//Text functions

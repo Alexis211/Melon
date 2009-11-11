@@ -92,9 +92,8 @@ void selectVideoMode(SimpleVT& v) {
 		} else {
 			v << "No graphics";
 		}
-		//v.setCursorCol(40);
-		//v << m.device->getName() << "\n";
-		v << "\n"; 
+		v.setCursorCol(50);
+		v << m.device->getName() << "\n";
 	}
 
 	while (1) {
@@ -175,12 +174,6 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	selectVideoMode(*kvt);		//////////////////////// SETUP VIDEO MODE
 	kvt->unmap();
-
-	for (int x = 0; x < 256; x++) {
-		for (int y = 0; y < 256; y++) {
-			Disp::mode.device->putPix(x, y, (x << 8) | y);
-		}
-	}
 
 	//Create a VT for handling the Melon bootup logo
 	SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);

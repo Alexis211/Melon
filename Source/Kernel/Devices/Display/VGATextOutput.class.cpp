@@ -14,7 +14,7 @@ String VGATextOutput::getClass() {
 }
 
 String VGATextOutput::getName() {
-	return "Standard mode0 VGA text display";
+	return "Standard VGA text display";
 }
 
 void VGATextOutput::getModes(Vector<mode_t> &to) {

@@ -61,6 +61,7 @@ class VESADisplay : public GraphicDisplay {
 
 	void getModes(Vector<Disp::mode_t> &to);
 	bool setMode(Disp::mode_t& mode);
+	void unsetMode();
 
 	void clear();
 	void putPix(u16int x, u16int y, u32int color);
