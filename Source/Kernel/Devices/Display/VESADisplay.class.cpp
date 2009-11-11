@@ -3,8 +3,6 @@
 
 #include <MemoryManager/PhysMem.ns.h>
 
-extern v86_function_t vesa_int;	//in vga-vesa.wtf.asm
-
 using namespace Disp;
 
 String VESADisplay::getClass() {
@@ -16,15 +14,16 @@ String VESADisplay::getName() {
 }
 
 vbe_controller_info_t VESADisplay::getCtrlrInfo() {
+	V86::map();
 	vbe_controller_info_t *info = (vbe_controller_info_t*)V86::alloc(sizeof(vbe_controller_info_t));
 	info->signature[0] = 'V'; info->signature[1] = 'B'; info->signature[2] = 'E'; info->signature[3] = '2';
 	info->videomodes = 0;
-	registers_t regs;
-	regs.eax = 0x00004F00;
-	regs.esi = LIN_SEG(info);
-	regs.edi = LIN_OFF(info);
-	V86::run(vesa_int, regs, 0);
-	if (regs.eax != 0x004F) PANIC("Something went wrong in detecting VBE modes.");
+	v86_regs_t regs;
+	regs.ax = 0x4F00;
+	regs.es = LIN_SEG(info);
+	regs.di = LIN_OFF(info);
+	V86::biosInt(0x10, regs);
+	if (regs.ax != 0x004F) PANIC("Something went wrong in detecting VBE modes.");
 	if (info->signature[3] != 'A') PANIC("No vesa sinature");
 	return *info;
 }
@@ -33,12 +32,12 @@ vbe_mode_info_t VESADisplay::getModeInfo(u16int id) {
 	V86::map();
 	vbe_mode_info_t *mode = (vbe_mode_info_t*)V86::alloc(sizeof(vbe_mode_info_t));
 	CMem::memset((u8int*)mode, 0, sizeof(vbe_mode_info_t));
-	registers_t regs;
-	regs.eax = 0x00004F01;
-	regs.ecx = id;
-	regs.esi = LIN_SEG(mode);
-	regs.edi = LIN_OFF(mode);
-	V86::run(vesa_int, regs, 0);
+	v86_regs_t regs;
+	regs.ax = 0x00004F01;
+	regs.cx = id;
+	regs.es = LIN_SEG(mode);
+	regs.di = LIN_OFF(mode);
+	V86::biosInt(0x10, regs);
 	return *mode;
 }
 
@@ -52,7 +51,7 @@ void VESADisplay::getModes(Vector<mode_t> &to) {
 
 		if ((mode.attributes & 0x90) != 0x90) continue;
 		if (mode.memory_model != 4 and mode.memory_model != 6) continue;
-		if (mode.bpp != 24) continue;
+		//if (mode.bpp != 24) continue;
 		mode_t m; m.device = this;
 		m.textCols = mode.Xres / C_FONT_WIDTH; m.textRows = mode.Yres / C_FONT_HEIGHT;
 		m.identifier = modes[i];
@@ -64,10 +63,10 @@ void VESADisplay::getModes(Vector<mode_t> &to) {
 bool VESADisplay::setMode(mode_t &mode) {
 	if (mode.device != this) return false;
 	m_currMode = getModeInfo(mode.identifier);
-	registers_t regs;
-	regs.eax = 0x00004F02;
-	regs.ebx = mode.identifier | 0x4000;
-	V86::run(vesa_int, regs, 0);
+	v86_regs_t regs;
+	regs.ax = 0x00004F02;
+	regs.bx = mode.identifier | 0x4000;
+	V86::biosInt(0x10, regs);
 
 	m_fb = (u8int*)0xF0000000;
 	for (u32int i = 0; i < (u32int)(m_currMode.Yres * m_currMode.pitch); i += 0x1000) {

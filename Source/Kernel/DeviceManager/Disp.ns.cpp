@@ -24,6 +24,10 @@ void moveCursor(u16int line, u16int col) {
 	mode.device->moveCursor(line, col);
 }
 
+bool textScroll(u16int line, u16int col, u16int height, u16int width, u8int color) {
+	return mode.device->textScroll(line, col, height, width, color);
+}
+
 void clear() {
 	mode.device->clear();
 }

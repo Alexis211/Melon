@@ -78,7 +78,11 @@ void SimpleVT::scroll() {
 		BUFCHR(m_rows - 1, c).c = ' ';
 		BUFCHR(m_rows - 1, c).color = m_color;
 	}	
-	if (m_mapped) redraw();
+	if (m_mapped) {
+		if (!Disp::textScroll(m_maprow, m_mapcol, m_rows, m_cols, m_color)) {
+			redraw();
+		}
+	}
 }
 
 void SimpleVT::updateCursor() {

@@ -18,6 +18,7 @@ class Display : public Device {
 	//Text functions
 	virtual void putChar(u16int line, u16int col, WChar c, u8int color) = 0;	//Color : <bg 4bits><fg 4bits>
 	virtual void moveCursor(u16int line, u16int col) = 0;
+	virtual bool textScroll(u16int line, u16int col, u16int height, u16int width, u8int color) { return false; }
 
 	//Graphic functions, can stay unimplemented for textual displays
 	virtual void putPix(u16int x, u16int y, u32int color) {}

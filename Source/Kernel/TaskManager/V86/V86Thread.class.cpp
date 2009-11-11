@@ -3,85 +3,75 @@
 
 #include <TaskManager/V86/V86.ns.h>
 
-void V86Thread::runV86(V86Thread* thread, u32int data, u32int ss, u32int cs) {
-	thread->m_process->getPagedir()->switchTo();
-	//Setup values on user stack
-	u32int *stack = (u32int*)(FP_TO_LINEAR(ss, V86_STACKSIZE));
-	stack--; *stack = data;
-
-	u32int sp = V86_STACKSIZE - 4;
-
-	//Setup a false iret structure on the kernel stack, containing (first pushed first) :
-	// - gs = cs
-	// - fs = cs
-	// - ds = cs
-	// - es = cs
-	// - stack segment = ss (temporarily in ecx)
-	// - stack pointer = sp (temp in ebx)
-	// - flags (OR'ed with EFLAGS.VM)
-	// - code segment = cs (temp in eax)
-	// - instruction pointer = ip (is 0)
-	asm volatile("			\
-			pushl %%eax;	\
-			pushl %%eax;	\
-			pushl %%eax;	\
-			pushl %%eax;	\
-			pushl %%ecx;	\
-			pushl %%ebx;	\
-			pushf;			\
-			pop %%ebx;		\
-			or $0x200, %%ebx;	\
-			or $0x20000, %%ebx;	\
-			push %%ebx;		\
-			pushl %%eax;	\
-			pushl $0;		\
-			iret;			\
-			" : : "a"(cs), "c"(ss), "b"(sp));
-}
+//in v86.wtf.asm
+extern "C" void v86_run(u32int pd_phys,	//A page directory's physical address
+	v86_regs_t* regs);
 
 /*
  *	Set up a V86 task :
  *	Allocate space for the kernel stack
- *	Map frames in lower 1MB : IVT (first page), BDA (0xA0000 to 0xFFFFF)
+ *	Map frames in lower 1MB
  *  Find somewhere to put the stack and the code, still in lower 1MB
- *  Map that space, and copy the 16bit code to that place
+ *  Copy the 16bit code to that place
  *  Setup values on the kernel stack for starting the thread (V86Thread::runV86),
  *  giving it entry point and stack location
  */
 
-V86Thread::V86Thread(v86_function_t* entry, v86_retval_t* ret, u32int data) : Thread() {
-	m_ret = ret; m_ret->finished = false;
-	m_xchgspace = 0;
-	m_isKernel = true;
-	m_if = true;
+V86Thread::V86Thread(v86_function_t* entry, v86_retval_t* ret) : Thread() {
+	m_ret = ret;
+	setup();
+	m_continueOnIret = true;
+
+	m_ret->regs->cs = V86::allocSeg(entry->size);	//Alocate segments for the code to run in
+	u8int* codeptr = (u8int*)(FP_TO_LINEAR(m_ret->regs->cs, 0));
+	memcpy(codeptr, entry->data, entry->size);	//Copy the code there
+	
+	m_ret->regs->ip = 0;
+
+	m_state = T_RUNNING;
+	m_process->registerThread(this);
+	Task::registerThread(this);
+}
+
+V86Thread::V86Thread(u8int int_no, v86_retval_t* ret) : Thread() {
+	m_ret = ret;
+	setup();
+	m_continueOnIret = false;
+
+	//setup CS:IP for running interrupt
+	u16int* ivt = 0;
+
+	m_ret->regs->cs = ivt[int_no * 2 + 1];
+	m_ret->regs->ip = ivt[int_no * 2];
+
+	m_state = T_RUNNING;
+	m_process->registerThread(this);
+	Task::registerThread(this);
+}
+
+void V86Thread::setup() {
+	m_ret->finished = false; m_xchgspace = 0; m_isKernel = true;
 	m_process = Task::currProcess();
-	m_kernelStack.addr = Mem::alloc(STACKSIZE);
-	m_kernelStack.size = STACKSIZE;	
+	m_if = true;	//Set virtual interrupt flag
+	m_kernelStack.addr = Mem::alloc(STACKSIZE); m_kernelStack.size = STACKSIZE; //Setup kernel stack
 
 	m_process->getPagedir()->switchTo();
 
 	//Map all lower memory
 	V86::map();
 
-	u16int cs = V86::allocSeg(entry->size);	//Alocate segments for the code to run in
-	u8int* codeptr = (u8int*)(FP_TO_LINEAR(cs, 0));
-	memcpy(codeptr, entry->data, entry->size);	//Copy the code there
+	//Allocate space for v86 stack
+	m_ret->regs->ss = V86::allocSeg(V86_STACKSIZE);
+	m_ret->regs->sp = V86_STACKSIZE - 4;
 
-	u16int ss = V86::allocSeg(V86_STACKSIZE);
-
+	//Setup kernel stack for running v86_run (entry procedure)
 	u32int* stack = (u32int*)((u32int)m_kernelStack.addr + m_kernelStack.size);
-	stack--; *stack = cs;	//Pass code segment (ip = 0)
-	stack--; *stack = ss;	//Pass stack segment (sp = V86_STACKSIZE)
-	stack--; *stack = data;	//Pass data for thread
-	stack--; *stack = (u32int)this;	//Pass thread pointer
+	stack--; *stack = (u32int)m_ret->regs;
+	stack--; *stack = m_process->getPagedir()->physicalAddr;
 	stack--; *stack = 0;
 	m_esp = (u32int)stack;
-	m_ebp = m_esp + 8;
-	m_eip = (u32int)runV86;
-
-	m_state = T_RUNNING;
-	m_process->registerThread(this);
-	Task::registerThread(this);
+	m_ebp = m_esp + 4;
+	m_eip = (u32int)v86_run;
 }
 
 bool V86Thread::handleV86GPF(registers_t *regs) {
@@ -135,16 +125,6 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 				return true;
 			case 0xCD:		// INT N
 				if (ip[1] == 3) return false;	//Breakpoint exception, here used for telling that thread has ended
-				if (ip[1] == 60) {		//INT 60 is used so that the real mode code can retrieve some regs from caller
-					regs->eax = m_ret->regs->eax;
-					regs->ebx = m_ret->regs->ebx;
-					regs->ecx = m_ret->regs->ecx;
-					regs->edx = m_ret->regs->edx;
-					regs->edi = m_ret->regs->edi;
-					regs->esi = m_ret->regs->esi;
-					regs->eip = (u16int)(regs->eip + 2);
-					return true;
-				}
 
 				stack -= 3;
 				regs->useresp = ((regs->useresp & 0xFFFF) - 6) & 0xFFFF;
@@ -162,7 +142,7 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 				regs->eflags = EFLAGS_IF | EFLAGS_VM | stack[2];
 				m_if = (stack[2] & EFLAGS_IF) != 0;
 				regs->useresp = ((regs->useresp & 0xFFFF) + 6) & 0xFFFF;
-				return false;
+				return m_continueOnIret;
 			case 0xFA:		// CLI
 				m_if = false;
 				regs->eip = (u16int)(regs->eip + 1);
@@ -181,7 +161,12 @@ void V86Thread::handleException(registers_t *regs, int no) {
 	if (no == 13) {			//General protection fault
 		if (!handleV86GPF(regs)) {
 			m_ret->finished = true;
-			*(m_ret->regs) = *regs;
+			m_ret->regs->ax = (u16int)regs->eax;
+			m_ret->regs->bx = (u16int)regs->ebx;
+			m_ret->regs->cx = (u16int)regs->ecx;
+			m_ret->regs->dx = (u16int)regs->edx;
+			m_ret->regs->di = (u16int)regs->edi;
+			m_ret->regs->si = (u16int)regs->esi;
 			Task::currentThreadExits(0);
 			return;
 		}

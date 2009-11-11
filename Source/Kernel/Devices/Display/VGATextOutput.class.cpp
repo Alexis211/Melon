@@ -3,8 +3,6 @@
 
 #include <TaskManager/V86/V86.ns.h>
 
-extern v86_function_t setvgamode;
-
 //Virtual address in higher half
 #define RAM_ADDR 0xC00B8000
 
@@ -35,10 +33,10 @@ void VGATextOutput::getModes(Vector<mode_t> &to) {
 
 bool VGATextOutput::setMode(mode_t& mode) {
 	if (mode.device == this && (mode.identifier == 3 or mode.identifier == 1)) {
-		registers_t r;
-		r.eax = mode.identifier;
+		v86_regs_t r;
+		r.ax = mode.identifier;
 		m_cols = mode.textCols;
-		V86::run(setvgamode, r, 0);
+		V86::biosInt(0x10, r);
 		clear();
 		return true;
 	}
