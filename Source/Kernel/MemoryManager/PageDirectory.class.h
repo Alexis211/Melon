@@ -26,6 +26,7 @@ struct PageDirectory {
 	PageDirectory(PageDirectory* other);	//Clones the other pagedir
 	~PageDirectory();
 	page_t *getPage(u32int address, bool make);
+	void map(page_t *p, u32int frame, bool is_user, bool is_writable);
 	void allocFrame(u32int address, bool is_user, bool is_writable);
 	void freeFrame(u32int address);
 	void switchTo();

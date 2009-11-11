@@ -61,9 +61,7 @@ V86Thread::V86Thread(v86_function_t* entry, v86_retval_t* ret, u32int data) : Th
 	m_process->getPagedir()->switchTo();
 
 	//Map all lower memory
-	for (u32int i = 0x00000; i < 0xFFFFF; i += 0x1000) {
-		m_process->getPagedir()->allocFrame(i, true, true);
-	}
+	V86::map();
 
 	u16int cs = V86::allocSeg(entry->size);	//Alocate segments for the code to run in
 	u8int* codeptr = (u8int*)(FP_TO_LINEAR(cs, 0));

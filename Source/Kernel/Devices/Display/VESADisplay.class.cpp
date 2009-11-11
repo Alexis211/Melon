@@ -1,6 +1,8 @@
 #include "VESADisplay.class.h"
 #include <DeviceManager/Disp.ns.h>
 
+#include <MemoryManager/PhysMem.ns.h>
+
 extern v86_function_t vesa_int;	//in vga-vesa.wtf.asm
 
 using namespace Disp;
@@ -28,6 +30,7 @@ vbe_controller_info_t VESADisplay::getCtrlrInfo() {
 }
 
 vbe_mode_info_t VESADisplay::getModeInfo(u16int id) {
+	V86::map();
 	vbe_mode_info_t *mode = (vbe_mode_info_t*)V86::alloc(sizeof(vbe_mode_info_t));
 	CMem::memset((u8int*)mode, 0, sizeof(vbe_mode_info_t));
 	registers_t regs;
@@ -47,8 +50,8 @@ void VESADisplay::getModes(Vector<mode_t> &to) {
 		if (modes[i] == 0xFFFF) break;
 		vbe_mode_info_t mode = getModeInfo(modes[i]);
 
-		if ((mode.attributes & 0x19) != 0x19) continue;
-		if (mode.planes != 1) continue;
+		if ((mode.attributes & 0x90) != 0x90) continue;
+		if (mode.memory_model != 4 and mode.memory_model != 6) continue;
 		mode_t m; m.device = this;
 		m.textCols = mode.Xres / C_FONT_WIDTH; m.textRows = mode.Yres / C_FONT_HEIGHT;
 		m.identifier = modes[i];
@@ -62,66 +65,69 @@ bool VESADisplay::setMode(mode_t &mode) {
 	m_currMode = getModeInfo(mode.identifier);
 	registers_t regs;
 	regs.eax = 0x00004F02;
-	regs.ebx = mode.identifier;
+	regs.ebx = mode.identifier | 0x4000;
 	V86::run(vesa_int, regs, 0);
+
+	m_fb = (u8int*)0xF0000000;
+	for (u32int i = 0; i < (u32int)(m_currMode.Yres * m_currMode.pitch); i += 0x1000) {
+		kernelPageDirectory->map(
+				kernelPageDirectory->getPage((u32int)(m_fb + i), true),
+			   	(m_currMode.physbase + i) / 0x1000, false, false);
+	}
+	m_pixWidth = (m_currMode.bpp + 1) / 8;
 	return true;
 }
 
-u8int* VESADisplay::memPos(u16int x, u16int y) {
-	u32int addr = y * m_currMode.pitch + x * (m_currMode.bpp / 8);
-
-	u8int *base = (u8int*)(((m_currMode.physbase & 0xFFFF0000) >> 12) | (m_currMode.physbase & 0x0000FFFF));
-
-	return base + addr;
-}
-
 void VESADisplay::clear() {
-		for (u16int y = 0; y < m_currMode.Yres; y++) {
-	for (u16int x = 0; x < m_currMode.Xres; x++) {
-			putPix(x, y, 0x77777777);
-		}
+	for (u32int* i = (u32int*)(memPos(0, 0)); i < (u32int*)(memPos(m_currMode.Xres, 0)); i++) {
+		*i = 0x77777777;
 	}
 }
 
 void VESADisplay::putPix(u16int x, u16int y, u32int c) {
-	u32int addr = y * m_currMode.pitch + x * (m_currMode.bpp / 8);
-	int banksize = m_currMode.granularity*1024;
-	int banknumber = addr / banksize;
-	int bankoffset = addr % banksize;
+	if (x >= m_currMode.Xres or y >= m_currMode.Yres) return;
+	union {
+		u8int* c;
+	   	u16int* w;
+		u32int* d;
+	} p = {memPos(x, y)};
+	if (m_currMode.bpp == 24) {
+		*p.d = (*p.d & 0xFF000000) | c;
+	} else if (m_currMode.bpp == 15) {
 
-	if (banknumber != b) {	
-		registers_t r;
-		r.eax = 0x4F05;
-		r.ebx = 0;
-		r.edx = banknumber;
-		V86::run(vesa_int, r, 0);
-		b = banknumber;
 	}
-
-	u8int* a = (u8int*)(0xA0000 + bankoffset);
-	a[2] = (c >> 16) & 0xFF;
-	a[1] = (c >> 8) & 0xFF;
-	a[0] = c & 0xFF;
 }
 
 u32int VESADisplay::getPix(u16int x, u16int y) {
-	u32int addr = y * m_currMode.pitch + x * (m_currMode.bpp / 8);
-	int banksize = m_currMode.granularity*1024;
-	int banknumber = addr / banksize;
-	int bankoffset = addr % banksize;
-
-	if (banknumber != b) {	
-		registers_t r;
-		r.eax = 0x4F05;
-		r.ebx = 0;
-		r.edx = banknumber;
-		V86::run(vesa_int, r, 0);
-		b = banknumber;
-	}
-
 	u32int ret;
-
-	u8int* a = (u8int*)(0xA0000 + bankoffset);
+	u8int* a = memPos(x, y);
 	ret = (a[2] << 16) | (a[1] << 8) | a[0];
 	return ret;
+}
+
+//Advanced functions
+void VESADisplay::putChar(u16int line, u16int col, WChar c, u8int color) {
+	u8int ch = c.toAscii();
+	if (ch == 0) return;
+	u16int sx = col * C_FONT_WIDTH, sy = line * C_FONT_HEIGHT;
+	u32int fgcolor = consoleColor[color & 0xF], bgcolor = consoleColor[(color >> 4) & 0xF];
+
+	int y = 0;
+	for (u8int* p = memPos(sx, sy); p < memPos(sx, sy + C_FONT_HEIGHT); p += m_currMode.pitch) {
+		union {
+			u8int* c;
+			u16int* w;
+			u32int* d;
+		} pos = {p + (8 * m_pixWidth)};
+		u8int pixs = consoleFont[ch][y];
+		if (m_pixWidth == 3) {
+			*pos.d = (*pos.d & 0xFF000000) | bgcolor;
+			for (int x = 0; x < 8; x++) {
+				pos.c -= m_pixWidth;
+				*pos.d = (*pos.d & 0xFF000000) | ((pixs & 1) != 0 ? fgcolor : bgcolor);
+				pixs = pixs >> 1;
+			}
+		}
+		y++;
+	}
 }

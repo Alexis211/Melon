@@ -94,7 +94,7 @@ void selectVideoMode(SimpleVT& v) {
 		}
 		//v.setCursorCol(40);
 		//v << m.device->getName() << "\n";
-		v << "\n";
+		v << "\n"; 
 	}
 
 	while (1) {
@@ -135,7 +135,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Disp::setText(vgaout);
 
 	//Create a VT for logging what kernel does
-	SimpleVT *kvt = new ScrollableVT(25, 80, 10, KVT_FGCOLOR, KVT_BGCOLOR);
+	SimpleVT *kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(0, 0);
 	*kvt << "Melon is loading...";
 
@@ -186,8 +186,6 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	Usr::load();
 	Log::log(KL_STATUS, "kmain : User list loaded");
-
-	//PANIC("Good, this works !");
 
 	Process* p = Process::run("/System/Applications/PaperWork.app", 0);
 	if (p == 0) {

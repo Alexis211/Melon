@@ -30,35 +30,19 @@ void GraphicDisplay::putChar(u16int line, u16int col, WChar c, u8int color) {
 
 	for (int y = 0; y < C_FONT_HEIGHT; y++) {
 		u8int pixs = consoleFont[ch][y];
-		for (int x = C_FONT_WIDTH - 1; x >= 0; x--) {
+		for (int x = 7; x >= 0; x--) {
 			putPix(sx + x, sy + y, ((pixs & 1) != 0 ? fgcolor : bgcolor));
 			pixs = pixs >> 1;
 		}
+		putPix(sx + 8, sy + y, bgcolor);
 	}
 }
 
 void GraphicDisplay::moveCursor(u16int line, u16int col) {
-	//If the current cursor position is correct, write there what is supposed to be there
-	if (m_csrbuff.x >= 0 and m_csrbuff.y >= 0) {
-		for (int x = 0; x < C_FONT_WIDTH; x++) {
-			for (int y = 0; y < C_FONT_HEIGHT; y++) {
-				putPix(m_csrbuff.x + x, m_csrbuff.y + y, m_csrbuff.buff[x][y]);
-			}
-		}
-	}
-
-	//Save the current stuff to the buffer
-	m_csrbuff.x = col * C_FONT_WIDTH;
-	m_csrbuff.y = line * C_FONT_HEIGHT;
-	for (int x = 0; x < C_FONT_WIDTH; x++) {
-		for (int y = 0; y < C_FONT_HEIGHT; y++) {
-			m_csrbuff.buff[x][y] = getPix(m_csrbuff.x + x, m_csrbuff.y + y);
-		}
-	}
 
 	//draw some cursor
 	for (int x = 0; x < C_FONT_WIDTH; x++) {
-		putPix(m_csrbuff.x + x, m_csrbuff.y + 14, 0x00FFFFFF);
-		putPix(m_csrbuff.x + x, m_csrbuff.y + 15, 0x00777777);
+		putPix((col * C_FONT_WIDTH) + x, (line * C_FONT_HEIGHT) + 14, 0x00FFFFFF);
+		putPix((col * C_FONT_WIDTH) + x, (line * C_FONT_HEIGHT) + 15, 0x00000000);
 	}
 }

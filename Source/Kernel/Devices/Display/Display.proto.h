@@ -7,6 +7,8 @@
 
 namespace Disp { struct mode_t; }
 
+class VirtualTerminal;
+
 class Display : public Device {
 	public:
 	virtual ~Display() {}

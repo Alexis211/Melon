@@ -74,13 +74,17 @@ page_t *PageDirectory::getPage(u32int address, bool make) {
 	}
 }
 
-void PageDirectory::allocFrame(u32int address, bool is_user, bool is_writable) {
-	page_t *p = getPage(address, true);
-	if (address < 0x100000) {
+void PageDirectory::map(page_t* p, u32int frame, bool is_user, bool is_writable) {
 		p->present = 1;
 		p->user = (is_user ? 1 : 0);
 		p->rw = (is_writable ? 1 : 0);
-		p->frame = (address / 0x1000);
+		p->frame = (frame);
+}
+
+void PageDirectory::allocFrame(u32int address, bool is_user, bool is_writable) {
+	page_t *p = getPage(address, true);
+	if (address < 0x100000) {
+		map(p, address / 0x1000, is_user, is_writable);
 	} else {
 		if (p != 0) PhysMem::allocFrame(p, is_user, is_writable);
 	}
@@ -89,12 +93,7 @@ void PageDirectory::allocFrame(u32int address, bool is_user, bool is_writable) {
 void PageDirectory::freeFrame(u32int address) {
 	page_t *p = getPage(address, false);
 	if (p == 0) return;
-	if (address < 0x100000) {
-		p->frame = 0;
-		p->present = 0;
-	} else {
-		PhysMem::freeFrame(p);
-	}
+	PhysMem::freeFrame(p);
 }
 
 void PageDirectory::switchTo() {

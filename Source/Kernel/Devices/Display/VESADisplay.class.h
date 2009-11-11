@@ -44,11 +44,16 @@ class VESADisplay : public GraphicDisplay {
 	vbe_controller_info_t getCtrlrInfo();
 	vbe_mode_info_t getModeInfo(u16int mode);
 
-	u8int* memPos(u16int x, u16int y);
-
 	vbe_mode_info_t m_currMode;
 
-	int b;
+	int b, m_pixWidth;
+
+	u8int *m_fb;
+
+	u8int* memPos(u16int x, u16int y) {
+		u32int addr = y * m_currMode.pitch + x * m_pixWidth;
+		return ((u8int*)m_fb) + addr;
+	}
 
 	public:
 	String getClass();
@@ -60,6 +65,9 @@ class VESADisplay : public GraphicDisplay {
 	void clear();
 	void putPix(u16int x, u16int y, u32int color);
 	u32int getPix(u16int x, u16int y);
+
+	//Advanced graphical functions, recoded for being optimized
+	virtual void putChar(u16int line, u16int col, WChar c, u8int color);
 };
 
 #endif

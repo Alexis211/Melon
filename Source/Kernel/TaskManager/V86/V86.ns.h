@@ -25,6 +25,7 @@ inline FARPTR LINEAR_TO_FP(void* ptr) {
 namespace V86 {
 	void run(v86_function_t& entry, registers_t &regs, u32int data);
 
+	void map(Process* p = 0);	//Maps lower 1MB of virtual memory to physical memory (lower 1MB as well)
 	u16int allocSeg(u16int size, Process* p = 0);
 	void* alloc(u16int size, Process* p = 0);
 }
