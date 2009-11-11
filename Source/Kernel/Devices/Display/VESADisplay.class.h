@@ -67,7 +67,7 @@ class VESADisplay : public GraphicDisplay {
 	u32int getPix(u16int x, u16int y);
 
 	//Advanced graphical functions, recoded for being optimized
-	virtual void putChar(u16int line, u16int col, WChar c, u8int color);
+	virtual void drawChar(u16int line, u16int col, WChar c, u8int color);
 };
 
 #endif

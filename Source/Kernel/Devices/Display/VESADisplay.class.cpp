@@ -52,6 +52,7 @@ void VESADisplay::getModes(Vector<mode_t> &to) {
 
 		if ((mode.attributes & 0x90) != 0x90) continue;
 		if (mode.memory_model != 4 and mode.memory_model != 6) continue;
+		if (mode.bpp != 24) continue;
 		mode_t m; m.device = this;
 		m.textCols = mode.Xres / C_FONT_WIDTH; m.textRows = mode.Yres / C_FONT_HEIGHT;
 		m.identifier = modes[i];
@@ -94,23 +95,50 @@ void VESADisplay::putPix(u16int x, u16int y, u32int c) {
 	if (m_currMode.bpp == 24) {
 		*p.d = (*p.d & 0xFF000000) | c;
 	} else if (m_currMode.bpp == 15) {
-
+		u32int r = (c & 0x00FF0000 >> 16) * 32 / 256,
+			   g = (c & 0x0000FF00 >> 8) * 32 / 256,
+			   b = (c & 0x000000FF) * 32 / 256;
+		*p.w = (r << 10) | (g << 5) | b; 
 	}
 }
 
 u32int VESADisplay::getPix(u16int x, u16int y) {
+	if (x >= m_currMode.Xres or y >= m_currMode.Yres) return 0;
 	u32int ret;
-	u8int* a = memPos(x, y);
-	ret = (a[2] << 16) | (a[1] << 8) | a[0];
+	union {
+		u8int* c;
+	   	u16int* w;
+		u32int* d;
+	} p = {memPos(x, y)};
+	if (m_currMode.bpp == 24) {
+		ret = *p.d & 0x00FFFFFF;
+	} else if (m_currMode.bpp == 15) {
+		u32int r = ((*p.w >> 10) & 0x1F) * 256 / 32,
+			   g = ((*p.w >> 5) & 0x1F) * 256 / 32,
+			   b = (*p.w & 0x1F) * 256 / 32;
+		return (r << 16) | (g << 8) | b;
+	}
 	return ret;
 }
 
 //Advanced functions
-void VESADisplay::putChar(u16int line, u16int col, WChar c, u8int color) {
+void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 	u8int ch = c.toAscii();
 	if (ch == 0) return;
 	u16int sx = col * C_FONT_WIDTH, sy = line * C_FONT_HEIGHT;
 	u32int fgcolor = consoleColor[color & 0xF], bgcolor = consoleColor[(color >> 4) & 0xF];
+
+	if (m_pixWidth == 2) {
+		u32int r = (fgcolor & 0x00FF0000 >> 16) * 32 / 256,
+			   g = (fgcolor & 0x0000FF00 >> 8) * 32 / 256,
+			   b = (fgcolor & 0x000000FF) * 32 / 256;
+		fgcolor = (r << 10) | (g << 5) | b;
+		r = (bgcolor & 0x00FF0000 >> 16) * 32 / 256,
+		g = (bgcolor & 0x0000FF00 >> 8) * 32 / 256,
+		b = (bgcolor & 0x000000FF) * 32 / 256;
+		bgcolor = (r << 10) | (g << 5) | b;
+	}
+		
 
 	int y = 0;
 	for (u8int* p = memPos(sx, sy); p < memPos(sx, sy + C_FONT_HEIGHT); p += m_currMode.pitch) {
@@ -125,6 +153,13 @@ void VESADisplay::putChar(u16int line, u16int col, WChar c, u8int color) {
 			for (int x = 0; x < 8; x++) {
 				pos.c -= m_pixWidth;
 				*pos.d = (*pos.d & 0xFF000000) | ((pixs & 1) != 0 ? fgcolor : bgcolor);
+				pixs = pixs >> 1;
+			}
+		} else if (m_pixWidth == 2) {
+			*pos.w = bgcolor;
+			for (int x = 0; x < 8; x++) {
+				pos.c -= m_pixWidth;
+				*pos.w = ((pixs & 1) != 0 ? fgcolor : bgcolor);
 				pixs = pixs >> 1;
 			}
 		}
