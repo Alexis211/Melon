@@ -12,7 +12,6 @@ ASMFLAGS = -f elf
 OutFile = Melon.ke
 Objects = Core/loader.wtf.o \
 		Core/kmain.wtf.o \
-		Core/cppsupport.wtf.o \
 		Core/Sys.ns.o \
 		Core/Log.ns.o \
 		MemoryManager/Mem.ns.o \
@@ -47,6 +46,7 @@ Objects = Core/loader.wtf.o \
 		Linker/Binary.proto.o \
 		Linker/MelonBinary.class.o \
 		Linker/ElfBinary.class.o \
+		../Library/Common/cppsupport.wtf.o \
 		../Library/Common/Bitset.class.o \
 		../Library/Common/String.class.o \
 		../Library/Common/ByteArray.class.o \

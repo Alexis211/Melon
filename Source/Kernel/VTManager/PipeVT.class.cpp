@@ -11,7 +11,7 @@ void PipeVT::setCursorCol(u32int col) {
 }
 
 void PipeVT::put(WChar c, bool updatecsr) {
-	Kbd::keypress_t kp;
+	keypress_t kp;
 	if (c.value == '\t') {
 		m_col = (m_col + 8) &~(8 - 1);
 		kp.hascmd = true;

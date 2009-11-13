@@ -18,7 +18,7 @@ class ScrollableVT : public SimpleVT {
 	void redraw();
 	void scroll();
 
-	void keyPress(Kbd::keypress_t kp);
+	void keyPress(keypress_t kp);
 };
 
 #endif

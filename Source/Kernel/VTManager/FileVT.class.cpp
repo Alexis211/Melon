@@ -31,8 +31,8 @@ void FileVT::put(WChar c, bool updatecsr) {
 	}
 }
 
-Kbd::keypress_t FileVT::getKeypress(bool show, bool block) {
-	Kbd::keypress_t ret;
+keypress_t FileVT::getKeypress(bool show, bool block) {
+	keypress_t ret;
 	if (m_isWriting) return ret;
 
 	if (m_bufferPos == m_buffer.size()) {

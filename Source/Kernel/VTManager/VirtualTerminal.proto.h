@@ -17,7 +17,7 @@ struct vtchr {
 class VirtualTerminal : public Ressource {
 	protected:
 	Mutex m_kbdMutex, m_kbdbuffMutex;
-	Vector<Kbd::keypress_t> m_kbdbuff;	//Key press events buffer
+	Vector<keypress_t> m_kbdbuff;	//Key press events buffer
 
 	//SYSCALLS :
 	static call_t m_callTable[];
@@ -26,10 +26,14 @@ class VirtualTerminal : public Ressource {
 	u32int writeSC(u32int);
 	u32int putSC(u32int);
 	u32int readLineSC(u32int);
+	u32int getKeypressSC(u32int);
 	u32int setColorSC(u32int);
 	u32int setCursorLineSC(u32int);
 	u32int setCursorColSC(u32int);
 	u32int isBoxedSC();
+	u32int getHeightSC();
+	u32int getWidthSC();
+	u32int locateSC(u32int, u32int);
 	bool accessible() { return true; }
 
 	public:
@@ -40,6 +44,8 @@ class VirtualTerminal : public Ressource {
 
 	virtual void setColor(u8int fgcolor, u8int bgcolor = 0xFF) {}	//For a pipe/file VT, this will do nothing.
 	virtual bool isBoxed() = 0;
+	virtual u8int height() { return 0; }
+	virtual u8int width() { return 0; }
 
 	virtual void updateCursor() {}
 	virtual void moveCursor(u32int row, u32int col) {}	//These are not implemented for pipe/file VTs
@@ -60,8 +66,8 @@ class VirtualTerminal : public Ressource {
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 
 	//Keyboard functions
-	virtual void keyPress(Kbd::keypress_t kp);	//Called by Kbd:: when a key is pressed, overloaded by ScrollableVT
-	virtual Kbd::keypress_t getKeypress(bool show = true, bool block = true);	//Block : must we wait for a key to be pressed ?
+	virtual void keyPress(keypress_t kp);	//Called by Kbd:: when a key is pressed, overloaded by ScrollableVT
+	virtual keypress_t getKeypress(bool show = true, bool block = true);	//Block : must we wait for a key to be pressed ?
 	String readLine(bool show = true);
 };
 

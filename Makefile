@@ -1,6 +1,6 @@
 .PHONY: clean, mrproper, Init.rfs, commit
 
-Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/SampleApps
+Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
@@ -10,8 +10,9 @@ RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keym
 	Source/Kernel/Ressources/Configuration/Groups:/System/Configuration/Groups \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
-	Source/Applications/SampleApps/asmdemo:/Applications/Demos/ASMDemo.app \
-	Source/Applications/SampleApps/cxxdemo:/Applications/Demos/CPPDemo.app \
+	Source/Applications/Demos/asmdemo:/Applications/Demos/ASMDemo.app \
+	Source/Applications/Demos/cxxdemo:/Applications/Demos/CPPDemo.app \
+	Source/Applications/Demos/GOL:/Applications/Demos/GOL.app \
 	Source/Applications/Shell/Shell:/Applications/Shell/Shell.app \
 	Source/Applications/Shell/Help.txt:/Applications/Shell/Help.txt \
 	Source/Applications/PaperWork/PaperWork:/System/Applications/PaperWork.app \

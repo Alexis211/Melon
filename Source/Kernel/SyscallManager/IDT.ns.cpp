@@ -72,7 +72,9 @@ extern "C" void interrupt_handler(registers_t regs) {
 		if (regs.int_no >= 40)
 			outb(0xA0, 0x20);
 		outb(0x20, 0x20);
+		asm volatile("sti");	//Make handling preemtible
 		Dev::handleIRQ(regs, (regs.int_no - 32));
+		asm volatile("cli");
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
 	}
 	if (regs.int_no == 64) {

@@ -4,10 +4,6 @@
 
 #include <Heap.class.h>
 
-extern "C" void __cxa_pure_virtual() {}	//Required when using abstract classes
-void *__dso_handle;		//Required when using global objects
-extern "C" int __cxa_atexit(void (*f)(void*), void *p, void *d) { return 0; }
-
 extern u32int start_ctors, end_ctors, start_dtors, end_dtors;
 
 Heap heap;

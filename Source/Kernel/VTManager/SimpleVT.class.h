@@ -22,6 +22,8 @@ class SimpleVT : public VirtualTerminal {
 	void clear();
 	void setColor(u8int fgcolor, u8int bgcolor = 0xFF);
 	bool isBoxed() { return true; }
+	u8int height() { return m_rows; }
+	u8int width() { return m_cols; }
 
 	void map(s32int row = -1, s32int col = -1);
 	void unmap();

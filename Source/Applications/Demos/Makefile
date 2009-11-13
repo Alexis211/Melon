@@ -9,7 +9,7 @@ CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I .
 LD = ld
 LDFLAGS = -T ../../Library/Link.ld -L ../../Library
 
-Applications = asmdemo cxxdemo
+Applications = asmdemo cxxdemo GOL
 
 all: $(Applications)
 	echo "* Done with applications : $(Applications)"

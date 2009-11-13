@@ -4,6 +4,7 @@
 #include <Syscall/RessourceCaller.class.h>
 
 #include <VirtualTerminal.iface.h>
+#include <Kbd.iface.h>
 
 #include <String.class.h>
 #include <WChar.class.h>
@@ -29,6 +30,10 @@ class VirtualTerminal : public RessourceCaller {
 	void write(String s) {
 		doCall(VTIF_WRITE, (u32int)&s);
 	}
+	keypress_t getKeypress(bool show = true, bool block = true) {
+		keypress_t* ptr = (keypress_t*)doCall(VTIF_GETKEYPRESS, (show ? 1 : 0) | (block ? 2 : 0));
+		return *ptr;
+	}
 	String readLine(bool show = true) {
 		return String::unserialize(doCall(VTIF_READLINE, (show ? 1 : 0)));
 	}
@@ -44,8 +49,20 @@ class VirtualTerminal : public RessourceCaller {
 	bool isBoxed() {
 		return doCall(VTIF_ISBOXED) != 0;
 	}
+	u8int height() {
+		return doCall(VTIF_GETHEIGHT);
+	}
+	u8int width() {
+		return doCall(VTIF_GETWIDTH);
+	}
 	void put(WChar c) {
 		doCall(VTIF_PUT, c);
+	}
+	void moveCursor(u8int line, u8int col) {
+		doCall(VTIF_LOCATE, line, col);
+	}
+	void put(u8int line, u8int col, WChar c) {
+		moveCursor(line, col); put(c);
 	}
 	
 	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }

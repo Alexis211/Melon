@@ -7,7 +7,7 @@ u64int current = RANDOM_SEED;
 
 u64int rand() {
 	current = (u32int)(a*current + b);
-	while (current > m) current -= m;
+	if (current > m) current = current % m;
 	return current;
 }
 

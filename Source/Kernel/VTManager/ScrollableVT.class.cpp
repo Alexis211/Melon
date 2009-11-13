@@ -69,7 +69,7 @@ void ScrollableVT::scroll() {
 	SimpleVT::scroll();
 }
 
-void ScrollableVT::keyPress(Kbd::keypress_t kp) {
+void ScrollableVT::keyPress(keypress_t kp) {
 	if (kp.hascmd && kp.modifiers == STATUS_SHIFT) {
 		s32int nlup = m_linesup;
 		if (kp.command == KBDC_PGUP) {

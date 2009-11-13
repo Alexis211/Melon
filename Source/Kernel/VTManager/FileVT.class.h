@@ -18,7 +18,7 @@ class FileVT : public VirtualTerminal {
 	void setCursorCol(u32int col);
 
 	void put(WChar c, bool updatecsr = true);
-	Kbd::keypress_t getKeypress(bool show = true, bool block = true);
+	keypress_t getKeypress(bool show = true, bool block = true);
 };
 
 #endif

@@ -41,5 +41,5 @@ void Mutex::unlock() {
 }
 
 bool Mutex::locked() {
-	return m_locked;
+	return m_locked == MUTEX_TRUE;
 }
