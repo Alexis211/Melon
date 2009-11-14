@@ -4,8 +4,10 @@
 using namespace Kbd;
 
 void VirtualTerminal::keyPress(keypress_t kp) {
-	m_kbdbuffMutex.waitLock();
-	m_kbdbuff.push(kp);
+	if (m_kbdbuffEnd == m_kbdbuffStart - 1 or (m_kbdbuffEnd == KBDBUFFSIZE - 1 and m_kbdbuffStart == 0)) return;
+	m_kbdbuff[m_kbdbuffEnd] = kp;
+	m_kbdbuffEnd++;
+	if (m_kbdbuffEnd == KBDBUFFSIZE) m_kbdbuffEnd = 0;
 	if (!m_kbdMutex.locked()) {
 		if (kp.haschar && !kp.hascmd) {
 			put(kp.character);
@@ -17,29 +19,26 @@ void VirtualTerminal::keyPress(keypress_t kp) {
 			put("\b");
 		}
 	}
-	m_kbdbuffMutex.unlock();
 }
 
 keypress_t VirtualTerminal::getKeypress(bool show, bool block) {
 	m_kbdMutex.waitLock();
 
-	if (m_kbdbuff.empty() && !block) {
+	if (m_kbdbuffStart == m_kbdbuffEnd && !block) {
 		m_kbdMutex.unlock();
 		return keypress_t();
 	}
 
-	while (m_kbdbuff.empty()) {
+	while (m_kbdbuffStart == m_kbdbuffEnd) {
 		Task::currThread()->sleep(10);
 	}
 
-	m_kbdbuffMutex.waitLock();
-	keypress_t ret = m_kbdbuff[0];
+	keypress_t ret = m_kbdbuff[m_kbdbuffStart];
 
-	for (u32int i = 1; i < m_kbdbuff.size(); i++) {
-		m_kbdbuff[i - 1] = m_kbdbuff[i];
-	}
-	m_kbdbuff.pop();
-	m_kbdbuffMutex.unlock();
+	m_kbdbuffStart++;
+	if (m_kbdbuffStart == KBDBUFFSIZE) m_kbdbuffStart = 0;
+
+	m_kbdMutex.unlock();
 
 	if (show) {
 		if (ret.haschar && !ret.hascmd) {
@@ -53,7 +52,6 @@ keypress_t VirtualTerminal::getKeypress(bool show, bool block) {
 		}
 	}
 
-	m_kbdMutex.unlock();
 	return ret;
 }
 

@@ -14,10 +14,13 @@ struct vtchr {
 	WChar c;
 };
 
+#define KBDBUFFSIZE 10
+
 class VirtualTerminal : public Ressource {
 	protected:
-	Mutex m_kbdMutex, m_kbdbuffMutex;
-	Vector<keypress_t> m_kbdbuff;	//Key press events buffer
+	Mutex m_kbdMutex;
+	keypress_t m_kbdbuff[KBDBUFFSIZE];	//Key press events buffer
+	int m_kbdbuffStart, m_kbdbuffEnd;
 
 	//SYSCALLS :
 	static call_t m_callTable[];

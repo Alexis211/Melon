@@ -201,7 +201,10 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	if (init.empty()) {
 		*kvt << "\n\n";
 		new KernelShell(cwd, kvt);
-		while (1) asm volatile("sti; hlt");
+		while (KernelShell::getInstances() > 0) {
+			Task::currThread()->sleep(100);
+		}
+		Sys::halt();
 	} else {
 		selectVideoMode(*kvt);
 		//Create a VT for handling the Melon bootup logo
@@ -222,7 +225,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			p->setOutVT(vt);
 			p->start();
 			while (p->getState() != P_FINISHED) Task::currThread()->sleep(100);
-			Sys::halt();
+			PANIC("Init has terminated");
 		}
 	}
 

@@ -6,7 +6,9 @@
 #include <VirtualTerminal.iface.h>
 
 VirtualTerminal::VirtualTerminal() : 
-	Ressource(VTIF_OBJTYPE, m_callTable), m_kbdMutex(false), m_kbdbuffMutex(false), m_kbdbuff() {
+	Ressource(VTIF_OBJTYPE, m_callTable), m_kbdMutex(false), m_kbdbuff() {
+	m_kbdbuffStart = 0;
+	m_kbdbuffEnd = 0;
 }
 
 VirtualTerminal::~VirtualTerminal() {

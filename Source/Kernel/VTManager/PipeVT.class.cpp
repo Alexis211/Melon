@@ -1,4 +1,5 @@
 #include "PipeVT.class.h"
+#include <TaskManager/Task.ns.h>
 
 PipeVT::PipeVT() {
 	m_col = 0;
@@ -29,7 +30,9 @@ void PipeVT::put(WChar c, bool updatecsr) {
 		kp.character = c;
 		m_col++;
 	}
-	m_kbdbuffMutex.waitLock();
-	m_kbdbuff.push(kp);
-	m_kbdbuffMutex.unlock();
+	while (m_kbdbuffEnd == m_kbdbuffStart - 1 or (m_kbdbuffEnd == KBDBUFFSIZE - 1 and m_kbdbuffStart == 0)) 
+		Task::currThread()->sleep(10);
+	m_kbdbuff[m_kbdbuffEnd] = kp;
+	m_kbdbuffEnd++;
+	if (m_kbdbuffEnd == KBDBUFFSIZE) m_kbdbuffEnd = 0;
 }
