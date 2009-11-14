@@ -175,10 +175,10 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	//*************************************** 	DEVICE SETUP
 
-	if (enableVESA) Dev::registerDevice(new VESADisplay());
-	FloppyController::detect();
 	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
+	if (enableVESA) Dev::registerDevice(new VESADisplay());
+	FloppyController::detect();
 
 	//***************************************	MOUNT ROOT FILESYSTEM
 

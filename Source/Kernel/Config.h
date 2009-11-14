@@ -8,13 +8,10 @@
 #define TXTLOGO_BGCOLOR 0
 #define KVT_FGCOLOR 7
 #define KVT_BGCOLOR 0
-#define KVT_OKCOLOR 2
-#define KVT_BLECOLOR 4	//BLE = Boot Log Entry
-#define KVT_LIGHTCOLOR 8
+#define KVT_LIGHTCOLOR 6
+#define KVT_ENTRYCOLOR 15
 
-#define SHELL_FGCOLOR 7
-#define SHELL_BGCOLOR 0
-#define SHELL_LIGHTCOLOR 6
-#define SHELL_ENTRYCOLOR 15
+#define SHELL_FGCOLOR 0
+#define SHELL_BGCOLOR 7
 
 #endif

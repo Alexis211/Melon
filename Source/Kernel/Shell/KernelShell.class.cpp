@@ -31,7 +31,7 @@ KernelShell::KernelShell(DirectoryNode* cwd, VirtualTerminal* vt) {
 }
 
 KernelShell::KernelShell(DirectoryNode* cwd) {
-	ScrollableVT* vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+	ScrollableVT* vt = new ScrollableVT(15, 76, 200, KVT_FGCOLOR, KVT_BGCOLOR);
 	vt->map(9);
 	setup(cwd, vt);
 }
@@ -65,11 +65,11 @@ u32int KernelShell::run() {
 	};
 	
 	while (1) {
-		m_vt->setColor(SHELL_LIGHTCOLOR);
+		m_vt->setColor(KVT_LIGHTCOLOR);
 		*m_vt << VFS::path(m_cwd) << " # ";
-		m_vt->setColor(SHELL_ENTRYCOLOR);
+		m_vt->setColor(KVT_ENTRYCOLOR);
 		Vector<String> tokens = m_vt->readLine().split(" ");
-		m_vt->setColor(SHELL_FGCOLOR);
+		m_vt->setColor(KVT_FGCOLOR);
 		if (tokens[0] == "help") {
 			*m_vt << " - Command list for integrated kernel shell:\n";
 			*m_vt << "  - help       shows this help screen\n";

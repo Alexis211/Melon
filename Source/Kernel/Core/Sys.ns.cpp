@@ -147,7 +147,7 @@ void halt() {
 	SimpleVT vt(3, message.size() + 16, 7, 6);
 	vt.map();
 	vt << "\n\t" << message;
-	while (1) asm volatile("cli");
+	while (1) asm volatile("cli; hlt");
 }
 
 u32int scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
