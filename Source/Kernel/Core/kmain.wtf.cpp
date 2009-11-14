@@ -133,6 +133,8 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			Mem::placementAddress = mods[i].mod_end + 0x1000;
 	}
 
+	//**************************************	BASIC KERNEL SETUP
+
 	//Create text output
 	VGATextOutput *vgaout = new VGATextOutput();
 	Disp::setText(vgaout);
@@ -151,9 +153,34 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	PhysMem::removeTemporaryPages(); 	//Remove useless page mapping
 
 	Mem::createHeap();		//Create kernel heap 
+	Dev::registerDevice(vgaout);
 
 	Dev::registerDevice(new Timer()); 	//Initialize timer
-	Task::initialize(String((char*)mbd->cmdline), kvt);	//Initialize multitasking 
+	String kcmdline((char*)mbd->cmdline);
+	Task::initialize(kcmdline, kvt);	//Initialize multitasking 
+
+	asm volatile("sti");
+
+	//***************************************	PARSE COMMAND LINE
+	
+	Vector<String> opts = kcmdline.split(" ");
+	String keymap = "fr", init = "/System/Applications/PaperWork.app";
+	bool enableVESA = true;
+	for (u32int i = 0; i < opts.size(); i++) {
+		Vector<String> opt = opts[i].split(":");
+		if (opt[0] == "vesa" && opt[1] != "enabled") enableVESA = false;
+		if (opt[0] == "keymap") keymap = opt[1];
+		if (opt[0] == "init") init = opt[1];
+	}
+
+	//*************************************** 	DEVICE SETUP
+
+	if (enableVESA) Dev::registerDevice(new VESADisplay());
+	FloppyController::detect();
+	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
+	Kbd::setFocus(kvt);	//Set focus to virtual terminal
+
+	//***************************************	MOUNT ROOT FILESYSTEM
 
 	FileSystem* fs = RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
 	DirectoryNode* cwd;
@@ -161,48 +188,42 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Task::currProcess()->setCwd(cwd);
 	VFS::setRootNode(cwd);
 
+	if (keymap != "builtin") {
+		if (!Kbd::loadKeymap(keymap)) *kvt << "\nWARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";
+	}
+
 	Log::init(KL_STATUS);	//Setup logging
-	Log::log(KL_STATUS, "kmail : Melon booting.");
+	Log::log(KL_STATUS, "kmain : Melon booting.");
 
-	Dev::registerDevice(vgaout);
-	Log::log(KL_STATUS, "kmain : Registered textual VGA output");
-	Dev::registerDevice(new VESADisplay());
-	Log::log(KL_STATUS, "kmain : Created VESA display");
-
-	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
-	if (!Kbd::loadKeymap("fr")) Log::log(KL_ERROR, "kmain : could not load french keymap.");
-	Kbd::setFocus(kvt);	//Set focus to virtual terminal
-	Log::log(KL_STATUS, "kmain : Keyboard set up");
-
-	asm volatile("sti");
-
-	selectVideoMode(*kvt);		//////////////////////// SETUP VIDEO MODE
-
-	//Create a VT for handling the Melon bootup logo
-	SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
-	melonLogoVT->map(1);
-	new Thread(logoAnimation, (void*)melonLogoVT, true);
-
-	FloppyController::detect();
-	Log::log(KL_STATUS, "kmain : Floppy drives detected");
-
-	Usr::load();
+	Usr::load();			//Setup user managment
 	Log::log(KL_STATUS, "kmain : User list loaded");
 
-	Process* p = Process::run("/System/Applications/PaperWork.app", 0);
-	if (p == 0) {
-		PANIC("Could not launch PaperWork !");
+	if (init.empty()) {
+		*kvt << "\n\n";
+		new KernelShell(cwd, kvt);
+		while (1) asm volatile("sti; hlt");
 	} else {
-		Log::log(KL_STATUS, "kmain : Starting PaperWork (init)");
-		VirtualTerminal* vt = new ScrollableVT(Disp::textRows() - 10, Disp::textCols() - 4,
-			   	200, SHELL_FGCOLOR, SHELL_BGCOLOR);
-		Kbd::setFocus(vt);
-		((ScrollableVT*)vt)->map(9);
-		p->setInVT(vt);
-		p->setOutVT(vt);
-		p->start();
-		while (p->getState() != P_FINISHED) Task::currThread()->sleep(100);
-		PANIC("PaperWork finished.");
+		selectVideoMode(*kvt);
+		//Create a VT for handling the Melon bootup logo
+		SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
+		melonLogoVT->map(1);
+		new Thread(logoAnimation, (void*)melonLogoVT, true);
+
+		Process* p = Process::run(init, 0);
+		if (p == 0) {
+			PANIC((char*)(u8int*)ByteArray(String("Could not launch init : ") += init));
+		} else {
+			Log::log(KL_STATUS, String("kmain : Starting init : ") += init);
+			VirtualTerminal* vt = new ScrollableVT(Disp::textRows() - 10, Disp::textCols() - 4,
+					200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+			Kbd::setFocus(vt);
+			((ScrollableVT*)vt)->map(9);
+			p->setInVT(vt);
+			p->setOutVT(vt);
+			p->start();
+			while (p->getState() != P_FINISHED) Task::currThread()->sleep(100);
+			Sys::halt();
+		}
 	}
 
 	PANIC("END OF KMAIN");

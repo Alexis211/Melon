@@ -7,6 +7,11 @@
 #include <VFS/File.class.h>
 #include <Core/Log.ns.h>
 
+//Whatever built-in keymap we want to use should go here. notice  without this line, melon dies.
+#include <Ressources/Keymaps/fr.cxd>
+
+#define SETKM(a, b)  memcpy((u8int*)a, (u8int*)b, 128 * sizeof(WChar));;
+
 namespace Kbd {
 
 //These are arbitrarily decided codes given to each scancode
@@ -29,28 +34,10 @@ u8int ctrlkeys[] = {
 /* 0xF0 */	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-melon_keymap_t km;
-WChar *keymapNormal = NULL, *keymapShift = NULL, *keymapCaps = NULL, *keymapAltgr = NULL, *keymapShiftAltgr = NULL;
 u8int kbdstatus = 0;
 VirtualTerminal *focusedVT = NULL;	//This is the VT that must receive the character
 
 void process(keypress_t kp) {	//This routine sends the information of a keypress to someone
-	/*  String r("Key press ");
-	String n = String::number(kp.pressed);
-	r += n;
-	r += ", hascmd=";	
-	n = String::number(kp.hascmd);
-	r += n;
-	r += ", cmd=";
-	n = String::number(kp.command);
-	r += n;
-	r += ", haschar=";
-	n = String::number(kp.haschar);
-	r += n;
-	r += ", char='";
-	r += kp.character;
-	r += "'";
-	DEBUG(r); */
 	if (focusedVT != NULL) {
 		if (((kp.haschar and kp.character != 0) or (kp.hascmd and kp.command < 100)) and kp.pressed) {
 			focusedVT->keyPress(kp);
@@ -63,6 +50,8 @@ void setFocus(VirtualTerminal* vt) {
 }
 
 bool loadKeymap(String lang) {
+	melon_keymap_t km;
+
 	String file = "/System/Keymaps/";
 	file += lang;
 	file += ".mkm";
@@ -73,11 +62,27 @@ bool loadKeymap(String lang) {
 		Log::log(KL_WARNING, String("Kbd.ns : keymap badly loaded : ") += file);
 	}
 
-	keymapNormal = km.normal;
-	if (km.shift[0x10] != 0) keymapShift = km.shift; else keymapShift = keymapNormal;
-	if (km.caps[0x10] != 0) keymapCaps = km.caps; else keymapShift = keymapShift;
-	if (km.altgr[0x10] != 0) keymapAltgr = km.altgr; else keymapShift = keymapNormal;
-	if (km.shiftaltgr[0x10] != 0) keymapShiftAltgr = km.shiftaltgr; else keymapShift = keymapAltgr;
+	SETKM(keymap_normal, km.normal);
+	if (km.shift[0x10] != 0) {
+		SETKM(keymap_shift, km.shift);
+	} else {
+		SETKM(keymap_shift, keymap_normal);
+	}
+	if (km.caps[0x10] != 0) {
+		SETKM(keymap_caps, km.caps);
+	} else {
+		SETKM(keymap_shift, keymap_shift);
+	}
+	if (km.altgr[0x10] != 0){
+		SETKM(keymap_altgr, km.altgr);
+	} else {
+		SETKM(keymap_shift, keymap_normal);
+	}
+	if (km.shiftaltgr[0x10] != 0) {
+		SETKM(keymap_shiftaltgr, km.shiftaltgr);
+	} else {
+		SETKM(keymap_shiftaltgr, keymap_altgr);
+	}
 
 	Log::log(KL_STATUS, String("Kbd.ns : loaded keymap : ") += file);
 	return true;
@@ -105,18 +110,18 @@ void keyPress(u8int scancode) {
 		}
 		if (((kbdstatus & STATUS_SHIFT) != 0) xor ((kbdstatus & STATUS_CAPS) != 0)) {
 			if (kbdstatus & STATUS_ALTGR) {
-				if (keymapShiftAltgr != NULL) kp.character = keymapShiftAltgr[scancode];
+				kp.character = keymap_shiftaltgr[scancode];
 			} else {
-				if (keymapCaps != NULL and (kbdstatus & STATUS_CAPS))
-					kp.character = keymapCaps[scancode];
-				else if (keymapShift != NULL)
-					kp.character = keymapShift[scancode];
+				if (kbdstatus & STATUS_CAPS)
+					kp.character = keymap_caps[scancode];
+				else
+					kp.character = keymap_shift[scancode];
 			}
 		} else {
 			if (kbdstatus & STATUS_ALTGR) {
-				if (keymapAltgr != NULL) kp.character = keymapAltgr[scancode];
+				kp.character = keymap_altgr[scancode];
 			} else {
-				if (keymapNormal != NULL) kp.character = keymapNormal[scancode];
+				kp.character = keymap_normal[scancode];
 			}
 		}
 	} else if (cmd >= KBDC_KPINSERT and cmd <= KBDC_KPDEL and (kbdstatus & STATUS_NUM)) {
@@ -175,18 +180,18 @@ void keyRelease(u8int scancode) {
 		}
 		if (((kbdstatus & STATUS_SHIFT) != 0) xor ((kbdstatus & STATUS_CAPS) != 0)) {
 			if (kbdstatus & STATUS_ALTGR) {
-				if (keymapShiftAltgr != NULL) kp.character = keymapShiftAltgr[scancode];
+				kp.character = keymap_shiftaltgr[scancode];
 			} else {
-				if (keymapCaps != NULL and (kbdstatus & STATUS_CAPS))
-					kp.character = keymapCaps[scancode];
-				else if (keymapShift != NULL)
-					kp.character = keymapShift[scancode];
+				if (kbdstatus & STATUS_CAPS)
+					kp.character = keymap_caps[scancode];
+				else
+					kp.character = keymap_shift[scancode];
 			}
 		} else {
 			if (kbdstatus & STATUS_ALTGR) {
-				if (keymapAltgr != NULL) kp.character = keymapAltgr[scancode];
+				kp.character = keymap_altgr[scancode];
 			} else {
-				if (keymapNormal != NULL) kp.character = keymapNormal[scancode];
+				kp.character = keymap_normal[scancode];
 			}
 		}
 	} else if (cmd >= KBDC_KPINSERT and cmd <= KBDC_KPDEL and (kbdstatus & STATUS_NUM)) {

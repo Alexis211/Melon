@@ -19,7 +19,6 @@ void KernelShell::setup(DirectoryNode* cwd, VirtualTerminal *vt) {
 	m_vt = vt;
 	Task::currProcess()->setInVT(vt);
 	Task::currProcess()->setOutVT(vt);
-	((ScrollableVT*)m_vt)->map(9);
 	Kbd::setFocus(m_vt);
 	m_cwd = cwd;
 	*m_vt << "Welcome to Melon's kernel shell !\n";
@@ -32,7 +31,9 @@ KernelShell::KernelShell(DirectoryNode* cwd, VirtualTerminal* vt) {
 }
 
 KernelShell::KernelShell(DirectoryNode* cwd) {
-	setup(cwd, new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR));
+	ScrollableVT* vt = new ScrollableVT(15, 76, 200, SHELL_FGCOLOR, SHELL_BGCOLOR);
+	vt->map(9);
+	setup(cwd, vt);
 }
 
 KernelShell::~KernelShell() {

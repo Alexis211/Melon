@@ -22,20 +22,22 @@ int main(Vector<String> args) {
 		}
 	}
 
-	while (1) {
+	char *tmp = new char[w * h + 1];
+
+	bool run = true;
+	while (run) {
 		//Display cells
-		outvt.moveCursor(0, 0);
 		for (u32int y = 0; y < h; y++) {
 			for (u32int x = 0; x < w; x++) {
 				if (cells[x * h + y]) {
-					outvt.setColor(0, 2);
+					tmp[y * w + x] = '#';
 				} else {
-					outvt.setColor(7, 0);
+					tmp[y * w + x] = ' ';
 				}
-				outvt << " ";
 			}
 		}
-		outvt << "Press Ctrl+h for help";
+		outvt.moveCursor(0, 0);
+		outvt << String(tmp, w*h) << "Press Ctrl+h for help";
 
 		//Compute next generation
 		for (u32int y = 0; y < h; y++) {
@@ -61,9 +63,9 @@ int main(Vector<String> args) {
 		}
 
 		keypress_t kp = invt.getKeypress(false, false);
-		if (kp.hascmd && (kp.modifiers & STATUS_CTRL)) {
+		while (kp.hascmd && (kp.modifiers & STATUS_CTRL)) {
 			if (kp.character == WChar("c")) {
-				break;
+				run = false;
 			} else if (kp.character == WChar("r")) {
 				for (u32int i = 0; i < 20; i++) {
 					u64int x = Rand::rand() * w / Rand::max();
@@ -75,16 +77,18 @@ int main(Vector<String> args) {
 					cells[i] = true;
 					cells[(2 * i) % (h - i)] = true;
 					cells[(w * i) % (h * w - i)] = true;
+					cells[(w * i) % (h * w - i) + w] = true;
 				}
 			} else if (kp.character == WChar("h")) {
-				outvt << "** Melon's demo Game Of Life Simulator help :\n";
+				outvt << "\n\n** Melon's demo Game Of Life Simulator help :\n";
 				outvt << " - ctrl+c : quit\n";
 				outvt << " - ctrl+h : show this\n";
 				outvt << " - ctrl+r : add some random cells\n";
-				outvt << " - ctrl+R : add more cells, but not random\n";
+				outvt << " - ctrl+R : add more cells, but not random\n\n";
 				outvt << "Press any key to return to simultaor...";
 				invt.getKeypress();
 			}
+			kp = invt.getKeypress(false, false);
 		}
 
 		Thread::get().sleep(100);
