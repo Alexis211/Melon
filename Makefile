@@ -63,6 +63,8 @@ floppy: $(Files)
 	for f in $(Files); do \
 		sudo cp $$f Mount; \
 	done
+	sudo cp Source/Applications/Demos/GOL Mount/GOL.app
+	sudo cp Source/Applications/Demos/asmdemo Mount/ASM.dem
 	sleep 0.4
 	sudo umount Mount
 

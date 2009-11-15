@@ -50,7 +50,8 @@ FATFS* FATFS::mount(Partition* p, DirectoryNode* mountpoint) {
 	*kvt << "\nDetected a FAT" << (s64int)fs->m_fatType << " filesystem.\n" <<
 		"root_dir_sectors:" << fs->m_rootDirSectors << " fat_size:" << fs->m_fatSize << " total_sectors:" <<
 		fs->m_totalSectors << " data_sectors:" << dataSectors << " count_of_clusters:" << fs->m_countOfClusters <<
-		" sizeof(fat_dir_entry_t):" << sizeof(fat_dir_entry_t) << " first_data_sector:" << fs->m_firstDataSector;
+		" sizeof(fat_dir_entry_t):" << sizeof(fat_dir_entry_t) << " first_data_sector:" << fs->m_firstDataSector <<
+		" cluster_size:" << fs->m_clusterSize;
 	return 0;
 }
 
@@ -122,7 +123,30 @@ bool FATFS::setParent(FSNode* node, FSNode* parent) {
 }
 
 u32int FATFS::read(FileNode* file, u64int position, u32int max_length, u8int *data) {
-	return 0;
+	u32int len = max_length;
+	if (position >= file->getLength()) return 0;
+	if (position + len > file->getLength()) len = len - position;
+	u32int firstCluster = position / m_clusterSize, clusterOffset = position % m_clusterSize;
+	u32int clusters = (len + clusterOffset) / m_clusterSize + 1, lastClusBytesToRead = (len + clusterOffset) % m_clusterSize;
+	u32int clust = FIRSTCLUS(file);
+	//Find first cluster
+	for (u32int i = 0; i < firstCluster and clust != 0; i++) clust = nextCluster(clust);
+	if (clust == 0) return 0;
+	//Read first cluster
+	u8int* temp = (u8int*)Mem::alloc(m_clusterSize);
+	readCluster(clust, temp);
+	memcpy(data, temp + clusterOffset, (m_clusterSize - clusterOffset));
+	//Read next clusters
+	u32int pos = (m_clusterSize - clusterOffset);
+	for (u32int i = 1; i < clusters; i++) {
+		clust = nextCluster(clust);
+		if (clust == 0) break;
+		readCluster(clust, temp);
+		memcpy(data + pos, temp, (i == clusters - 1 ? lastClusBytesToRead : m_clusterSize));
+		pos += m_clusterSize;
+	}
+	Mem::free(temp);
+	return len;
 }
 
 bool FATFS::write(FileNode* file, u64int position, u32int length, u8int* data) {
