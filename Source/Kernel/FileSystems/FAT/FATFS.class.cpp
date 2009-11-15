@@ -1,0 +1,201 @@
+#include "FATFS.class.h"
+#include <VTManager/SimpleVT.class.h>
+#include "FATFileNode.class.h"
+#include "FATDirectoryNode.class.h"
+#include <VFS/VFS.ns.h>
+
+#define FIRSTCLUS(node) ((u32int&)(node->type() == NT_DIRECTORY ? \
+			((FATDirectoryNode*)(node))->m_firstCluster : \
+			((FATFileNode*)(node))->m_firstCluster))
+#define FIRSTDEID(node) ((u32int&)(node->type() == NT_DIRECTORY ? \
+			((FATDirectoryNode*)(node))->m_firstDirEntryID : \
+			((FATFileNode*)(node))->m_firstDirEntryID))
+
+FATFS* FATFS::mount(Partition* p, DirectoryNode* mountpoint) {
+	if (mountpoint != 0 and !mountpoint->mountpointable()) return 0;
+	//		***	READ BOOT SECTOR ***
+	union {
+		fat_BS_t s;
+		u8int c[512];
+	} bs;
+	p->readBlocks(0, 1, bs.c);
+	//		*** CHECK FILESYSTEM TYPE ***
+	if (bs.s.extBS_16.boot_signature != 0x28 and bs.s.extBS_16.boot_signature != 0x29
+			and bs.s.extBS_32.boot_signature != 0x28 and bs.s.extBS_32.boot_signature != 0x29) return 0;
+	//		*** DO SOME CALCULATIONS ***
+	FATFS* fs = new FATFS();
+	fs->m_fatSize = (bs.s.table_size_16 == 0 ? bs.s.extBS_32.table_size_32 : bs.s.table_size_16);
+	fs->m_totalSectors = (bs.s.total_sectors_16 == 0 ? bs.s.total_sectors_32 : bs.s.total_sectors_16);
+	fs->m_rootDirSectors = ((bs.s.root_entry_count * 32) + (bs.s.bytes_per_sector - 1)) / bs.s.bytes_per_sector;
+	fs->m_firstDataSector = bs.s.reserved_sector_count + (fs->m_fatSize * bs.s.table_count);
+	fs->m_clusterSize = bs.s.bytes_per_sector * bs.s.sectors_per_cluster;
+	u32int dataSectors = fs->m_totalSectors - (fs->m_firstDataSector + fs->m_rootDirSectors);
+	fs->m_countOfClusters = dataSectors / bs.s.sectors_per_cluster;
+	if (fs->m_countOfClusters < 4085) {	//Find out FAT type
+		fs->m_fatType = 12;
+	} else if (fs->m_countOfClusters < 65525) {
+		fs->m_fatType = 16;
+	} else {
+		fs->m_fatType = 32;
+	}
+	fs->m_readOnly = true;
+	fs->m_bs = bs.s;
+	fs->m_part = p;
+	//		*** CREATE ROOT DIRECTORY NODE ***
+	fs->m_rootNode = new FATDirectoryNode("/", fs, mountpoint);
+	FIRSTCLUS(fs->m_rootNode) = 2;
+	if (fs->m_fatType == 32) FIRSTCLUS(fs->m_rootNode) = bs.s.extBS_32.root_cluster;
+	if (mountpoint != 0) mountpoint->mount(fs->m_rootNode);
+	VFS::registerFilesystem(fs);
+	*kvt << "\nDetected a FAT" << (s64int)fs->m_fatType << " filesystem.\n" <<
+		"root_dir_sectors:" << fs->m_rootDirSectors << " fat_size:" << fs->m_fatSize << " total_sectors:" <<
+		fs->m_totalSectors << " data_sectors:" << dataSectors << " count_of_clusters:" << fs->m_countOfClusters <<
+		" sizeof(fat_dir_entry_t):" << sizeof(fat_dir_entry_t) << " first_data_sector:" << fs->m_firstDataSector;
+	return 0;
+}
+
+u32int FATFS::nextCluster(u32int cluster) {
+	u8int fat_table[m_part->getBlockSize()];
+	u32int val;
+	if (m_fatType == 12) {
+		u32int fat_offset = cluster + (cluster / 2);
+		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
+		u32int ent_offset = fat_offset % m_part->getBlockSize();
+		m_part->readBlocks(fat_sector, 1, fat_table);
+		u16int tblval = *(u16int*)&fat_table[ent_offset];
+		if (cluster & 1) val = tblval >> 4;
+		else val = tblval & 0x0FFF;
+		if (val >= 0xFF7) val = 0;
+	} else if (m_fatType == 16) {
+		u32int fat_offset = cluster * 2;
+		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
+		u32int ent_offset = fat_offset % m_part->getBlockSize();
+		m_part->readBlocks(fat_sector, 1, fat_table);
+		u16int tblval = *(u16int*)&fat_table[ent_offset];
+		val = tblval;
+		if (tblval >= 0xFFF7) val = 0;
+	} else if (m_fatType == 32) {
+		u32int fat_offset = cluster * 4;
+		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
+		u32int ent_offset = fat_offset % m_part->getBlockSize();
+		m_part->readBlocks(fat_sector, 1, fat_table);
+		val = *(u32int*)&fat_table[ent_offset] & 0x0FFFFFFF;
+		if (val >= 0x0FFFFFF7) val = 0;
+	}
+	return val;
+}
+
+void FATFS::readCluster(u32int cluster, u8int* data) {
+	u32int firstSector = ((cluster - 2) * m_bs.sectors_per_cluster) + m_firstDataSector;
+	if (cluster > 2 and m_fatType != 32) firstSector += m_rootDirSectors;
+	m_part->readBlocks(firstSector, m_bs.sectors_per_cluster, data);
+}
+
+bool FATFS::unmount() {
+	if (m_readOnly) return true;
+	return false;
+}
+
+bool FATFS::setName(FSNode* node, String name) {
+	if (m_readOnly) return false;
+	return false;
+}
+
+bool FATFS::setPermissions(FSNode* node, u32int permissions) {
+	if (m_readOnly) return false;
+	return false;
+}
+
+bool FATFS::setUid(FSNode* node, u32int uid) {
+	if (m_readOnly) return false;
+	return false;
+}
+
+bool FATFS::setGid(FSNode* node, u32int gid) {
+	if (m_readOnly) return false;
+	return false;
+}
+
+bool FATFS::setParent(FSNode* node, FSNode* parent) {
+	if (m_readOnly) return false;
+	return false;
+}
+
+u32int FATFS::read(FileNode* file, u64int position, u32int max_length, u8int *data) {
+	return 0;
+}
+
+bool FATFS::write(FileNode* file, u64int position, u32int length, u8int* data) {
+	if (m_readOnly) return false;
+	return false;
+}
+
+bool FATFS::truncate(FileNode* file) {
+	if (m_readOnly) return false;
+	return false;
+}
+
+bool FATFS::loadContents(DirectoryNode* dir) {
+	u32int cluster = FIRSTCLUS(dir);
+	union {
+		u8int *c;
+		fat_dir_entry_t *e;
+	} e;
+
+	u32int entries = m_clusterSize / sizeof(fat_dir_entry_t);
+	if (cluster == 2 and m_fatType != 32) {		//This is the value we use for the root directory
+		e.c = (u8int*)Mem::alloc(m_rootDirSectors * m_part->getBlockSize());
+		m_part->readBlocks(m_firstDataSector, m_rootDirSectors, e.c);
+	} else {
+		e.c = (u8int*)Mem::alloc(m_clusterSize);
+	}
+
+	while (cluster != 0) {
+		if (cluster != 2 or m_fatType == 32) readCluster(cluster, e.c);
+		for (u32int i = 0; i < entries; i++) {
+			if (e.e[i].name[0] == 0 or e.e[i].name[0] == 0xE5) continue;	//Nothing intresting here.
+			if (e.e[i].attributes == FA_LFN) continue;	//Long file name entry, nothing intresting
+			if (e.e[i].attributes & FA_VOLUMEID) continue;
+			String name;
+			for (int j = 0; j < 8; j++) {
+				if (e.e[i].name[j] == ' ') break;
+				name += WChar(e.e[i].name[j]);
+			}
+			for (int j = 0; j < 3; j++) {
+				if (e.e[i].extension[j] == ' ') break;
+				if (j == 0) name += ".";
+				name += WChar(e.e[i].extension[j]);
+			}
+			u32int first_clus = (e.e[i].first_clust_high << 16) + e.e[i].first_clust_low;
+			FSNode* n;
+			if (e.e[i].attributes & FA_DIRECTORY) {
+				if (name == "." or name == "..") continue;
+				n = new FATDirectoryNode(name, this, dir);
+			} else {
+				n = new FATFileNode(name, this, dir, e.e[i].size);
+			}
+			FIRSTCLUS(n) = first_clus;
+			dir->getChildren().push(n);
+		}
+		if (cluster == 2 && m_fatType != 32) break;	//We are in a FAT12/16 root directory
+		cluster = nextCluster(cluster);
+	}
+
+	Mem::free(e.c);
+	return true;
+}
+
+FileNode* FATFS::createFile(DirectoryNode* parent, String name) {
+	if (m_readOnly) return false;
+	return 0;
+}
+
+DirectoryNode* FATFS::createDirectory(DirectoryNode* parent, String name) {
+	if (m_readOnly) return false;
+	return 0;
+}
+
+bool FATFS::remove(DirectoryNode* parent, FSNode* node) {
+	if (m_readOnly) return false;
+	return false;
+}

@@ -128,8 +128,7 @@ u32int KernelShell::run() {
 					String p = VFS::path(n);
 					for (u32int i = 0; i < VFS::filesystems.size(); i++) {
 						if (VFS::path(VFS::filesystems[i]->getRootNode()) == p) {
-							VFS::unmount(VFS::filesystems[i]);
-							ok = true;
+							ok = VFS::unmount(VFS::filesystems[i]);
 							break;
 						}
 					}

@@ -25,6 +25,7 @@
 #include <Rand.ns.h>
 #include <VFS/Part.ns.h>
 #include <FileSystems/RamFS/RamFS.class.h>
+#include <FileSystems/FAT/FATFS.class.h>
 #include <VFS/FileNode.class.h>
 #include <VFS/VFS.ns.h>
 #include <VFS/DirectoryNode.class.h>
@@ -36,6 +37,8 @@
 extern u32int end;	//Placement address
 
 extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
+
+SimpleVT* kvt;
 
 u32int logoAnimation(void* p) {
 	SimpleVT& vt = *((SimpleVT*)p);
@@ -140,7 +143,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Disp::setText(vgaout);
 
 	//Create a VT for logging what kernel does
-	SimpleVT *kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
+	kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(0, 0);
 	*kvt << "Melon is loading...";
 
@@ -186,6 +189,8 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	DirectoryNode* cwd;
 	cwd = VFS::getRootNode();
 	Task::currProcess()->setCwd(cwd);
+
+	FATFS::mount(Part::partitions[0], (DirectoryNode*)VFS::createDirectory("/Mount"));
 
 	if (keymap != "builtin") {
 		if (!Kbd::loadKeymap(keymap)) *kvt << "\nWARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";

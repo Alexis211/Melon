@@ -18,8 +18,11 @@
 
 //This file contains system-relative functions
 class String;
+class SimpleVT;
 class VirtualTerminal;
 struct registers_t;
+
+extern SimpleVT* kvt;
 
 namespace Sys {
 	void outb(u16int port, u8int value);

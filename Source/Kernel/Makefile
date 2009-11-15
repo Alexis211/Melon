@@ -66,6 +66,7 @@ Objects = Core/loader.wtf.o \
 		VFS/DirectoryNode.class.o \
 		UserManager/Usr.ns.o \
 		FileSystems/RamFS/RamFS.class.o \
+		FileSystems/FAT/FATFS.class.o \
 		SyscallManager/IDT.ns.o \
 		SyscallManager/Ressource.class.o \
 		SyscallManager/Res.ns.o \
