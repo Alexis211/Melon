@@ -40,20 +40,24 @@ int main(Vector<String> args) {
 		outvt << String(tmp, w*h) << "Press Ctrl+h for help";
 
 		//Compute next generation
-		for (u32int y = 0; y < h; y++) {
-			for (u32int x = 0; x < w; x++) {
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
 				u8int n = 0;
-				for (u32int yy = y - 1; yy <= y + 1; yy++) {
-					for (u32int xx = x - 1; xx <= x + 2; xx++) {
-						if (xx < w and yy < h and cells[xx * h + yy]) n++;
+				for (int yy = y - 1; yy < y + 2; yy++) {
+					for (int xx = x - 1; xx < x + 2; xx++) {
+						if (xx < w and yy < h and xx >= 0 and yy >= 0
+							   and cells[xx * h + yy]) n++;
 					}
 				}
-				if (cells[x * h + y]) n--;
-				if ((cells[x * h + y] and n == 2) or n == 3) {
-					newcells[x * h + y] = true;
+				newcells[x * h + y] = cells[x * h + y];
+				if (cells[x * h + y]) {
+					n--;
+					if (n < 2) newcells[x * h + y] = false;
+					if (n > 3) newcells[x * h + y] = false;
 				} else {
-					newcells[x * h + y] = false;
+					if (n == 3) newcells[x*  h + y] = true;
 				}
+
 			}
 		}
 		for (u32int x = 0; x < w; x++) {
@@ -73,11 +77,10 @@ int main(Vector<String> args) {
 					cells[x * h + y] = true;
 				}
 			} else if (kp.character == WChar("R")) {
-				for (u32int i = 0; i < h; i++) {
-					cells[i] = true;
-					cells[(2 * i) % (h - i)] = true;
-					cells[(w * i) % (h * w - i)] = true;
-					cells[(w * i) % (h * w - i) + w] = true;
+				for (u32int i = 0; i < 150; i++) {
+					u64int x = Rand::rand() * w / Rand::max();
+					u64int y = Rand::rand() * h / Rand::max();
+					cells[x * h + y] = true;
 				}
 			} else if (kp.character == WChar("h")) {
 				outvt << "\n\n** Melon's demo Game Of Life Simulator help :\n";

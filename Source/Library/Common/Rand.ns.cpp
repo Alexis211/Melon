@@ -2,7 +2,7 @@
 
 namespace Rand {
 
-u32int m = 2073741824, a = 50000, b = 1534;
+u32int m = 2073741978, a = 50023, b = 1534097;
 u64int current = RANDOM_SEED;
 
 u64int rand() {
