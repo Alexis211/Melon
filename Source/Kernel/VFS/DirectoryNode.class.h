@@ -8,6 +8,7 @@ class DirectoryNode : public FSNode {
 	protected:
 	Vector<FSNode*> m_children;
 	bool m_contentLoaded;
+	DirectoryNode* m_mounts;	//Root node of the filesystem mounted here, null if none
 
 	//Syscalls
 	static call_t m_callTable[];
@@ -19,20 +20,20 @@ class DirectoryNode : public FSNode {
 			u32int uid = 0, u32int gid = 0) : 
 			FSNode(name, fs, parent, 0, permissions, uid, gid), m_children(), m_contentLoaded(false) {
 		addCallTable(m_callTable);
+		m_mounts = 0;
 	}
-	virtual ~DirectoryNode() {
-		if (m_contentLoaded) {
-			for (u32int i = 0; i < m_children.size(); i++) {
-				delete m_children[i];
-			}
-		}
-	}
+	virtual ~DirectoryNode();
 
 	Vector<FSNode*> &getChildren() { return m_children; }	//MUST BE USED ONLY BY FILESYSTEMS
 
 	u8int type() { return NT_DIRECTORY; }
+	u64int getLength();
+	FSNode* getParent();
 	bool removable();
 	bool unmountable();
+	bool mountpointable();
+	void mount(DirectoryNode* childRoot);
+	void unmount();
 
 	bool loadContent();
 	FSNode* getChild(u32int index);

@@ -182,11 +182,10 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	//***************************************	MOUNT ROOT FILESYSTEM
 
-	FileSystem* fs = RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
+	RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
 	DirectoryNode* cwd;
-	cwd = fs->getRootNode();
+	cwd = VFS::getRootNode();
 	Task::currProcess()->setCwd(cwd);
-	VFS::setRootNode(cwd);
 
 	if (keymap != "builtin") {
 		if (!Kbd::loadKeymap(keymap)) *kvt << "\nWARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";

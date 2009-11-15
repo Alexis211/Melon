@@ -1,30 +1,36 @@
 #include "RamFS.class.h"
 #include <VFS/DirectoryNode.class.h>
 #include "RamFileNode.class.h"
+#include <VFS/VFS.ns.h>
 
 RamFS::RamFS() {
 }
 
 RamFS::~RamFS() {
-	delete m_rootNode;
 }
 
 RamFS* RamFS::mount(u32int maxSize, DirectoryNode* mountpoint) {
+	if (mountpoint != 0 and !mountpoint->mountpointable()) return 0;
 	RamFS* rfs = new RamFS();
 	rfs->m_maxSize = maxSize;
 	rfs->m_usedSize = 0;
 	rfs->m_isWritable = true;
 	rfs->m_rootNode = new DirectoryNode("/", rfs, mountpoint);	
+	if (mountpoint != 0) mountpoint->mount(rfs->m_rootNode);
+	VFS::registerFilesystem(rfs);
 	return rfs;
 }
 
 RamFS* RamFS::mount(u8int *ptr, u32int maxSize, DirectoryNode* mountpoint, bool writable) {
+	if (mountpoint != 0 and !mountpoint->mountpointable()) return 0;
 	RamFS* rfs = new RamFS();
 
 	rfs->m_maxSize = maxSize;
 	rfs->m_usedSize = 0;
 	rfs->m_isWritable = true;
 	rfs->m_rootNode = new DirectoryNode("/", rfs, mountpoint);
+	if (mountpoint != 0) mountpoint->mount(rfs->m_rootNode);
+	VFS::registerFilesystem(rfs);
 
 	union {
 		u8int* c;
@@ -81,7 +87,7 @@ RamFS* RamFS::mount(u8int *ptr, u32int maxSize, DirectoryNode* mountpoint, bool 
 }
 
 bool RamFS::unmount() {
-	return m_rootNode->unmountable();
+	return true;
 }
 
 bool RamFS::setName(FSNode* node, String name) { return true; }
@@ -164,6 +170,7 @@ bool RamFS::remove(DirectoryNode* parent, FSNode* node) {
 	if (node->type() == NT_FILE) {
 		u8int *d = ((RamFileNode*)node)->m_data;
 		if (d != 0) Mem::free(d);
+		((RamFileNode*)node)->m_data = 0;
 	}
 	return true;
 }

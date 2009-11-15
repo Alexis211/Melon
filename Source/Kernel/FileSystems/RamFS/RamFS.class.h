@@ -17,10 +17,10 @@ struct initrd_file_header {
 
 class RamFS : public FileSystem {
 	private:
-	~RamFS();
+	virtual ~RamFS();
 	RamFS(const RamFS& other);
 	RamFS();
-	bool unmount();	//TO BE USED ONLY BY VFS::UNMOUNT (when will exist...)
+	bool unmount();
 
 	u32int m_maxSize;
 	u32int m_usedSize;

@@ -3,14 +3,20 @@
 
 #include <VFS/DirectoryNode.class.h>
 #include <VFS/FileSystem.proto.h>
+#include <Vector.class.h>
 
-typedef FileSystem* (* mountcallback)(Partition* partition);
+typedef FileSystem* (* mount_callback_t)(Partition* partition);
 
 namespace VFS {
-	void registerMountCallback(mountcallback mcb);
+	extern Vector<FileSystem*> filesystems;
+
+	void registerMountCallback(mount_callback_t mcb);
 	bool mount(Partition* partition, DirectoryNode *mountpoint);
-	bool setRootNode(DirectoryNode* root);
 	DirectoryNode* getRootNode();
+
+	void registerFilesystem(FileSystem* fs);
+	void unregisterFilesystem(FileSystem* fs);
+	bool unmount(FileSystem* fs);
 
 	FSNode* find(const String& path, FSNode* start = 0);
 	FSNode* createFile(const String& path, FSNode* start = 0, bool vrfyperm = false);

@@ -1,19 +1,40 @@
 #include "VFS.ns.h"
 #include <VFS/FileNode.class.h>
+#include <Vector.class.h>
+
+FileSystem::~FileSystem() { delete m_rootNode; }
 
 namespace VFS {
 
-DirectoryNode *rootNode;
-
-//TODO : mount stuff
-
-bool setRootNode(DirectoryNode* node) {
-	rootNode = node;
-	return true;
-}
+DirectoryNode *rootNode = 0;
+Vector<FileSystem*> filesystems;
 
 DirectoryNode* getRootNode() {
 	return rootNode;
+}
+
+void registerFilesystem(FileSystem* fs) {
+	unregisterFilesystem(fs);
+	filesystems.push(fs);
+	if (rootNode == 0) rootNode = fs->getRootNode();
+}
+
+void unregisterFilesystem(FileSystem* fs) {
+	for (u32int i = 0; i < filesystems.size(); i++) {
+		if (filesystems[i] == fs) {
+			filesystems[i] = filesystems.back();
+			filesystems.pop();
+			break;
+		}
+	}
+}
+
+bool unmount(FileSystem* fs) {
+	if (!fs->getRootNode()->unmountable()) return false;
+	if (fs->getRootNode() == rootNode) return false;
+	if (!fs->unmount()) return false;
+	delete fs;	//Will automatically delete the root node (destructor is in this file);
+	return true;
 }
 
 FSNode* find(const String& path, FSNode* start) {
