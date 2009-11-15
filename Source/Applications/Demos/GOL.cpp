@@ -96,4 +96,6 @@ int main(Vector<String> args) {
 
 	delete cells;
 	delete newcells;
+
+	outvt << "\n\n";
 }

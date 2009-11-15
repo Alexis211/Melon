@@ -8,7 +8,7 @@
 #include <MemoryManager/PhysMem.ns.h>
 #include <DeviceManager/Time.ns.h>
 
-#define DEBUGVT(x) SimpleVT *x = new SimpleVT(4, 56, 0, 15); x->map(); x->put('\n');
+#define DEBUGVT(x) SimpleVT *x = new SimpleVT(4, 56, PANIC_FGCOLOR, PANIC_BGCOLOR); x->map(); x->put('\n');
 
 using namespace CMem;
 
@@ -81,6 +81,14 @@ void dumpRegs(registers_t *regs, VirtualTerminal& vt) {
 	vt << "eflags=" << (u32int)regs->eflags << ", useresp=" << (u32int)regs->useresp << ", ss=" << (u32int)regs->ss << "\n";
 }
 
+void stackTrace(u32int ebp, VirtualTerminal& vt, u32int maxframes) {
+	u32int *stack = (u32int*)ebp;
+	for (u32int i = 0; i < maxframes and (u32int)stack > 0xC0000000; i++) {
+		vt << "Frame: " << (u32int)stack << " n:" << stack[0] << " r:" << stack[1] << "\n";
+		stack = (u32int*)stack[0];
+	}
+}
+
 //Used by PANIC() macro (see common.wtf.h)
 void panic(char *message, char *file, u32int line) {
 	asm volatile("cli");
@@ -96,7 +104,7 @@ void panic(char *message, char *file, u32int line) {
 void panic(char *message, registers_t *regs, char *file, u32int line) {
 	asm volatile("cli");
 
-	SimpleVT vt(12, 70, 7, 1);
+	SimpleVT vt(15, 70, BSOD_FGCOLOR, BSOD_BGCOLOR);
 	vt.map();
 	vt.write("\n");
 
@@ -108,15 +116,11 @@ void panic(char *message, registers_t *regs, char *file, u32int line) {
 		asm volatile("mov %%cr2, %0" : "=r"(cr2));
 		vt << "cr2=" << (u32int)cr2 << "\n";
 	}
-	vt << "\n\n";
+	vt << "\n";
+
+	stackTrace(regs->ebp, vt, 5);
 
 	while (1) asm volatile("cli; hlt");
-
-	u32int *v = (u32int*)regs->ebp;
-	for (int i = 0; i < 10; i++) {
-		vt << "ebp=" << (u32int)v << ", value=" << (u32int)(v[1]) << "\n";
-		v = (u32int*)(*v);
-	}
 }
 
 //Used by ASSERT() macro (see common.wtf.h)
@@ -144,7 +148,7 @@ void reboot() {
 void halt() {
 	shutdown_cleanup();
 	String message("MELON SEZ : KTHXBYE, U CAN NAOW TURNZ OFF UR COMPUTER.");
-	SimpleVT vt(3, message.size() + 16, 7, 6);
+	SimpleVT vt(3, message.size() + 16, HALT_FGCOLOR, HALT_BGCOLOR);
 	vt.map();
 	vt << "\n\t" << message;
 	while (1) asm volatile("cli; hlt");

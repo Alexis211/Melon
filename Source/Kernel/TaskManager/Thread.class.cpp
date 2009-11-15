@@ -161,6 +161,8 @@ void Thread::handleException(registers_t *regs, int no) {
 	if (no == 3) {
 		vt << "\n\nBreakpoint data :\n";
 		Sys::dumpRegs(regs, vt);
+		Sys::stackTrace(regs->ebp, vt, 10);
+
 		vt << "Press any key to continue execution of program...";
 		m_process->m_inVT->getKeypress(false);
 		vt << "\n";

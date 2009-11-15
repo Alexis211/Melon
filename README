@@ -21,3 +21,14 @@ You will probably be prompted for your password. We need it to mount the floppy 
 
 And run it with Qemu :
 $ make qemu
+
+** HOW TO CONFIGURE THE GRUB ENTRIES : **
+If you want to change the entries that appear when you `make qemu`, then edit the Grub-menu.cfg and `make floppy` again.
+
+The options for the kernel command line are the following :
+- vesa:[disabled|enabled]	enables or disables the VESA driver (hangs on Bochs when enabled)
+- keymap:[builtin|...]		selects a keymap. keymaps are in Source/Kernel/Ressources/Keymaps
+							built-in keymap is defined in Source/Kernel/DeviceManager/Kbd.ns.cpp
+- init:<init_app>			select the init application to run. empty string = go to kernel shell.
+							default is /System/Applications/PaperWork.app
+
