@@ -9,7 +9,7 @@ ElfBinary::~ElfBinary() {
 
 Binary* ElfBinary::load(File& file) {
 	elf_ehdr_t hdr;
-	file.read<elf_ehdr_t> (&hdr);
+	if (!file.read<elf_ehdr_t> (&hdr)) return 0;
 	//Verify we have an elf file
 	if (hdr.e_ident[0] != 0x7F or hdr.e_ident[1] != 'E' or hdr.e_ident[2] != 'L' or hdr.e_ident[3] != 'F') return 0;
 

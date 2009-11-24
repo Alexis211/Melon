@@ -34,6 +34,7 @@ class KernelShell {
 	void free(Vector<String>& args);
 	void uptime(Vector<String>& args);
 	void part(Vector<String>& args);
+	void readblock(Vector<String>& args);
 
 	void setup(DirectoryNode* cwd, VirtualTerminal *vt);
 

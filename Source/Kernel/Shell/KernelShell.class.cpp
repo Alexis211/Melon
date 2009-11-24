@@ -61,6 +61,7 @@ u32int KernelShell::run() {
 		{"free", &KernelShell::free},
 		{"uptime", &KernelShell::uptime},
 		{"part", &KernelShell::part},
+		{"readblock", &KernelShell::readblock},
 
 		{0, 0}
 	};

@@ -58,3 +58,22 @@ void KernelShell::part(Vector<String>& args) {
 		}
 	}
 }
+
+void KernelShell::readblock(Vector<String>& args) {
+	if (args.size() == 3) {
+		Vector<Device*> devcs = Dev::findDevices("block");
+		u32int id = args[1].toInt(), block = args[2].toInt();
+		if (id < devcs.size()) {
+			BlockDevice* bdev = (BlockDevice*)devcs[id];
+			*m_vt << "Block " << block << " from device " << bdev->getName() << " (" << bdev->getClass() << ")\n";
+			u8int* buff = (u8int*)Mem::alloc(bdev->blockSize());
+			bdev->readBlocks(block, 1, buff);
+			m_vt->hexDump(buff, 32);
+			Mem::free(buff);
+		} else {
+			*m_vt << "Block device #" << id << " does not exist.\n";
+		}
+	} else {
+		*m_vt << "Usage: readblock <dev id> <block id>\n";
+	}
+}

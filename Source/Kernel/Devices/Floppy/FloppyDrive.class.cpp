@@ -2,6 +2,7 @@
 #include "FloppyController.class.h"
 #include <TaskManager/Task.ns.h>
 #include <DeviceManager/Time.ns.h>
+#include <VTManager/SimpleVT.class.h>
 #include <Core/Log.ns.h>
 
 using namespace Sys;
@@ -145,7 +146,7 @@ bool FloppyDrive::seek(u32int cyli, s32int head) {
 
 	int st0, cyl = -1;
 
-	for (u32int i = 0; i < 10; i++) {
+	for (u32int i = 0; i < 5; i++) {
 		asm volatile ("cli");
 		m_fdc->writeCmd(FC_SEEK);
 		m_fdc->writeCmd(head << 2);
@@ -158,12 +159,7 @@ bool FloppyDrive::seek(u32int cyli, s32int head) {
 		if (st0 & 0xC0) { //Error
 			continue;
 		}
-		if (cyl == 0xFF or cyl == 0x00) {	//0xFF for bochs, 0x00 for qemu :D
-			setMotorState(false);
-			m_fdc->setNoActiveDrive();
-			return true;
-		}
-		if (cyl == (int)cyli) {
+		if (cyl == 0xFF or cyl == 0x00 or cyl == 0x01 or cyl == (int)cyli) {	//0xFF for bochs, 0x00 for qemu :D
 			setMotorState(false);
 			m_fdc->setNoActiveDrive();
 			return true;
@@ -296,16 +292,13 @@ bool FloppyDrive::readBlocks(u64int start, u32int count, u8int *data) {
 	u32int startblock = start;
 	if (count == 1) {
 		u32int cylinder = (startblock / (m_sectors * 2)), offset = (startblock % (m_sectors * 2)) * 512;
-		if (m_buffCyl == cylinder && m_buffTime >= Time::uptime() - 4) {
-			memcpy(data, (const u8int*)(&m_buffer[offset]), 512);
-			return true;
-		} else {
+		if (m_buffCyl != cylinder or m_buffTime < Time::uptime() - 4) {
 			if (!doTrack(cylinder, FD_READ)) return false;
 			m_buffCyl = cylinder;
 			m_buffTime = Time::uptime();
-			memcpy(data, (const u8int*)(&m_buffer[offset]), 512);
-			return true;
 		}
+		memcpy(data, (const u8int*)(&m_buffer[offset]), 512);
+		return true;
 	} else {
 		m_buffCyl = 0xFFFF;	//Invalid cylinder
 		m_buffTime = 0;
