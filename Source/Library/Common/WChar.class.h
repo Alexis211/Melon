@@ -9,8 +9,10 @@
 
 enum {
 	UE_UTF8,
-	UE_UTF16,
-	UE_UTF32,
+	UE_UTF16_LE,
+	UE_UTF16_BE,
+	UE_UTF32_LE,
+	UE_UTF32_BE,
 };
 
 union uchar_repr_t {
@@ -31,13 +33,17 @@ struct WChar {
 
 	void affectAscii(char c);
 	u32int affectUtf8(const char* c);
-	u32int affectUtf16(const char* c);
-	u32int affectUtf32(const char* c);
+	u32int affectUtf16le(const char* c);
+	u32int affectUtf16be(const char* c);
+	u32int affectUtf32le(const char* c);
+	u32int affectUtf32be(const char* c);
 
 	u32int affect(const char* c, u8int encoding = UE_UTF8) {
 		if (encoding == UE_UTF8) return affectUtf8(c);
-		if (encoding == UE_UTF16) return affectUtf16(c);
-		if (encoding == UE_UTF32) return affectUtf32(c);
+		if (encoding == UE_UTF16_LE) return affectUtf16le(c);
+		if (encoding == UE_UTF16_BE) return affectUtf16be(c);
+		if (encoding == UE_UTF32_LE) return affectUtf32le(c);
+		if (encoding == UE_UTF32_BE) return affectUtf32be(c);
 		affectAscii(c[0]);	//Default case :/
 		return 1;
 	}
@@ -45,13 +51,17 @@ struct WChar {
 	u8int toAscii();
 
 	uchar_repr_t toUtf8();
-	uchar_repr_t toUtf16();
-	uchar_repr_t toUtf32();
+	uchar_repr_t toUtf16le();
+	uchar_repr_t toUtf16be();
+	uchar_repr_t toUtf32le();
+	uchar_repr_t toUtf32be();
 
 	uchar_repr_t encode(u8int encoding = UE_UTF8) {
 		if (encoding == UE_UTF8) return toUtf8();
-		//if (encoding == UE_UTF16) return toUtf16();
-		if (encoding == UE_UTF32) return toUtf32();
+		//if (encoding == UE_UTF16_LE) return toUtf16le();
+		//if (encoding == UE_UTF16_BE) return toUtf16be();
+		if (encoding == UE_UTF32_LE) return toUtf32le();
+		if (encoding == UE_UTF32_BE) return toUtf32be();
 		uchar_repr_t x;
 		x.c[0] = toAscii();
 		return x;

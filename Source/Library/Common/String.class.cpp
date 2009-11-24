@@ -84,8 +84,8 @@ void String::affect (const char* string, u8int encoding) {
 		return;
 	}
 	m_string = new WChar[m_length + 1];
-	int i = 0, l = strlen(string), c = 0;
-	while (i < l) {
+	u32int i = 0, c = 0;
+	while (c < m_length) {
 		i += m_string[c].affect(string + i, encoding);
 		c++;
 	}

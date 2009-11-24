@@ -3,6 +3,7 @@
 #include "FATFileNode.class.h"
 #include "FATDirectoryNode.class.h"
 #include <VFS/VFS.ns.h>
+#include <ByteArray.class.h>
 
 #define FIRSTCLUS(node) ((u32int&)(node->type() == NT_DIRECTORY ? \
 			((FATDirectoryNode*)(node))->m_firstCluster : \
@@ -125,7 +126,7 @@ bool FATFS::setParent(FSNode* node, FSNode* parent) {
 u32int FATFS::read(FileNode* file, u64int position, u32int max_length, u8int *data) {
 	u32int len = max_length;
 	if (position >= file->getLength()) return 0;
-	if (position + len > file->getLength()) len = len - position;
+	if (position + len > file->getLength()) len = file->getLength() - position;
 	u32int firstCluster = position / m_clusterSize, clusterOffset = position % m_clusterSize;
 	u32int clusters = (len + clusterOffset) / m_clusterSize + 1, lastClusBytesToRead = (len + clusterOffset) % m_clusterSize;
 	u32int clust = FIRSTCLUS(file);
@@ -174,21 +175,34 @@ bool FATFS::loadContents(DirectoryNode* dir) {
 		e.c = (u8int*)Mem::alloc(m_clusterSize);
 	}
 
+	ByteArray lfnBuffer;
 	while (cluster != 0) {
 		if (cluster != 2 or m_fatType == 32) readCluster(cluster, e.c);
 		for (u32int i = 0; i < entries; i++) {
-			if (e.e[i].name[0] == 0 or e.e[i].name[0] == 0xE5) continue;	//Nothing intresting here.
-			if (e.e[i].attributes == FA_LFN) continue;	//Long file name entry, nothing intresting
-			if (e.e[i].attributes & FA_VOLUMEID) continue;
-			String name;
-			for (int j = 0; j < 8; j++) {
-				if (e.e[i].name[j] == ' ') break;
-				name += WChar(e.e[i].name[j]);
+			if (e.e[i].attributes == FA_LFN && e.c[i*32] != 0xE5) {	//Long file name entry
+				u8int num = e.c[i*32] & 0x3;
+				if (lfnBuffer.size() < num * 26) lfnBuffer.resize(num * 26);
+				num--;
+				memcpy(lfnBuffer + (num * 26), e.c + (i*32 + 1), 10);
+				memcpy(lfnBuffer + (num * 26 + 10), e.c + (i*32 + 14), 12);
+				memcpy(lfnBuffer + (num * 26 + 22), e.c + (i*32 + 28), 4);
 			}
-			for (int j = 0; j < 3; j++) {
-				if (e.e[i].extension[j] == ' ') break;
-				if (j == 0) name += ".";
-				name += WChar(e.e[i].extension[j]);
+			if (e.e[i].attributes & FA_VOLUMEID) continue;
+			if (e.e[i].name[0] == 0  or e.e[i].name[0] == 0xE5) continue;	//Nothing intresting here.
+			String name;
+			if (lfnBuffer.empty()) {
+				for (int j = 0; j < 8; j++) {
+					if (e.e[i].name[j] == ' ') break;
+					name += WChar(e.e[i].name[j]);
+				}
+				for (int j = 0; j < 3; j++) {
+					if (e.e[i].extension[j] == ' ') break;
+					if (j == 0) name += ".";
+					name += WChar(e.e[i].extension[j]);
+				}
+			} else {
+				name = lfnBuffer.toString(UE_UTF16_LE);
+				lfnBuffer.clear();
 			}
 			u32int first_clus = (e.e[i].first_clust_high << 16) + e.e[i].first_clust_low;
 			FSNode* n;
