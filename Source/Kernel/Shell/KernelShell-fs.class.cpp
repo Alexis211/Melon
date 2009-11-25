@@ -125,3 +125,21 @@ void KernelShell::run(Vector<String>& args) {
 		}
 	}
 }
+
+void KernelShell::hexdump(Vector<String>& args) {
+	if (args.size() == 1) {
+		*m_vt << "No file to hexdump.\n";
+	} else {
+		for (u32int i = 1; i < args.size(); i++) {
+			File f(args[i], FM_READ, m_cwd);
+			if (f.valid()) {
+				u8int *buff = (u8int*)Mem::alloc(f.length());
+				f.read(f.length(), buff);
+				m_vt->hexDump(buff, f.length());
+				Mem::free(buff);
+			} else {
+				*m_vt << "Error reading from file " << args[i] << "\n";
+			}
+		}
+	}
+}

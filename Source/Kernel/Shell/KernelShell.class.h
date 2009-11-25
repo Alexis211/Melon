@@ -27,6 +27,7 @@ class KernelShell {
 	void rm(Vector<String>& args);
 	void wf(Vector<String>& args);
 	void run(Vector<String>& args);
+	void hexdump(Vector<String>& args);
 
 	//in KernelShell-sys
 	void devices(Vector<String>& args);

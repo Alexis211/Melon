@@ -136,8 +136,8 @@ u32int FATFS::read(FileNode* file, u64int position, u32int max_length, u8int *da
 	//Read first cluster
 	u8int* temp = (u8int*)Mem::alloc(m_clusterSize);
 	readCluster(clust, temp);
-	memcpy(data, temp + clusterOffset, (m_clusterSize - clusterOffset));
-	//Read next clusters
+	memcpy(data, temp + clusterOffset, (len > m_clusterSize - clusterOffset ? m_clusterSize - clusterOffset : len));
+	//Read next cluster
 	u32int pos = (m_clusterSize - clusterOffset);
 	for (u32int i = 1; i < clusters; i++) {
 		clust = nextCluster(clust);

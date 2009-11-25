@@ -60,6 +60,8 @@ class FloppyController : public Device {
 
 	bool m_first;
 
+	bool m_irqHappened;
+
 	FloppyDrive* m_drives[2];
 
 	void checkInterrupt(int *st0, int *cyl);
@@ -69,6 +71,10 @@ class FloppyController : public Device {
 	bool writeCmd(u8int cmd);			//Sends command to controller
 	u8int readData();					//Reads a byte from controller
 	bool reset();
+
+	void handleIRQ(registers_t regs, int irq);
+	void resetIrq() { m_irqHappened = false; }
+	void waitIrq();
 	
 	public:
 	static void detect();

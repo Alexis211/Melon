@@ -95,13 +95,12 @@ bool FloppyDrive::calibrate() {
 	if (!setMotorState(true)) return false;
 
 	for (int i = 0; i < 10; i++) {
-		asm volatile("cli");
+		m_fdc->resetIrq();
 		m_fdc->writeCmd(FC_RECALIBRATE);
 		m_fdc->writeCmd(m_driveNumber);
 
-		Task::currThread()->waitIRQ(m_fdc->m_irq);
+		m_fdc->waitIrq();
 		m_fdc->checkInterrupt(&st0, &cyl);
-		asm volatile("sti");
 
 		if (st0 & 0xC0) {
 			continue;
@@ -112,6 +111,7 @@ bool FloppyDrive::calibrate() {
 		}
 	}
 	setMotorState(false);
+	*kvt << getName() << ": calibrate fail\n";
 	return false;
 }
 
@@ -146,27 +146,29 @@ bool FloppyDrive::seek(u32int cyli, s32int head) {
 
 	int st0, cyl = -1;
 
-	for (u32int i = 0; i < 5; i++) {
-		asm volatile ("cli");
+	for (u32int i = 0; i < 10; i++) {
+		m_fdc->resetIrq();
 		m_fdc->writeCmd(FC_SEEK);
 		m_fdc->writeCmd(head << 2);
 		m_fdc->writeCmd(cyl);
 
-		Task::currThread()->waitIRQ(m_fdc->m_irq);
+		m_fdc->waitIrq();
 		m_fdc->checkInterrupt(&st0, &cyl);
-		asm volatile("sti");
 
 		if (st0 & 0xC0) { //Error
+			Task::currThread()->sleep(10);
 			continue;
 		}
-		if (cyl == 0xFF or cyl == 0x00 or cyl == 0x01 or cyl == (int)cyli) {	//0xFF for bochs, 0x00 for qemu :D
+		if (cyl == 0xFF or cyl == 0x00 or cyl == (int)cyli) {	//0xFF for bochs, 0x00 for qemu :D
 			setMotorState(false);
 			m_fdc->setNoActiveDrive();
 			return true;
 		}
+		Task::currThread()->sleep(10);
 	}
 	setMotorState(false);
 	m_fdc->setNoActiveDrive();
+	*kvt << getName() << ": seek fail\n";
 	return false;
 }
 
@@ -199,7 +201,7 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 
 		Task::currThread()->sleep(100);
 
-		asm volatile("cli");
+		m_fdc->resetIrq();
 		m_fdc->writeCmd(cmd);
 		m_fdc->writeCmd(m_driveNumber);	//Drive number & first head << 2
 		m_fdc->writeCmd(cyl);	//Cylinder
@@ -210,7 +212,7 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 		m_fdc->writeCmd(0x1B);
 		m_fdc->writeCmd(0xFF);
 
-		Task::currThread()->waitIRQ(m_fdc->m_irq);
+		m_fdc->waitIrq();
 
 		u8int st0, st1, st2, rcy, rhe, rse, bps;
 		st0 = m_fdc->readData();
@@ -220,7 +222,6 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 		rhe = m_fdc->readData();
 		rse = m_fdc->readData();
 		bps = m_fdc->readData();
-		asm volatile("sti");
 
 		int error = 0;
 	
@@ -270,12 +271,11 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 
 bool FloppyDrive::readOnly() {
 	m_fdc->setActiveDrive(m_driveNumber);
-	asm volatile("cli");
+	m_fdc->resetIrq();
 	m_fdc->writeCmd(FC_SENSE_DRIVE_STATUS);
 	m_fdc->writeCmd(m_driveNumber);
-	Task::currThread()->waitIRQ(m_fdc->m_irq);
+	m_fdc->waitIrq();
 	u8int st3 = m_fdc->readData();
-	asm volatile("sti");
 
 	bool ret = (st3 & 0x80 ? true : false);
 

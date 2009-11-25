@@ -62,6 +62,7 @@ u32int KernelShell::run() {
 		{"uptime", &KernelShell::uptime},
 		{"part", &KernelShell::part},
 		{"readblock", &KernelShell::readblock},
+		{"hexdump", &KernelShell::hexdump},
 
 		{0, 0}
 	};

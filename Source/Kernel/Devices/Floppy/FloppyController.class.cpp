@@ -96,6 +96,7 @@ FloppyController::FloppyController(u32int base, u8int irq) : m_driveMutex(false)
 	m_drives[0] = NULL;
 	m_drives[1] = NULL;
 	m_first = false;
+	Dev::requestIRQ(this, m_irq);
 }
 
 void FloppyController::detect() {	//TODO : do this better
@@ -144,15 +145,14 @@ void FloppyController::setDOR() {
 		dor |= 0x10;
 	if (m_drives[1] != NULL and m_drives[1]->m_motorState != 0)
 		dor |= 0x20;
-	asm volatile ("cli");
+	resetIrq();
 	outb(m_base + FR_DOR, dor);
 	if (m_first) {	//First time we set the DOR, controller initialized
-		Task::currThread()->waitIRQ(m_irq);
+		waitIrq();
 		int st0, cyl;
 		checkInterrupt(&st0, &cyl);
 		m_first = false;
 	}
-	asm volatile ("sti");
 			//PANIC("test");
 }
 
@@ -202,4 +202,12 @@ bool FloppyController::reset() {
 		}
 	}
 	return true;
+}
+
+void FloppyController::handleIRQ(registers_t regs, int irq) {
+	m_irqHappened = true;
+}
+
+void FloppyController::waitIrq() {
+	while (!m_irqHappened) Task::currThread()->sleep(10);
 }
