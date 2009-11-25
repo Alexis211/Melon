@@ -115,6 +115,43 @@ void selectVideoMode(SimpleVT& v) {
 	}
 }
 
+bool mountFS(multiboot_info_t* mbd, String str) {
+	module_t *mods = (module_t*)mbd->mods_addr;
+	Vector<String> fs = str.split(":");
+	DirectoryNode* root;
+	if (fs[0] == "/") {
+		root = NULL;
+	} else {
+		FSNode* n = VFS::find(fs[0]);
+		if (n == NULL) {
+			*kvt << "Mountpoint does not exist : " << fs[0] << "\n";
+			return false;
+		}
+		if (n->type() != NT_DIRECTORY) {
+			*kvt << "Mountpoint is not a directory : " << fs[0] << "\n";
+			return false;
+		}
+		root = (DirectoryNode*)n;
+	}
+	if (fs[1] == "ramfs") {
+		if (fs[2].toInt() >= mbd->mods_count) {
+			*kvt << "Invalid module number for filesystem to mount on " << fs[0] << "\n";
+			return false;
+		}
+		RamFS::mount((u8int*)mods[fs[2].toInt()].mod_start, 1024 * 1024, root);
+	} else {
+		if (fs.size() < 5) fs.push("fat");
+		BlockDevice* d = Part::dev(fs[1], fs[2].toInt());
+		Partition* p = Part::part(d, fs[3].toInt());
+		if (fs[4] == "fat") {
+			FATFS::mount(p, root);
+		} else {
+			PANIC("Unknown filesystem type for root file system.");
+		}
+	}
+	return true;
+}
+
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
 
@@ -167,13 +204,17 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	//***************************************	PARSE COMMAND LINE
 	
 	Vector<String> opts = kcmdline.split(" ");
-	String keymap = "fr", init = "/System/Applications/PaperWork.app";
+	String keymap = "builtin", init = "/System/Applications/PaperWork.app";
+	String root = "ramfs:0";
+	Vector<String> mount;
 	bool enableVESA = true;
 	for (u32int i = 0; i < opts.size(); i++) {
 		Vector<String> opt = opts[i].split(":");
 		if (opt[0] == "vesa" && opt[1] != "enabled") enableVESA = false;
 		if (opt[0] == "keymap") keymap = opt[1];
 		if (opt[0] == "init") init = opt[1];
+		if (opt[0] == "root") root = opts[i].substr(5);
+		if (opt[0] == "mount") mount.push(opts[i].substr(6));
 	}
 
 	//*************************************** 	DEVICE SETUP
@@ -183,14 +224,23 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	if (enableVESA) Dev::registerDevice(new VESADisplay());
 	FloppyController::detect();
 
-	//***************************************	MOUNT ROOT FILESYSTEM
+	//***************************************	MOUNT FILESYSTEMS
 
-	RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
+	{	// mount root filesystem
+		if (!mountFS(mbd, String("/:") += root)) PANIC("Cannot mount root filesystem.");
+	}
 	DirectoryNode* cwd;
 	cwd = VFS::getRootNode();
 	Task::currProcess()->setCwd(cwd);
 
-	FATFS::mount(Part::partitions[0], (DirectoryNode*)VFS::createDirectory("/Mount"));
+	// mount other filesystems
+	for (u32int i = 0; i < mount.size(); i++) {
+		mountFS(mbd, mount[i]);
+	}
+
+	//FATFS::mount(Part::partitions[0], (DirectoryNode*)VFS::createDirectory("/Mount"));
+	
+	//***************************************	LOAD SYSTEM STUFF
 
 	if (keymap != "builtin") {
 		if (!Kbd::loadKeymap(keymap)) *kvt << "\nWARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";

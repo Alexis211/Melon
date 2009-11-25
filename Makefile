@@ -21,6 +21,7 @@ RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keym
 
 Files = $(Kernel) $(RamFS)
 Floppy = Melon.img
+HDD = HDD.img
 
 all:
 	for p in $(Projects); do \
@@ -56,26 +57,32 @@ commit: mrproper
 $(RamFS):
 	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)
 
-floppy: $(Files)
+$(Floppy): $(Files)
 	mkdir Mount; exit 0
 	sudo mount $(Floppy) Mount -o loop
-	sudo cp Grub-menu.cfg Mount/boot/menu.cfg
-	for f in $(Files); do \
-		sudo cp $$f Mount; \
-	done
-	sudo cp Source/Applications/Demos/GOL Mount/GOL.app
-	sudo cp Source/Applications/Demos/asmdemo Mount/ASM.dem
+	sudo ./CopyToFDD.sh
 	sleep 0.4
 	sudo umount Mount
 
-bochs:
+$(HDD): $(Kernel)
+	mkdir Mount; exit 0
+	sudo losetup -o 32256 /dev/loop3 $(HDD)
+	sudo mount /dev/loop3 Mount
+	sudo ./CopyToHDD.sh
+	sudo umount /dev/loop3
+	sudo losetup -d /dev/loop3	
+
+bochs: $(Floppy)
 	bochs -f Bochs.cfg
 
-qemu:
-	qemu -fda $(Floppy) -m 16
+qemu: $(Floppy)
+	qemu -fda $(Floppy) -hda $(HDD) -boot a -m 16
+
+qemu-hdd: $(HDD)
+	qemu -fda $(Floppy) -hda $(HDD) -boot c -m 16
 
 qemu_debug:
-	qemu -fda $(Floppy) -m 16 -s -S & gdb Source/Kernel/Melon.ke -x Qemu-GDB-Debug-CMD 
+	qemu -fda $(Floppy) -hda $(HDD) -boot a -m 16 -s -S & gdb Source/Kernel/Melon.ke -x Qemu-GDB-Debug-CMD 
 
 stats:
 	echo; echo " ** Statistics for project O3S ** "; \

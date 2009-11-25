@@ -1,6 +1,7 @@
 #include <Binding/VirtualTerminal.class.h>
 #include <Binding/Thread.class.h>
 #include <String.class.h>
+#include <ByteArray.class.h>
 #include <Rand.ns.h>
 
 int main(Vector<String> args) {
@@ -22,7 +23,7 @@ int main(Vector<String> args) {
 		}
 	}
 
-	char *tmp = new char[w * h + 1];
+	ByteArray tmp((w + 1) * (h + 1));
 
 	bool run = true;
 	while (run) {
@@ -37,7 +38,7 @@ int main(Vector<String> args) {
 			}
 		}
 		outvt.moveCursor(0, 0);
-		outvt << String(tmp, w*h) << "Press Ctrl+h for help";
+		outvt << tmp.toString() << "Press Ctrl+h for help";
 
 		//Compute next generation
 		for (int y = 0; y < h; y++) {

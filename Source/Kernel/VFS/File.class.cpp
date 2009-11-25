@@ -33,7 +33,7 @@ bool File::open(String filename, u8int mode, FSNode* start, bool vrfyperm) {
 	if (node == NULL){
 	   	if (mode == FM_READ) return false;
 		node = VFS::createFile(filename, start, vrfyperm);
-		if (node == 0) return false;
+		if (node == NULL) return false;
 	}
 	if (node->type() != NT_FILE) return false;
 
@@ -137,6 +137,7 @@ bool File::seek(u64int count, u8int mode) {
 }
 
 bool File::eof() {
+	if (!m_valid) return false;
 	return m_position == m_file->getLength();
 }
 

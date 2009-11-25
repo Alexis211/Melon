@@ -193,6 +193,7 @@ Vector<String> String::split(WChar c) const {
 
 String String::substr(s32int start, u32int size) {
 	if (start < 0) start = m_length - start;
+	if (size == 0) size = m_length - start;
 	String ret;
 	ret.m_string = new WChar[size + 1];
 	ret.m_length = size;
