@@ -46,7 +46,7 @@ class BasicString {
 	bool contains(const T& chr) const;
 
 	Vector< BasicString<T> > split(T sep) const;
-	BasicString<T> substr(s32int start, u32int size = 0);
+	BasicString<T> substr(s32int start, s32int size = -1);
 };
 
 #include "BasicString.class.cpp"

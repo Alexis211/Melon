@@ -86,7 +86,7 @@ u32int logoAnimation(void* p) {
 
 void selectVideoMode(SimpleVT& v) {
 	Disp::getModes();
-	v << "\n\nPlease select a graphic mode in the list below:\n";
+	v << "\nPlease select a graphic mode in the list below:\n";
 
 	for (u32int i = 0; i < Disp::modes.size(); i++) {
 		Disp::mode_t& m = Disp::modes[i];
@@ -206,7 +206,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	//***************************************	LOAD SYSTEM STUFF
 
 	if (keymap != "builtin") {
-		if (!Kbd::loadKeymap(keymap)) *kvt << "\nWARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";
+		if (!Kbd::loadKeymap(keymap)) *kvt << "WARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";
 	}
 
 	Log::init(KL_STATUS);	//Setup logging
@@ -216,7 +216,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Log::log(KL_STATUS, "kmain : User list loaded");
 
 	if (init.empty()) {
-		*kvt << "\n\n";
+		*kvt << "\n";
 		new KernelShell(cwd, kvt);
 		while (KernelShell::getInstances() > 0) {
 			Task::currThread()->sleep(100);

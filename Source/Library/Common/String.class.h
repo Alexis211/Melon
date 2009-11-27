@@ -43,7 +43,7 @@ class String : public BasicString<WChar> {
 
 	Vector<String> split(WChar c) const;
 
-	String substr(s32int start, u32int size = 0);
+	String substr(s32int start, s32int size = -1);
 };
 
 #endif

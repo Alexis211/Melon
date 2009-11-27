@@ -83,12 +83,16 @@ int main(Vector<String> args) {
 					u64int y = Rand::rand() * h / Rand::max();
 					cells[x * h + y] = true;
 				}
+			} else if (kp.character == WChar("p")) {
+				outvt << " [PAUSED] press a key to resume";
+				invt.getKeypress();
 			} else if (kp.character == WChar("h")) {
 				outvt << "\n\n** Melon's demo Game Of Life Simulator help :\n";
 				outvt << " - ctrl+c : quit\n";
 				outvt << " - ctrl+h : show this\n";
+				outvt << " - ctrl+p : pause\n";
 				outvt << " - ctrl+r : add some random cells\n";
-				outvt << " - ctrl+R : add more cells, but not random\n\n";
+				outvt << " - ctrl+R : add more cells, still random\n\n";
 				outvt << "Press any key to return to simultaor...";
 				invt.getKeypress();
 			}

@@ -173,9 +173,10 @@ Vector< BasicString<T> > BasicString<T>::split(T sep) const {
 }
 
 template <typename T>
-BasicString<T> BasicString<T>::substr(s32int start, u32int size) {
+BasicString<T> BasicString<T>::substr(s32int start, s32int size) {
+	if (size == 0) return BasicString<T>();
 	if (start < 0) start = m_length - start;
-	if (size == 0) size = m_length - start;
+	if (size == -1) size = m_length - start;
 	BasicString<T> ret;
 	ret.m_string = new T[size + 1];
 	ret.m_length = size;
