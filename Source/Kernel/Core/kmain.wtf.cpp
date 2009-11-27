@@ -115,43 +115,6 @@ void selectVideoMode(SimpleVT& v) {
 	}
 }
 
-bool mountFS(multiboot_info_t* mbd, String str) {
-	module_t *mods = (module_t*)mbd->mods_addr;
-	Vector<String> fs = str.split(":");
-	DirectoryNode* root;
-	if (fs[0] == "/") {
-		root = NULL;
-	} else {
-		FSNode* n = VFS::find(fs[0]);
-		if (n == NULL) {
-			*kvt << "Mountpoint does not exist : " << fs[0] << "\n";
-			return false;
-		}
-		if (n->type() != NT_DIRECTORY) {
-			*kvt << "Mountpoint is not a directory : " << fs[0] << "\n";
-			return false;
-		}
-		root = (DirectoryNode*)n;
-	}
-	if (fs[1] == "ramfs") {
-		if (fs[2].toInt() >= mbd->mods_count) {
-			*kvt << "Invalid module number for filesystem to mount on " << fs[0] << "\n";
-			return false;
-		}
-		RamFS::mount((u8int*)mods[fs[2].toInt()].mod_start, 1024 * 1024, root);
-	} else {
-		if (fs.size() < 5) fs.push("fat");
-		BlockDevice* d = Part::dev(fs[1], fs[2].toInt());
-		Partition* p = Part::part(d, fs[3].toInt());
-		if (fs[4] == "fat") {
-			FATFS::mount(p, root);
-		} else {
-			PANIC("Unknown filesystem type for root file system.");
-		}
-	}
-	return true;
-}
-
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
 
@@ -182,7 +145,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	//Create a VT for logging what kernel does
 	kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(0, 0);
-	*kvt << "Melon is loading...";
+	*kvt << "Melon is loading...\n";
 
 	IDT::init();		//Setup interrupts 
 
@@ -227,7 +190,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	//***************************************	MOUNT FILESYSTEMS
 
 	{	// mount root filesystem
-		if (!mountFS(mbd, String("/:") += root)) PANIC("Cannot mount root filesystem.");
+		if (!VFS::mount(String("/:") += root, kvt, mbd)) PANIC("Cannot mount root filesystem.");
 	}
 	DirectoryNode* cwd;
 	cwd = VFS::getRootNode();
@@ -235,7 +198,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	// mount other filesystems
 	for (u32int i = 0; i < mount.size(); i++) {
-		mountFS(mbd, mount[i]);
+		VFS::mount(mount[i], kvt, mbd);
 	}
 
 	//FATFS::mount(Part::partitions[0], (DirectoryNode*)VFS::createDirectory("/Mount"));

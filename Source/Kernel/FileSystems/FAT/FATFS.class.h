@@ -103,12 +103,14 @@ class FATFS : public FileSystem {
 	Partition* m_part;
 
 	u32int nextCluster(u32int cluster);		//Get the next cluster number in the chain (0 = EOF)
-	void readCluster(u32int cluster, u8int* data);	//Read the content of a cluster to a buffer
+	bool readCluster(u32int cluster, u8int* data);	//Read the content of a cluster to a buffer
 	
 	public:
-	static FATFS* mount(Partition* p, DirectoryNode* mountpoint);
+	static FileSystem* mount(Partition* p, DirectoryNode* mountpoint, bool readwrite = false);
 
 	bool unmount();
+
+	String getDevDescription() { return Part::partIdentifier(m_part); }
 
 	bool setName(FSNode* node, String name);
 	bool setPermissions(FSNode* node, u32int permissions);

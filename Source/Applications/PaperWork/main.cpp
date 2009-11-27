@@ -1,6 +1,8 @@
 #include <Binding/Process.class.h>
 #include <String.class.h>
 
+#define DEFAULT_SHELL "/Applications/Shell/Shell.app"
+
 int main(Vector<String> args) {
 	String act = "init";
 	if (args.size() == 2) {
@@ -36,7 +38,10 @@ int main(Vector<String> args) {
 				outvt << "Authentication failed.\n\n";
 				continue;
 			}
-			Process p = Process::run("/Applications/Shell/Shell.app");
+			outvt << "What shell to run [" << DEFAULT_SHELL << "]? ";
+			String sh = invt.readLine();
+			if (sh == "") sh = DEFAULT_SHELL;
+			Process p = Process::run(sh);
 			if (p.valid()) {
 				p.setInVT(invt);
 				p.setOutVT(outvt);

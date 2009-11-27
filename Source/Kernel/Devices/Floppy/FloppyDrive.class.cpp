@@ -156,7 +156,6 @@ bool FloppyDrive::seek(u32int cyli, s32int head) {
 		m_fdc->checkInterrupt(&st0, &cyl);
 
 		if (st0 & 0xC0) { //Error
-			Task::currThread()->sleep(10);
 			continue;
 		}
 		if (cyl == 0xFF or cyl == 0x00 or cyl == (int)cyli) {	//0xFF for bochs, 0x00 for qemu :D
@@ -164,7 +163,6 @@ bool FloppyDrive::seek(u32int cyli, s32int head) {
 			m_fdc->setNoActiveDrive();
 			return true;
 		}
-		Task::currThread()->sleep(10);
 	}
 	setMotorState(false);
 	m_fdc->setNoActiveDrive();

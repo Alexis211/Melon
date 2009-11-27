@@ -35,6 +35,8 @@ class RamFS : public FileSystem {
 	bool setGid(FSNode* node, u32int gid);
 	bool setParent(FSNode* node, FSNode* parent);
 
+	String getDevDescription() { return "ramfs"; }
+
 	u32int read(FileNode* file, u64int position, u32int max_length, u8int *data);
 	bool write(FileNode* file, u64int position, u32int length, u8int *data);
 	bool truncate(FileNode* file);

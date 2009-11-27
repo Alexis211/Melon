@@ -12,7 +12,7 @@ DirectoryNode::~DirectoryNode() {
 			delete m_children[i];
 		}
 	}
-	if (m_name == "/") ((DirectoryNode*)(m_parent))->unmount();
+	if (m_name == "/" && m_parent != NULL) ((DirectoryNode*)(m_parent))->unmount();
 }
 
 u32int DirectoryNode::getIdxChildSC(u32int idx) {

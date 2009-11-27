@@ -1,6 +1,19 @@
 #include "VFS.ns.h"
 #include <VFS/FileNode.class.h>
 #include <Vector.class.h>
+#include <VTManager/VirtualTerminal.proto.h>
+
+#include <VFS/Part.ns.h>
+#include <FileSystems/RamFS/RamFS.class.h>
+#include <FileSystems/FAT/FATFS.class.h>
+
+struct local_fs_t {
+	const char* name;
+	mount_callback_t cb;
+} fileSystems[] = {
+	{"fat", FATFS::mount},
+	{0, 0}
+};
 
 FileSystem::~FileSystem() { delete m_rootNode; }
 
@@ -35,6 +48,68 @@ bool unmount(FileSystem* fs) {
 	if (!fs->unmount()) return false;
 	delete fs;	//Will automatically delete the root node (destructor is in this file);
 	return true;
+}
+
+bool mount(String str, VirtualTerminal* vt, multiboot_info_t *mbd) {
+	Vector<String> fs = str.split(":");
+	DirectoryNode* root;
+	if (fs[0] == "/") {
+		root = NULL;
+	} else {
+		FSNode* n = VFS::find(fs[0]);
+		if (n == NULL) {
+			*vt << "Mountpoint does not exist : " << fs[0] << "\n";
+			return false;
+		}
+		if (n->type() != NT_DIRECTORY) {
+			*vt << "Mountpoint is not a directory : " << fs[0] << "\n";
+			return false;
+		}
+		root = (DirectoryNode*)n;
+	}
+	if (fs[1] == "ramfs") {
+		if (fs.size() > 2) {
+			if (mbd != 0) {
+				module_t *mods = (module_t*)mbd->mods_addr;
+				if (fs[2].toInt() >= mbd->mods_count) {
+					*vt << "Invalid module number for filesystem to mount on " << fs[0] << "\n";
+					return false;
+				}
+				RamFS::mount((u8int*)mods[fs[2].toInt()].mod_start, 1024 * 1024, root);
+				return true;
+			} else {
+				*vt << "Cannot mount kernel modules outside of kernel command line.\n";
+				return false;
+			}
+		} else {
+			RamFS::mount(1024 * 1024, root);
+			return true;
+		}
+	} else {
+		if (fs.size() < 4) {
+			*vt << "Syntax: <mountpoint>:[<dev_class>]:<dev_id>:<part_id>[:<fs_type>[:[ro|rw]]]\n";
+			return false;
+		}
+		if (fs[1] == "") fs[1] = "block";
+		if (fs.size() < 5) fs.push("");
+		if (fs.size() < 6) fs.push("ro");	//By default, mount file systems read-only
+		BlockDevice* d = Part::dev(fs[1], fs[2].toInt());
+		Partition* p = Part::part(d, fs[3].toInt());
+		for (u32int i = 0; fileSystems[i].cb != 0; i++) {
+			if (fs[4] == fileSystems[i].name or fs[4] == "") {
+				if (fileSystems[i].cb(p, root, (fs[5] == "rw")) != NULL) {
+					return true;
+				} else if (fs[4] != "") {
+					*vt << "Could not mount filesystem on " << fs[0] << "\n";
+					if (root == NULL) PANIC("Error while mounting root filesystem.");
+					return false;
+				}
+			}
+		}
+		*vt << "Unknown filesystem type for filesystem to mount on " << fs[0] << "\n";
+		if (root == NULL) PANIC("Unknown filesystem type for root file system.");
+		return false;
+	}
 }
 
 FSNode* find(const String& path, FSNode* start) {

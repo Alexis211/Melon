@@ -1,11 +1,13 @@
 #ifndef DEF_VFS_NS_H
 #define DEF_VFS_NS_H
 
+#include <Core/multiboot.wtf.h>
+
 #include <VFS/DirectoryNode.class.h>
 #include <VFS/FileSystem.proto.h>
 #include <Vector.class.h>
 
-typedef FileSystem* (* mount_callback_t)(Partition* partition);
+typedef FileSystem* (* mount_callback_t)(Partition* partition, DirectoryNode* mountpoint, bool readwrite);
 
 namespace VFS {
 	extern Vector<FileSystem*> filesystems;
@@ -17,6 +19,8 @@ namespace VFS {
 	void registerFilesystem(FileSystem* fs);
 	void unregisterFilesystem(FileSystem* fs);
 	bool unmount(FileSystem* fs);
+
+	bool mount(String str, VirtualTerminal* logvt, multiboot_info_t* mbd = 0);
 
 	FSNode* find(const String& path, FSNode* start = 0);
 	FSNode* createFile(const String& path, FSNode* start = 0, bool vrfyperm = false);

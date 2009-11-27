@@ -57,6 +57,7 @@ u32int getDeviceID(BlockDevice* dev) {
 }
 
 BlockDevice* dev(String _class, u32int idx) {
+	if (_class.empty()) _class = "block";
 	for (u32int i = 0; i < devices.size(); i++) {
 		String devclass = devices[i]->getClass();
 		if (devclass == _class or (devclass.size() > _class.size() and devclass.substr(0, _class.size()) == _class)) {
@@ -81,6 +82,10 @@ Partition* part(BlockDevice* dev, u32int idx) {
 		}
 	}
 	return NULL;
+}
+
+String partIdentifier(Partition* p) {
+	return String("d") += String::number(getDeviceID(p->getDevice())) += String("p") += String::number(p->getPartNumber());
 }
 
 }

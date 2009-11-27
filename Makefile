@@ -5,7 +5,7 @@ Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperW
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
 RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
-	:/Applications :/Applications/Demos :/Applications/Shell \
+	:/Applications :/Applications/Demos :/Applications/Shell :/Mount \
 	Source/Kernel/Ressources/Configuration/Users:/System/Configuration/Users \
 	Source/Kernel/Ressources/Configuration/Groups:/System/Configuration/Groups \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \

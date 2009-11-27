@@ -26,6 +26,8 @@ class FileSystem {
 	bool isWritable() { return m_isWritable; }
 	DirectoryNode* getRootNode() { return m_rootNode; }
 
+	virtual String getDevDescription() = 0;
+
 	//Must be implemented by the filesystem
 	virtual bool setName(FSNode* node, String name) = 0;
 	virtual bool setPermissions(FSNode* node, u32int permissions) = 0;
