@@ -17,7 +17,7 @@ BlockCache<T>::~BlockCache() {
 template <typename T>
 void BlockCache<T>::sync() {
 	for (u32int i = 0; i < m_count; i++) {
-		if (m_cacheInfo[i].dirty) m_dev->writeBlocks(m_cacheInfo[i].id, 1, m_cache + (i * m_dev->getBlockSize()));
+		if (m_cacheInfo[i].dirty) m_dev->writeBlocks(m_cacheInfo[i].id, 1, m_cache + (i * m_dev->blockSize()));
 	}	
 }
 
@@ -30,7 +30,7 @@ void BlockCache<T>::init(u32int count) {
 		m_cacheInfo[i].lastuse = 0;
 		m_cacheInfo[i].dirty = false;
 	}
-	m_cache = (u8int*)Mem::alloc(m_count * m_dev->getBlockSize());
+	m_cache = (u8int*)Mem::alloc(m_count * m_dev->blockSize());
 }
 
 template <typename T>
@@ -45,11 +45,11 @@ bool BlockCache<T>::setCache(u64int block, u8int* data, bool dirty) {
 	}
 	if (best >= m_count) return false;
 	if (m_cacheInfo[best].dirty && (m_cacheInfo[best].id != block or !dirty))
-	   m_dev->writeBlocks(m_cacheInfo[best].id, 1, m_cache + (best * m_dev->getBlockSize()));
+	   m_dev->writeBlocks(m_cacheInfo[best].id, 1, m_cache + (best * m_dev->blockSize()));
 	m_cacheInfo[best].id = block;
 	m_cacheInfo[best].lastuse = Time::uptime();
 	m_cacheInfo[best].dirty = dirty;
-	memcpy(m_cache + (best * m_dev->getBlockSize()), data, m_dev->getBlockSize());
+	memcpy(m_cache + (best * m_dev->blockSize()), data, m_dev->blockSize());
 	return true;
 }
 
@@ -58,7 +58,7 @@ bool BlockCache<T>::getCache(u64int block, u8int* data) {
 	for (u32int i = 0; i < m_count; i++) {
 		if (m_cacheInfo[i].id == block && m_cacheInfo[i].lastuse != 0) {
 			m_cacheInfo[i].lastuse = Time::uptime();
-			memcpy(data, m_cache + (i * m_dev->getBlockSize()), m_dev->getBlockSize());
+			memcpy(data, m_cache + (i * m_dev->blockSize()), m_dev->blockSize());
 			return true;
 		}
 	}

@@ -63,12 +63,12 @@ FileSystem* FATFS::mount(Partition* p, DirectoryNode* mountpoint, bool readwrite
 }
 
 u32int FATFS::nextCluster(u32int cluster) {
-	u8int fat_table[m_part->getBlockSize()];
+	u8int fat_table[m_part->blockSize()];
 	u32int val;
 	if (m_fatType == 12) {
 		u32int fat_offset = cluster + (cluster / 2);
-		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
-		u32int ent_offset = fat_offset % m_part->getBlockSize();
+		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->blockSize());
+		u32int ent_offset = fat_offset % m_part->blockSize();
 		m_fatCache.readBlocks(fat_sector, 1, fat_table);
 		u16int tblval = *(u16int*)&fat_table[ent_offset];
 		if (cluster & 1) val = tblval >> 4;
@@ -76,16 +76,16 @@ u32int FATFS::nextCluster(u32int cluster) {
 		if (val >= 0xFF7) val = 0;
 	} else if (m_fatType == 16) {
 		u32int fat_offset = cluster * 2;
-		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
-		u32int ent_offset = fat_offset % m_part->getBlockSize();
+		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->blockSize());
+		u32int ent_offset = fat_offset % m_part->blockSize();
 		m_fatCache.readBlocks(fat_sector, 1, fat_table);
 		u16int tblval = *(u16int*)&fat_table[ent_offset];
 		val = tblval;
 		if (tblval >= 0xFFF7) val = 0;
 	} else if (m_fatType == 32) {
 		u32int fat_offset = cluster * 4;
-		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
-		u32int ent_offset = fat_offset % m_part->getBlockSize();
+		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->blockSize());
+		u32int ent_offset = fat_offset % m_part->blockSize();
 		m_fatCache.readBlocks(fat_sector, 1, fat_table);
 		val = *(u32int*)&fat_table[ent_offset] & 0x0FFFFFFF;
 		if (val >= 0x0FFFFFF7) val = 0;
@@ -175,7 +175,7 @@ bool FATFS::loadContents(DirectoryNode* dir) {
 
 	u32int entries = m_clusterSize / sizeof(fat_dir_entry_t);
 	if (cluster == 2 and m_fatType != 32) {		//This is the value we use for the root directory
-		e.c = (u8int*)Mem::alloc(m_rootDirSectors * m_part->getBlockSize());
+		e.c = (u8int*)Mem::alloc(m_rootDirSectors * m_part->blockSize());
 		if (!m_part->readBlocks(m_firstDataSector, m_rootDirSectors, e.c)) return false;
 	} else {
 		e.c = (u8int*)Mem::alloc(m_clusterSize);

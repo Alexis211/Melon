@@ -26,7 +26,7 @@ class Partition {
 	u64int getStartBlock();
 	u64int getBlockCount();
 	u8int getPartNumber();
-	u32int getBlockSize();
+	u32int blockSize();
 	inline u64int blocks() { return getBlockCount(); }
 };
 

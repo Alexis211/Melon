@@ -67,4 +67,4 @@ BlockDevice* Partition::getDevice() { return m_device; }
 u64int Partition::getStartBlock() { return m_startblock; }
 u64int Partition::getBlockCount() { return m_blockcount; }
 u8int Partition::getPartNumber() { return m_partnumber; }
-u32int Partition::getBlockSize() { return m_device->blockSize(); }
+u32int Partition::blockSize() { return m_device->blockSize(); }
