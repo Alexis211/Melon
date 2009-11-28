@@ -92,7 +92,10 @@ bool FloppyDrive::calibrate() {
 
 	int st0, cyl = -1;
 
-	if (!setMotorState(true)) return false;
+	if (!setMotorState(true)) {
+		*kvt << getName() << ": calibrate fail\n";
+		return false;
+	}
 
 	for (int i = 0; i < 10; i++) {
 		m_fdc->resetIrq();
@@ -138,18 +141,17 @@ bool FloppyDrive::killMotor() {
 	return true;
 }
 
-bool FloppyDrive::seek(u32int cyli, s32int head) {
+bool FloppyDrive::seek(u32int cyli, s32int head, bool recursive) {
 	if (cyli >= m_cylinders) return false;
-	m_fdc->setActiveDrive(m_driveNumber);
 
 	setMotorState(true);	//Turn on motor
 
 	int st0, cyl = -1;
 
-	for (u32int i = 0; i < 10; i++) {
+	for (u32int i = 0; i < (recursive ? 10 : 5); i++) {
 		m_fdc->resetIrq();
 		m_fdc->writeCmd(FC_SEEK);
-		m_fdc->writeCmd(head << 2);
+		m_fdc->writeCmd(head << 2 | m_driveNumber);
 		m_fdc->writeCmd(cyl);
 
 		m_fdc->waitIrq();
@@ -160,20 +162,23 @@ bool FloppyDrive::seek(u32int cyli, s32int head) {
 		}
 		if (cyl == 0xFF or cyl == 0x00 or cyl == (int)cyli) {	//0xFF for bochs, 0x00 for qemu :D
 			setMotorState(false);
-			m_fdc->setNoActiveDrive();
 			return true;
 		}
 	}
-	setMotorState(false);
-	m_fdc->setNoActiveDrive();
-	*kvt << getName() << ": seek fail\n";
-	return false;
+	if (recursive) {
+		setMotorState(false);
+		*kvt << getName() << ": seek fail\n";
+		return false;
+	} else {
+		calibrate();
+		return seek(cyli, head, true);
+	}
 }
 
 bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
+	m_fdc->setActiveDrive(m_driveNumber);
 	if (!seek(cyl, 0)) return false;
 	if (!seek(cyl, 1)) return false;
-	m_fdc->setActiveDrive(m_driveNumber);
 
 	u8int cmd, flags = 0xC0;
 	switch (dir) {

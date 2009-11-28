@@ -22,7 +22,7 @@ class FloppyDrive : public BlockDevice {
 	bool calibrate();
 	bool setMotorState(bool on);
 	bool killMotor();
-	bool seek(u32int cyli, s32int head);
+	bool seek(u32int cyli, s32int head, bool recursive = false);
 	bool doTrack(u32int cyl, u8int dir);
 
 	public:

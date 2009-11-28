@@ -57,7 +57,7 @@ u32int getDeviceID(BlockDevice* dev) {
 }
 
 BlockDevice* dev(String _class, u32int idx) {
-	if (_class.empty()) _class = "block";
+	if (_class.empty()) return devices[idx];
 	for (u32int i = 0; i < devices.size(); i++) {
 		String devclass = devices[i]->getClass();
 		if (devclass == _class or (devclass.size() > _class.size() and devclass.substr(0, _class.size()) == _class)) {

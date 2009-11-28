@@ -25,7 +25,7 @@ FileSystem* FATFS::mount(Partition* p, DirectoryNode* mountpoint, bool readwrite
 	if (bs.s.extBS_16.boot_signature != 0x28 and bs.s.extBS_16.boot_signature != 0x29
 			and bs.s.extBS_32.boot_signature != 0x28 and bs.s.extBS_32.boot_signature != 0x29) return 0;
 	//		*** DO SOME CALCULATIONS ***
-	FATFS* fs = new FATFS();
+	FATFS* fs = new FATFS(p);
 	fs->m_fatSize = (bs.s.table_size_16 == 0 ? bs.s.extBS_32.table_size_32 : bs.s.table_size_16);
 	fs->m_totalSectors = (bs.s.total_sectors_16 == 0 ? bs.s.total_sectors_32 : bs.s.total_sectors_16);
 	fs->m_rootDirSectors = ((bs.s.root_entry_count * 32) + (bs.s.bytes_per_sector - 1)) / bs.s.bytes_per_sector;
@@ -42,7 +42,6 @@ FileSystem* FATFS::mount(Partition* p, DirectoryNode* mountpoint, bool readwrite
 	}
 	fs->m_readOnly = true;
 	fs->m_bs = bs.s;
-	fs->m_part = p;
 	//		*** CREATE ROOT DIRECTORY NODE ***
 	fs->m_rootNode = new FATDirectoryNode("/", fs, mountpoint);
 	FIRSTCLUS(fs->m_rootNode) = 2;
@@ -52,6 +51,7 @@ FileSystem* FATFS::mount(Partition* p, DirectoryNode* mountpoint, bool readwrite
 		delete fs;
 		return 0;
 	}
+	fs->m_fatCache.init(fs->m_fatType == 12 ? 8 : (fs->m_fatType == 16 ? 20 : 40));
 	if (mountpoint != 0) mountpoint->mount(fs->m_rootNode);
 	VFS::registerFilesystem(fs);
 	*kvt << "Detected a FAT" << (s64int)fs->m_fatType << " filesystem.\n" <<
@@ -69,7 +69,7 @@ u32int FATFS::nextCluster(u32int cluster) {
 		u32int fat_offset = cluster + (cluster / 2);
 		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
 		u32int ent_offset = fat_offset % m_part->getBlockSize();
-		m_part->readBlocks(fat_sector, 1, fat_table);
+		m_fatCache.readBlocks(fat_sector, 1, fat_table);
 		u16int tblval = *(u16int*)&fat_table[ent_offset];
 		if (cluster & 1) val = tblval >> 4;
 		else val = tblval & 0x0FFF;
@@ -78,7 +78,7 @@ u32int FATFS::nextCluster(u32int cluster) {
 		u32int fat_offset = cluster * 2;
 		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
 		u32int ent_offset = fat_offset % m_part->getBlockSize();
-		m_part->readBlocks(fat_sector, 1, fat_table);
+		m_fatCache.readBlocks(fat_sector, 1, fat_table);
 		u16int tblval = *(u16int*)&fat_table[ent_offset];
 		val = tblval;
 		if (tblval >= 0xFFF7) val = 0;
@@ -86,7 +86,7 @@ u32int FATFS::nextCluster(u32int cluster) {
 		u32int fat_offset = cluster * 4;
 		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->getBlockSize());
 		u32int ent_offset = fat_offset % m_part->getBlockSize();
-		m_part->readBlocks(fat_sector, 1, fat_table);
+		m_fatCache.readBlocks(fat_sector, 1, fat_table);
 		val = *(u32int*)&fat_table[ent_offset] & 0x0FFFFFFF;
 		if (val >= 0x0FFFFFF7) val = 0;
 	}

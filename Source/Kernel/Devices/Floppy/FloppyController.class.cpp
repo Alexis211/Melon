@@ -153,7 +153,6 @@ void FloppyController::setDOR() {
 		checkInterrupt(&st0, &cyl);
 		m_first = false;
 	}
-			//PANIC("test");
 }
 
 void FloppyController::setActiveDrive(u8int drive) {
@@ -190,10 +189,10 @@ u8int FloppyController::readData() {
 bool FloppyController::reset() {
 	outb(m_base + FR_DOR, 0x00);	//Disable controller
 	m_first = true;
-	setNoActiveDrive();
 
 	if (m_drives[0] != NULL) m_drives[0]->m_motorState = 0;
 	if (m_drives[1] != NULL) m_drives[1]->m_motorState = 0;
+	setNoActiveDrive();
 
 	for (int i = 0; i < 2; i++) {
 		if (m_drives[i] != NULL) {

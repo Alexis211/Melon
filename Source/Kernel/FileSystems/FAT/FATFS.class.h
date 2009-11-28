@@ -3,6 +3,7 @@
 
 #include <VFS/FileSystem.proto.h>
 #include <VFS/Part.ns.h>
+#include <VFS/BlockCache.class.h>
 
 struct fat_extBS_32_t {			//Extended boot sector for FAT32
 	unsigned int		table_size_32;
@@ -88,9 +89,6 @@ struct fat_dir_entry_t {
 
 class FATFS : public FileSystem {
 	private:
-	FATFS() {}
-	~FATFS() {}
-
 	fat_BS_t m_bs;
 	bool m_readOnly;
 	u32int m_fatSize;	//Size of one FAT, in sectors
@@ -101,10 +99,14 @@ class FATFS : public FileSystem {
 	u32int m_clusterSize;	//size of a cluster in bytes
 	u32int m_fatType;	//12, 16 or 32
 	Partition* m_part;
+	BlockCache<Partition> m_fatCache;
 
 	u32int nextCluster(u32int cluster);		//Get the next cluster number in the chain (0 = EOF)
 	bool readCluster(u32int cluster, u8int* data);	//Read the content of a cluster to a buffer
 	
+	~FATFS() {}
+	FATFS(Partition* p) : m_part(p), m_fatCache(p) {}
+
 	public:
 	static FileSystem* mount(Partition* p, DirectoryNode* mountpoint, bool readwrite = false);
 

@@ -90,7 +90,6 @@ bool mount(String str, VirtualTerminal* vt, multiboot_info_t *mbd) {
 			*vt << "Syntax: <mountpoint>:[<dev_class>]:<dev_id>:<part_id>[:<fs_type>[:[ro|rw]]]\n";
 			return false;
 		}
-		if (fs[1] == "") fs[1] = "block";
 		if (fs.size() < 5) fs.push("");
 		if (fs.size() < 6) fs.push("ro");	//By default, mount file systems read-only
 		BlockDevice* d = Part::dev(fs[1], fs[2].toInt());

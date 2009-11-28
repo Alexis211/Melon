@@ -2,21 +2,23 @@
 
 using namespace CMem;	//For memcpy
 
-Partition::Partition(BlockDevice* dev, u8int partnumber, u64int startblock, u64int blockcount) {
+Partition::Partition(BlockDevice* dev, u8int partnumber, u64int startblock, u64int blockcount)
+: m_cache(dev) {
 	m_device = dev;
 	m_partnumber = partnumber;
 	m_startblock = startblock;
 	m_blockcount = blockcount;
+	m_cache.init(10 + (m_device->blocks() / 1000 > 100 ? 100 : m_device->blocks() / 1000));
 }
 
 bool Partition::readBlocks(u64int startblock, u32int count, u8int *data) {
 	if (startblock + count > m_startblock + m_blockcount) return false;
-	return m_device->readBlocks(startblock - m_startblock, count, data);
+	return m_cache.readBlocks(startblock - m_startblock, count, data);
 }
 
 bool Partition::writeBlocks(u64int startblock, u32int count, u8int *data) {
 	if (startblock + count > m_startblock + m_blockcount) return false;
-	return m_device->writeBlocks(startblock - m_startblock, count, data);
+	return m_cache.writeBlocks(startblock - m_startblock, count, data);
 }
 
 bool Partition::read(u64int start, u32int length, u8int *data) {
