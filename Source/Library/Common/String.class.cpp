@@ -84,8 +84,8 @@ void String::affect (const char* string, u8int encoding) {
 		return;
 	}
 	m_string = new WChar[m_length + 1];
-	int i = 0, l = strlen(string), c = 0;
-	while (i < l) {
+	u32int i = 0, c = 0;
+	while (c < m_length) {
 		i += m_string[c].affect(string + i, encoding);
 		c++;
 	}
@@ -191,8 +191,10 @@ Vector<String> String::split(WChar c) const {
 	return ret;
 }
 
-String String::substr(s32int start, u32int size) {
+String String::substr(s32int start, s32int size) {
+	if (size == 0) return String();
 	if (start < 0) start = m_length - start;
+	if (size == -1) size = m_length - start;
 	String ret;
 	ret.m_string = new WChar[size + 1];
 	ret.m_length = size;

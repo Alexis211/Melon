@@ -2,10 +2,12 @@
 #define DEF_PARTITION_CLASS_H
 
 #include <Devices/BlockDevice.proto.h>
+#include <VFS/BlockCache.class.h>
 
 class Partition {
 	private:
 	BlockDevice* m_device;
+	BlockCache<BlockDevice> m_cache;
 	u64int m_startblock, m_blockcount;
 	u8int m_partnumber;	//Partition number in partition table of device
 
@@ -24,7 +26,7 @@ class Partition {
 	u64int getStartBlock();
 	u64int getBlockCount();
 	u8int getPartNumber();
-	u32int getBlockSize();
+	u32int blockSize();
 	inline u64int blocks() { return getBlockCount(); }
 };
 

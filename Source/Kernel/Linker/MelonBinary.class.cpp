@@ -2,7 +2,7 @@
 
 Binary* MelonBinary::load(File& file) {
 	u32int magic;
-	file.read<u32int>(&magic);
+	if (!file.read<u32int>(&magic)) return 0;
 	if (magic == 0xFEEDBEEF) {
 		MelonBinary* r = new MelonBinary;
 		file.read<u32int>(&r->m_size);

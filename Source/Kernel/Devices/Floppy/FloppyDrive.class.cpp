@@ -2,6 +2,7 @@
 #include "FloppyController.class.h"
 #include <TaskManager/Task.ns.h>
 #include <DeviceManager/Time.ns.h>
+#include <VTManager/SimpleVT.class.h>
 #include <Core/Log.ns.h>
 
 using namespace Sys;
@@ -91,16 +92,18 @@ bool FloppyDrive::calibrate() {
 
 	int st0, cyl = -1;
 
-	if (!setMotorState(true)) return false;
+	if (!setMotorState(true)) {
+		*kvt << getName() << ": calibrate fail\n";
+		return false;
+	}
 
 	for (int i = 0; i < 10; i++) {
-		asm volatile("cli");
+		m_fdc->resetIrq();
 		m_fdc->writeCmd(FC_RECALIBRATE);
 		m_fdc->writeCmd(m_driveNumber);
 
-		Task::currThread()->waitIRQ(m_fdc->m_irq);
+		m_fdc->waitIrq();
 		m_fdc->checkInterrupt(&st0, &cyl);
-		asm volatile("sti");
 
 		if (st0 & 0xC0) {
 			continue;
@@ -111,6 +114,7 @@ bool FloppyDrive::calibrate() {
 		}
 	}
 	setMotorState(false);
+	*kvt << getName() << ": calibrate fail\n";
 	return false;
 }
 
@@ -137,47 +141,44 @@ bool FloppyDrive::killMotor() {
 	return true;
 }
 
-bool FloppyDrive::seek(u32int cyli, s32int head) {
+bool FloppyDrive::seek(u32int cyli, s32int head, bool recursive) {
 	if (cyli >= m_cylinders) return false;
-	m_fdc->setActiveDrive(m_driveNumber);
 
 	setMotorState(true);	//Turn on motor
 
 	int st0, cyl = -1;
 
-	for (u32int i = 0; i < 10; i++) {
-		asm volatile ("cli");
+	for (u32int i = 0; i < (recursive ? 10 : 5); i++) {
+		m_fdc->resetIrq();
 		m_fdc->writeCmd(FC_SEEK);
-		m_fdc->writeCmd(head << 2);
+		m_fdc->writeCmd(head << 2 | m_driveNumber);
 		m_fdc->writeCmd(cyl);
 
-		Task::currThread()->waitIRQ(m_fdc->m_irq);
+		m_fdc->waitIrq();
 		m_fdc->checkInterrupt(&st0, &cyl);
-		asm volatile("sti");
 
 		if (st0 & 0xC0) { //Error
 			continue;
 		}
-		if (cyl == 0xFF or cyl == 0x00) {	//0xFF for bochs, 0x00 for qemu :D
+		if (cyl == 0xFF or cyl == 0x00 or cyl == (int)cyli) {	//0xFF for bochs, 0x00 for qemu :D
 			setMotorState(false);
-			m_fdc->setNoActiveDrive();
-			return true;
-		}
-		if (cyl == (int)cyli) {
-			setMotorState(false);
-			m_fdc->setNoActiveDrive();
 			return true;
 		}
 	}
-	setMotorState(false);
-	m_fdc->setNoActiveDrive();
-	return false;
+	if (recursive) {
+		setMotorState(false);
+		*kvt << getName() << ": seek fail\n";
+		return false;
+	} else {
+		calibrate();
+		return seek(cyli, head, true);
+	}
 }
 
 bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
+	m_fdc->setActiveDrive(m_driveNumber);
 	if (!seek(cyl, 0)) return false;
 	if (!seek(cyl, 1)) return false;
-	m_fdc->setActiveDrive(m_driveNumber);
 
 	u8int cmd, flags = 0xC0;
 	switch (dir) {
@@ -203,7 +204,7 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 
 		Task::currThread()->sleep(100);
 
-		asm volatile("cli");
+		m_fdc->resetIrq();
 		m_fdc->writeCmd(cmd);
 		m_fdc->writeCmd(m_driveNumber);	//Drive number & first head << 2
 		m_fdc->writeCmd(cyl);	//Cylinder
@@ -214,7 +215,7 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 		m_fdc->writeCmd(0x1B);
 		m_fdc->writeCmd(0xFF);
 
-		Task::currThread()->waitIRQ(m_fdc->m_irq);
+		m_fdc->waitIrq();
 
 		u8int st0, st1, st2, rcy, rhe, rse, bps;
 		st0 = m_fdc->readData();
@@ -224,7 +225,6 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 		rhe = m_fdc->readData();
 		rse = m_fdc->readData();
 		bps = m_fdc->readData();
-		asm volatile("sti");
 
 		int error = 0;
 	
@@ -274,12 +274,11 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 
 bool FloppyDrive::readOnly() {
 	m_fdc->setActiveDrive(m_driveNumber);
-	asm volatile("cli");
+	m_fdc->resetIrq();
 	m_fdc->writeCmd(FC_SENSE_DRIVE_STATUS);
 	m_fdc->writeCmd(m_driveNumber);
-	Task::currThread()->waitIRQ(m_fdc->m_irq);
+	m_fdc->waitIrq();
 	u8int st3 = m_fdc->readData();
-	asm volatile("sti");
 
 	bool ret = (st3 & 0x80 ? true : false);
 
@@ -296,16 +295,13 @@ bool FloppyDrive::readBlocks(u64int start, u32int count, u8int *data) {
 	u32int startblock = start;
 	if (count == 1) {
 		u32int cylinder = (startblock / (m_sectors * 2)), offset = (startblock % (m_sectors * 2)) * 512;
-		if (m_buffCyl == cylinder && m_buffTime >= Time::uptime() - 4) {
-			memcpy(data, (const u8int*)(&m_buffer[offset]), 512);
-			return true;
-		} else {
+		if (m_buffCyl != cylinder or m_buffTime < Time::uptime() - 4) {
 			if (!doTrack(cylinder, FD_READ)) return false;
 			m_buffCyl = cylinder;
 			m_buffTime = Time::uptime();
-			memcpy(data, (const u8int*)(&m_buffer[offset]), 512);
-			return true;
 		}
+		memcpy(data, (const u8int*)(&m_buffer[offset]), 512);
+		return true;
 	} else {
 		m_buffCyl = 0xFFFF;	//Invalid cylinder
 		m_buffTime = 0;

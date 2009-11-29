@@ -32,3 +32,8 @@ The options for the kernel command line are the following :
 - init:<init_app>			select the init application to run. empty string = go to kernel shell.
 							default is /System/Applications/PaperWork.app
 
+** About HDD.img **
+This file is not used yet, although it is attached to the qemu and bochs VMs.
+Its content can be updated with `make hdd`, the file copying happens in CopyToHDD.sh.
+For the moment, we use a boot floppy for loading the kernel as the floppy is the only thing the kernel can read for now,
+but we could as well use the GRUB that is installed on HDD.img.

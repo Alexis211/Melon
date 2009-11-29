@@ -50,9 +50,9 @@ void ByteArray::resize(u32int size) {
 }
 
 String ByteArray::toString (u8int encoding) {
-	char* c = new char[m_length + 1];
+	char* c = new char[m_length + 4];
 	memcpy((u8int*)c, m_string, m_length);
-	c[m_length] = 0;	//Add NULL terminator
+	for (int i = 0; i < 4; i++) c[m_length + i] = 0;	//Add NULL terminator
 	String r(c, encoding);
 	delete c;
 	return r;

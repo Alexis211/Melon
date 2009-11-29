@@ -17,10 +17,10 @@ struct initrd_file_header {
 
 class RamFS : public FileSystem {
 	private:
-	~RamFS();
+	virtual ~RamFS();
 	RamFS(const RamFS& other);
 	RamFS();
-	bool unmount();	//TO BE USED ONLY BY VFS::UNMOUNT (when will exist...)
+	bool unmount();
 
 	u32int m_maxSize;
 	u32int m_usedSize;
@@ -34,6 +34,8 @@ class RamFS : public FileSystem {
 	bool setUid(FSNode* node, u32int uid);
 	bool setGid(FSNode* node, u32int gid);
 	bool setParent(FSNode* node, FSNode* parent);
+
+	String getDevDescription() { return "ramfs"; }
 
 	u32int read(FileNode* file, u64int position, u32int max_length, u8int *data);
 	bool write(FileNode* file, u64int position, u32int length, u8int *data);

@@ -13,6 +13,11 @@ namespace Part {
 	void unregisterDevice(BlockDevice* dev);
 
 	u32int getDeviceID(BlockDevice* dev);
+
+	BlockDevice* dev(String _class, u32int idx);
+	Partition* part(BlockDevice* dev, u32int idx);
+
+	String partIdentifier(Partition* p);	//Simply to help recognize the partition
 }
 
 #endif

@@ -26,11 +26,13 @@ void load() {
 	if (VFS::find("/System/Configuration/Groups")) VFS::find("/System/Configuration/Groups")->setPermissions(0600);
 	if (VFS::find("/System/Configuration/Users")) VFS::find("/System/Configuration/Users")->setPermissions(0600);
 	TextFile groups("/System/Configuration/Groups", FM_READ);
-	while (!groups.eof()) {
-		String s = groups.readLine();
-		Vector<String> data = s.split(":");
-		if (data.size() == 2 and !(s[0] == WChar("#"))) {
-			m_groups = m_groups->cons(Group(data[1], data[0].toInt()));
+	if (groups.valid()) {
+		while (!groups.eof()) {
+			String s = groups.readLine();
+			Vector<String> data = s.split(":");
+			if (data.size() == 2 and !(s[0] == WChar("#"))) {
+				m_groups = m_groups->cons(Group(data[1], data[0].toInt()));
+			}
 		}
 	}
 	if (m_groups == 0) {
@@ -39,12 +41,14 @@ void load() {
 	}
 
 	TextFile users("/System/Configuration/Users", FM_READ);
-	while (!users.eof()) {
-		String s = users.readLine();
-		if (s == "" or s[0] == WChar("#")) continue;
-		Vector<String> data = s.split(":");
-		if (data.size() == 6) {
-			m_users = m_users->cons(User(data[1], data[4], data[5], group(data[2].toInt()), data[3], data[0].toInt()));
+	if (users.valid()) {
+		while (!users.eof()) {
+			String s = users.readLine();
+			if (s == "" or s[0] == WChar("#")) continue;
+			Vector<String> data = s.split(":");
+			if (data.size() == 6) {
+				m_users = m_users->cons(User(data[1], data[4], data[5], group(data[2].toInt()), data[3], data[0].toInt()));
+			}
 		}
 	}
 	if (m_users == 0) {

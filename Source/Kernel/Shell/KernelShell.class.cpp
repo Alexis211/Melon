@@ -3,8 +3,8 @@
 #include <DeviceManager/Kbd.ns.h>
 #include <SimpleList.class.h>
 #include <MemoryManager/PhysMem.ns.h>
-#include <VFS/VFS.ns.h>
 #include <TaskManager/Task.ns.h>
+#include <VFS/VFS.ns.h>
 
 u32int KernelShell::m_instances = 0;
 
@@ -60,6 +60,9 @@ u32int KernelShell::run() {
 		{"free", &KernelShell::free},
 		{"uptime", &KernelShell::uptime},
 		{"part", &KernelShell::part},
+		{"readblock", &KernelShell::readblock},
+		{"mount", &KernelShell::mount},
+		{"hexdump", &KernelShell::hexdump},
 
 		{0, 0}
 	};
@@ -81,6 +84,9 @@ u32int KernelShell::run() {
 			*m_vt << "  - free       shows memory usage (frames and kheap)\n";
 			*m_vt << "  - uptime     shows seconds since boot\n";
 			*m_vt << "  - part       shows all detected block devs and partitions\n";
+			*m_vt << "  - mount      shows mounted devices or mounts a ramfs\n";
+			*m_vt << "  - readblock  reads a block from a block device and dumps it\n";
+			*m_vt << "  - hexdump    shows a hexadecimal dump of a file\n";
 			*m_vt << "  - Standard UNIX commands : ls cd cat pwd rm mkdir wf\n";
 			*m_vt << " - Scroll up with shift+pgup !\n";
 		} else if (tokens[0] == "reboot") {
@@ -92,6 +98,26 @@ u32int KernelShell::run() {
 		} else if (tokens[0] == "exit") {
 			if (tokens.size() == 1) return 0;
 			return tokens[1].toInt();
+		} else if (tokens[0] == "unmount") {
+			if (tokens.size() == 2) {
+				FSNode* n = VFS::find(tokens[1], m_cwd);
+				bool ok = false;
+				if (n == 0) {
+					ok = false;
+				} else {
+					String p = VFS::path(n);
+					for (u32int i = 0; i < VFS::filesystems.size(); i++) {
+						if (VFS::path(VFS::filesystems[i]->getRootNode()) == p) {
+							ok = VFS::unmount(VFS::filesystems[i]);
+							break;
+						}
+					}
+				}
+				if (ok) *m_vt << "Ok, filesystem unmounted.\n";
+				else *m_vt << "Error.\n";
+			} else {
+				*m_vt << "Usage: unmount <mountpoint>\n";
+			}
 		} else if (tokens[0] != "" or tokens.size() != 1) {
 			u32int i = 0;
 			bool found = false;

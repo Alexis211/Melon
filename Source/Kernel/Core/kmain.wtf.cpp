@@ -25,6 +25,7 @@
 #include <Rand.ns.h>
 #include <VFS/Part.ns.h>
 #include <FileSystems/RamFS/RamFS.class.h>
+#include <FileSystems/FAT/FATFS.class.h>
 #include <VFS/FileNode.class.h>
 #include <VFS/VFS.ns.h>
 #include <VFS/DirectoryNode.class.h>
@@ -36,6 +37,8 @@
 extern u32int end;	//Placement address
 
 extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
+
+SimpleVT* kvt;
 
 u32int logoAnimation(void* p) {
 	SimpleVT& vt = *((SimpleVT*)p);
@@ -83,7 +86,7 @@ u32int logoAnimation(void* p) {
 
 void selectVideoMode(SimpleVT& v) {
 	Disp::getModes();
-	v << "\n\nPlease select a graphic mode in the list below:\n";
+	v << "\nPlease select a graphic mode in the list below:\n";
 
 	for (u32int i = 0; i < Disp::modes.size(); i++) {
 		Disp::mode_t& m = Disp::modes[i];
@@ -140,9 +143,9 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Disp::setText(vgaout);
 
 	//Create a VT for logging what kernel does
-	SimpleVT *kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
+	kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(0, 0);
-	*kvt << "Melon is loading...";
+	*kvt << "Melon is loading...\n";
 
 	IDT::init();		//Setup interrupts 
 
@@ -164,13 +167,17 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	//***************************************	PARSE COMMAND LINE
 	
 	Vector<String> opts = kcmdline.split(" ");
-	String keymap = "fr", init = "/System/Applications/PaperWork.app";
+	String keymap = "builtin", init = "/System/Applications/PaperWork.app";
+	String root = "ramfs:0";
+	Vector<String> mount;
 	bool enableVESA = true;
 	for (u32int i = 0; i < opts.size(); i++) {
 		Vector<String> opt = opts[i].split(":");
 		if (opt[0] == "vesa" && opt[1] != "enabled") enableVESA = false;
 		if (opt[0] == "keymap") keymap = opt[1];
 		if (opt[0] == "init") init = opt[1];
+		if (opt[0] == "root") root = opts[i].substr(5);
+		if (opt[0] == "mount") mount.push(opts[i].substr(6));
 	}
 
 	//*************************************** 	DEVICE SETUP
@@ -180,16 +187,26 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	if (enableVESA) Dev::registerDevice(new VESADisplay());
 	FloppyController::detect();
 
-	//***************************************	MOUNT ROOT FILESYSTEM
+	//***************************************	MOUNT FILESYSTEMS
 
-	FileSystem* fs = RamFS::mount((u8int*)mods[0].mod_start, 1024 * 1024, NULL);
+	{	// mount root filesystem
+		if (!VFS::mount(String("/:") += root, kvt, mbd)) PANIC("Cannot mount root filesystem.");
+	}
 	DirectoryNode* cwd;
-	cwd = fs->getRootNode();
+	cwd = VFS::getRootNode();
 	Task::currProcess()->setCwd(cwd);
-	VFS::setRootNode(cwd);
+
+	// mount other filesystems
+	for (u32int i = 0; i < mount.size(); i++) {
+		VFS::mount(mount[i], kvt, mbd);
+	}
+
+	//FATFS::mount(Part::partitions[0], (DirectoryNode*)VFS::createDirectory("/Mount"));
+	
+	//***************************************	LOAD SYSTEM STUFF
 
 	if (keymap != "builtin") {
-		if (!Kbd::loadKeymap(keymap)) *kvt << "\nWARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";
+		if (!Kbd::loadKeymap(keymap)) *kvt << "WARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";
 	}
 
 	Log::init(KL_STATUS);	//Setup logging
@@ -199,7 +216,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Log::log(KL_STATUS, "kmain : User list loaded");
 
 	if (init.empty()) {
-		*kvt << "\n\n";
+		*kvt << "\n";
 		new KernelShell(cwd, kvt);
 		while (KernelShell::getInstances() > 0) {
 			Task::currThread()->sleep(100);

@@ -83,7 +83,7 @@ void dumpRegs(registers_t *regs, VirtualTerminal& vt) {
 
 void stackTrace(u32int ebp, VirtualTerminal& vt, u32int maxframes) {
 	u32int *stack = (u32int*)ebp;
-	for (u32int i = 0; i < maxframes and (u32int)stack > 0xC0000000; i++) {
+	for (u32int i = 0; i < maxframes and (u32int)stack > 0xC0000000 and (u32int)stack < (ebp + 0x10000); i++) {
 		vt << "Frame: " << (u32int)stack << " n:" << stack[0] << " r:" << stack[1] << "\n";
 		stack = (u32int*)stack[0];
 	}

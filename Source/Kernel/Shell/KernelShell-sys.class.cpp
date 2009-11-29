@@ -4,6 +4,8 @@
 #include <MemoryManager/Mem.ns.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <VFS/Part.ns.h>
+#include <VFS/VFS.ns.h>
+#include <FileSystems/RamFS/RamFS.class.h>
 
 void KernelShell::devices(Vector<String>& args) {
 	Vector<Device*> dev = Dev::findDevices();
@@ -56,5 +58,44 @@ void KernelShell::part(Vector<String>& args) {
 				}
 			}
 		}
+	}
+}
+
+void KernelShell::mount(Vector<String>& args) {
+	if (args.size() == 1) {
+		for (u32int i = 0; i < VFS::filesystems.size(); i++) {
+			*m_vt << VFS::filesystems[i]->getDevDescription() << " on " << VFS::path(VFS::filesystems[i]->getRootNode()) << "\n";
+		}
+	} else if (args.size() == 2) {
+		if (args[1] == "help") {
+			*m_vt << "Usage: mount [help|<options>]\n" <<
+				"Options formats :\n" << 
+				" - <mountpoint>:ramfs\n" <<
+				" - <mountpoint>:[<dev_class>]:<dev_number>:<part_number>[:<type>[:[ro|rw]]]\n" <<
+				"You can have a list of available block devices and partitions by typing 'part'.\n";
+		} else {
+			if (VFS::mount(args[1], m_vt)) *m_vt << "Ok, filesystem mounted.\n";
+		}
+	} else {
+		*m_vt << "Usage: mount [<device> <mountpoint>\n";
+	}
+}
+
+void KernelShell::readblock(Vector<String>& args) {
+	if (args.size() == 3) {
+		Vector<Device*> devcs = Dev::findDevices("block");
+		u32int id = args[1].toInt(), block = args[2].toInt();
+		if (id < devcs.size()) {
+			BlockDevice* bdev = (BlockDevice*)devcs[id];
+			*m_vt << "Block " << block << " from device " << bdev->getName() << " (" << bdev->getClass() << ")\n";
+			u8int* buff = (u8int*)Mem::alloc(bdev->blockSize());
+			bdev->readBlocks(block, 1, buff);
+			m_vt->hexDump(buff, 32);
+			Mem::free(buff);
+		} else {
+			*m_vt << "Block device #" << id << " does not exist.\n";
+		}
+	} else {
+		*m_vt << "Usage: readblock <dev id> <block id>\n";
 	}
 }

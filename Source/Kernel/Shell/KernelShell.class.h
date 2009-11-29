@@ -27,6 +27,7 @@ class KernelShell {
 	void rm(Vector<String>& args);
 	void wf(Vector<String>& args);
 	void run(Vector<String>& args);
+	void hexdump(Vector<String>& args);
 
 	//in KernelShell-sys
 	void devices(Vector<String>& args);
@@ -34,6 +35,8 @@ class KernelShell {
 	void free(Vector<String>& args);
 	void uptime(Vector<String>& args);
 	void part(Vector<String>& args);
+	void readblock(Vector<String>& args);
+	void mount(Vector<String>& args);
 
 	void setup(DirectoryNode* cwd, VirtualTerminal *vt);
 

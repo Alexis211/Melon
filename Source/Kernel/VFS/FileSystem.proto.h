@@ -5,19 +5,28 @@
 class FSNode;
 class FileNode;
 class DirectoryNode;
+class FileSystem;
+
+namespace VFS {
+	bool unmount(FileSystem*);
+}
 
 //This abstract class describes a filesystem
 class FileSystem {
+	friend bool VFS::unmount(FileSystem*);
+
 	protected:
-	virtual ~FileSystem() {}
+	virtual ~FileSystem();
 	bool m_isWritable;	//false = read only
 	DirectoryNode* m_rootNode;
 
-	public:
-	bool unmount();
+	virtual bool unmount() = 0;	//Sync data with the disk
 
+	public:
 	bool isWritable() { return m_isWritable; }
 	DirectoryNode* getRootNode() { return m_rootNode; }
+
+	virtual String getDevDescription() = 0;
 
 	//Must be implemented by the filesystem
 	virtual bool setName(FSNode* node, String name) = 0;

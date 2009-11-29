@@ -44,12 +44,12 @@ class FSNode : public Ressource {
 	virtual bool used() { return false; }	//True if file is read/written from/to
 	
 	const String& getName() { return m_name; }
-	u64int getLength() { return m_length; }
+	virtual u64int getLength() { return m_length; }
 	u32int getPermissions() { return m_permissions; }
 	u32int getUid() { return m_uid; }
 	u32int getGid() { return m_gid; }
 	FileSystem *getFS() { return m_fs; }
-	FSNode* getParent() { return m_parent; }
+	virtual FSNode* getParent() { return m_parent; }
 
 	//Helper functions
 	bool readable(User* user = 0);
