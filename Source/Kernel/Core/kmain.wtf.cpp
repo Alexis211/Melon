@@ -7,6 +7,7 @@
 #include <Devices/Display/VESADisplay.class.h>
 #include <Devices/Keyboard/PS2Keyboard.class.h>
 #include <Devices/Floppy/FloppyDrive.class.h>
+#include <Devices/ATA/ATAController.class.h>
 #include <Devices/Timer.class.h>
 #include <DeviceManager/Disp.ns.h>
 #include <DeviceManager/Dev.ns.h>
@@ -186,6 +187,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
 	if (enableVESA) Dev::registerDevice(new VESADisplay());
 	FloppyController::detect();
+	ATAController::detect();
 
 	//***************************************	MOUNT FILESYSTEMS
 

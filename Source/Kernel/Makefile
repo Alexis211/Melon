@@ -77,6 +77,8 @@ Objects = Core/loader.wtf.o \
 		Devices/Keyboard/PS2Keyboard.class.o \
 		Devices/Floppy/FloppyController.class.o \
 		Devices/Floppy/FloppyDrive.class.o \
+		Devices/ATA/ATAController.class.o \
+		Devices/ATA/ATADrive.class.o \
 		Devices/Timer.class.o
  
 all: $(OutFile)
