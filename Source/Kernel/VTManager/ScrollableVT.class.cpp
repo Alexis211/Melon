@@ -80,6 +80,8 @@ void ScrollableVT::keyPress(keypress_t kp) {
 			nlup = m_linesup + 1;
 		} else if (kp.command == KBDC_DOWN) {
 			nlup = m_linesup - 1;
+		} else if (kp.command == KBDC_END) {
+			nlup = 0;
 		} else {
 			VirtualTerminal::keyPress(kp);
 		}
