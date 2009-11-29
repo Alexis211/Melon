@@ -27,14 +27,16 @@ void ATAController::detect() {
 	}
 }
 
-ATAController::ATAController(u32int base, u8int number) {
+ATAController::ATAController(u32int base, u8int number) : Mutex(MUTEX_TRUE) {
 	m_base = base; m_number = number;
 	m_drives[0] = NULL; m_drives[1] = NULL;
 	identify(false);	//Identify master device
 	identify(true);		//Identify slave device
+	unlock();
 }
 
 void ATAController::identify(bool slave) {
+	if (!locked()) return;
 	if (m_drives[(slave ? 1 : 0)] != NULL) return;
 	writeByte(ATA_PORT_DRIVE_SELECT, (slave ? 0xB0 : 0xA0)); 
 	writeByte(ATA_PORT_COMMAND, ATA_CMD_IDENTIFY);

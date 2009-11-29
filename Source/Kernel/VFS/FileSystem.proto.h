@@ -14,6 +14,8 @@ namespace VFS {
 //This abstract class describes a filesystem
 class FileSystem {
 	friend bool VFS::unmount(FileSystem*);
+	private:
+	String m_identifier;
 
 	protected:
 	virtual ~FileSystem();
@@ -25,8 +27,6 @@ class FileSystem {
 	public:
 	bool isWritable() { return m_isWritable; }
 	DirectoryNode* getRootNode() { return m_rootNode; }
-
-	virtual String getDevDescription() = 0;
 
 	//Must be implemented by the filesystem
 	virtual bool setName(FSNode* node, String name) = 0;
@@ -43,6 +43,10 @@ class FileSystem {
 	virtual FileNode* createFile(DirectoryNode* parent, String name) = 0;
 	virtual DirectoryNode* createDirectory(DirectoryNode* parent, String name) = 0;
 	virtual bool remove(DirectoryNode* parent, FSNode* node) = 0;
+
+	virtual Partition* getPart() = 0;
+	void setIdentifier(String s) { m_identifier = s; }
+	String getIdentifier() { return m_identifier; }
 };
 
 #endif

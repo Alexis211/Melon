@@ -1,5 +1,6 @@
 #include "Log.ns.h"
 #include <FileSystems/RamFS/RamFS.class.h>
+#include <VTManager/SimpleVT.class.h>
 #include <VFS/VFS.ns.h>
 
 namespace Log {
@@ -13,7 +14,7 @@ void init(u8int loglevel) {
 
 	logs[KL_PANIC] = new TextFile("/System/Logs/Panic.log", FM_APPEND);
 	if (!logs[KL_PANIC]->valid()) {	//FS maybee not read/write, mount a ramfs
-		RamFS::mount(1024*1024, (DirectoryNode*)VFS::find("/System/Logs"));
+		VFS::mount("/System/Logs:ramfs", kvt);
 		logs[KL_PANIC] = new TextFile("/System/Logs/Panic.log", FM_APPEND);
 	}
 	if (KL_CRITICAL <= loglevel) logs[KL_CRITICAL] = new TextFile("/System/Logs/Critical.log", FM_APPEND);

@@ -112,8 +112,6 @@ class FATFS : public FileSystem {
 
 	bool unmount();
 
-	String getDevDescription() { return Part::partIdentifier(m_part); }
-
 	bool setName(FSNode* node, String name);
 	bool setPermissions(FSNode* node, u32int permissions);
 	bool setUid(FSNode* node, u32int uid);
@@ -128,6 +126,8 @@ class FATFS : public FileSystem {
 	FileNode* createFile(DirectoryNode* parent, String name);
 	DirectoryNode* createDirectory(DirectoryNode* parent, String name);
 	bool remove(DirectoryNode* parent, FSNode* node);
+
+	Partition* getPart() { return m_part; }
 };
 
 #endif

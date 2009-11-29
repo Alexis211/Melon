@@ -2,6 +2,7 @@
 #define DEF_ATACONTROLLER_CLASS_H
 
 #include <Devices/Device.proto.h>
+#include <Mutex.class.h>
 
 #define ATA_BUS1_BASE 0x1F0
 #define ATA_BUS2_BASE 0x170
@@ -21,7 +22,7 @@
 
 class ATADrive;
 
-class ATAController : public Device {
+class ATAController : public Device, public Mutex {
 	friend class ATADrive;
 	private:
 	ATAController(u32int base, u8int number);

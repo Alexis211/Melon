@@ -75,15 +75,23 @@ bool mount(String str, VirtualTerminal* vt, multiboot_info_t *mbd) {
 					*vt << "Invalid module number for filesystem to mount on " << fs[0] << "\n";
 					return false;
 				}
-				RamFS::mount((u8int*)mods[fs[2].toInt()].mod_start, 1024 * 1024, root);
-				return true;
+				FileSystem* wat = RamFS::mount((u8int*)mods[fs[2].toInt()].mod_start, 1024 * 1024, root);
+				if (wat != NULL) {
+					wat->setIdentifier(str);
+					return true;
+				}
+				return false;
 			} else {
 				*vt << "Cannot mount kernel modules outside of kernel command line.\n";
 				return false;
 			}
 		} else {
-			RamFS::mount(1024 * 1024, root);
-			return true;
+			FileSystem* wat = RamFS::mount(1024 * 1024, root);
+			if (wat != NULL) {
+				wat->setIdentifier(str);
+				return true;
+			}
+			return false;
 		}
 	} else {
 		if (fs.size() < 4) {
@@ -94,9 +102,17 @@ bool mount(String str, VirtualTerminal* vt, multiboot_info_t *mbd) {
 		if (fs.size() < 6) fs.push("ro");	//By default, mount file systems read-only
 		BlockDevice* d = Part::dev(fs[1], fs[2].toInt());
 		Partition* p = Part::part(d, fs[3].toInt());
+		for (u32int i = 0; i < filesystems.size(); i++) {
+			if (filesystems[i]->getPart() == p) {
+				*vt << "Cannot mount " << str << " : partition already mounted.\n";
+				return false;
+			}
+		}
 		for (u32int i = 0; fileSystems[i].cb != 0; i++) {
 			if (fs[4] == fileSystems[i].name or fs[4] == "") {
-				if (fileSystems[i].cb(p, root, (fs[5] == "rw")) != NULL) {
+				FileSystem* mounted = fileSystems[i].cb(p, root, (fs[5] == "rw"));
+				if (mounted != NULL) {
+					mounted->setIdentifier(str);
 					return true;
 				} else if (fs[4] != "") {
 					*vt << "Could not mount filesystem on " << fs[0] << "\n";

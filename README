@@ -21,6 +21,9 @@ You will probably be prompted for your password. We need it to mount the floppy 
 
 And run it with Qemu :
 $ make qemu
+	OR
+$ make qemu-hdd
+The second option boots from the HDD instead of the floppy
 
 ** HOW TO CONFIGURE THE GRUB ENTRIES : **
 If you want to change the entries that appear when you `make qemu`, then edit the Grub-menu.cfg and `make floppy` again.

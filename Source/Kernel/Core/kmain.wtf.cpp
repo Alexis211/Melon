@@ -203,7 +203,14 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 		VFS::mount(mount[i], kvt, mbd);
 	}
 
-	//FATFS::mount(Part::partitions[0], (DirectoryNode*)VFS::createDirectory("/Mount"));
+	{
+		TextFile mounts("/System/Configuration/Mount", FM_READ);
+		while (mounts.valid() && !mounts.eof()) {
+			String m = mounts.readLine();
+			if (!m.empty() && m[0] != WChar("#")) VFS::mount(m, kvt, mbd);
+		}
+	}
+
 	
 	//***************************************	LOAD SYSTEM STUFF
 

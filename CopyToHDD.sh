@@ -6,10 +6,10 @@
 cp Grub-menu-hdd.cfg Mount/grub/menu.lst
 
 # Create directories
-mkdir Mount/System
+mkdir Mount/{System,Applications,Volumes}
 mkdir Mount/System/{Applications,Configuration,Logs,Keymaps}
-mkdir Mount/Applications
 mkdir Mount/Applications/{Demos,Shell}
+mkdir Mount/Volumes/{Floppy,InitRFS}
 
 # Copy welcome text
 cp Source/Kernel/Ressources/Texts/Welcome.txt Mount
@@ -24,6 +24,10 @@ cp Source/Kernel/Ressources/Keymaps/*.mkm Mount/System/Keymaps
 cp Source/Applications/PaperWork/PaperWork Mount/System/Applications/PaperWork.app
 cp Source/Applications/Shell/Shell Mount/Applications/Shell/Shell.app
 cp Source/Applications/Shell/Help.txt Mount/Applications/Shell
+
+# Create mount configuration file
+echo "/Volumes/InitRFS:ramfs:0" > Mount/System/Configuration/Mount
+echo "/Volumes/Floppy:block.floppy:0:0" >> Mount/System/Configuration/Mount
 
 # Copy demo apps
 cp Source/Applications/Demos/GOL Mount/Applications/Demos/GOL.app

@@ -37,6 +37,7 @@ void ATADrive::cmdCommon(u32int numblock, u32int count) {
 bool ATADrive::readBlocks(u64int start, u32int count, u8int* data) {
 	if (start + count >= m_blockCount) return false;
 
+	m_ctrlr->waitLock();
 	cmdCommon(start, count);
 	m_ctrlr->writeByte(ATA_PORT_COMMAND, ATA_CMD_READ);
 
@@ -47,6 +48,7 @@ bool ATADrive::readBlocks(u64int start, u32int count, u8int* data) {
 		data[idx * 2] = (u8int)tmpword;
 		data[idx * 2 + 1] = (u8int)(tmpword >> 8);
 	}
+	m_ctrlr->unlock();
 	return true;	
 }
 
@@ -54,6 +56,7 @@ bool ATADrive::writeBlocks(u64int start, u32int count, u8int* data) {
 	if (start + count >= m_blockCount) return false;
 	if (readOnly()) return false;
 
+	m_ctrlr->waitLock();
 	cmdCommon(start, count);
 	m_ctrlr->writeByte(ATA_PORT_COMMAND, ATA_CMD_WRITE);
 
@@ -63,6 +66,7 @@ bool ATADrive::writeBlocks(u64int start, u32int count, u8int* data) {
 		u16int tmpword = (data[idx * 2]) | (data[idx * 2 + 1] << 8); 
 		m_ctrlr->writeByte(ATA_PORT_DATA, tmpword);
 	}
+	m_ctrlr->unlock();
 	return true;	
 }
 

@@ -64,7 +64,7 @@ void KernelShell::part(Vector<String>& args) {
 void KernelShell::mount(Vector<String>& args) {
 	if (args.size() == 1) {
 		for (u32int i = 0; i < VFS::filesystems.size(); i++) {
-			*m_vt << VFS::filesystems[i]->getDevDescription() << " on " << VFS::path(VFS::filesystems[i]->getRootNode()) << "\n";
+			*m_vt << VFS::filesystems[i]->getIdentifier() << "\n"; 
 		}
 	} else if (args.size() == 2) {
 		if (args[1] == "help") {
