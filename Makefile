@@ -52,7 +52,8 @@ mrproper:
 commit: mrproper
 	git add .
 	git commit -a
-	git push origin
+	git push github
+	git push home
 
 $(RamFS):
 	Source/Tools/MakeRamFS/MakeRamFS $(RamFS) $(RamFSFiles)
