@@ -51,7 +51,7 @@ mrproper:
 
 commit: mrproper
 	git add .
-	git commit -a
+	git commit -a; exit 0
 	git push github
 	git push home
 
