@@ -13,6 +13,7 @@ call_t Process::m_callTable[] = {
 	CALL1(PRIF_FREEPAGES, &Process::freePagesSC),
 	CALL0(PRIF_GETPID, &Process::getPid),
 	CALL0(PRIF_GETPPID, &Process::getPpid),
+	CALL0(PRIF_GETUID, &Process::getUid),
 	CALL0(PRIF_ARGC, &Process::argcSC),
 	CALL1(PRIF_ARGV, &Process::argvSC),
 	CALL0(PRIF_START, &Process::startSC),

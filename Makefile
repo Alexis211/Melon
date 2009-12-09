@@ -1,4 +1,4 @@
-.PHONY: clean, mrproper, Init.rfs, commit
+.PHONY: clean, mrproper, Init.rfs, floppy, commit
 
 Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
 

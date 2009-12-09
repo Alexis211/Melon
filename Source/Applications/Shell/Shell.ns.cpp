@@ -1,5 +1,6 @@
 #include "Shell.ns.h"
 #include <Binding/Sys.ns.h>
+#include <Binding/Process.class.h>
 
 namespace Shell {
 
@@ -64,6 +65,8 @@ u32int run() {
 			outvt << "Uptime : " << (s64int)Sys::uptime() << "s\n";
 		} else if (cmd[0] == "free") {
 			outvt << "Free RAM : " << (s64int)Sys::freeRam() << " Kio of " << (s64int)Sys::totalRam() << " Kio\n"; 
+		} else if (cmd[0] == "uid") {
+			outvt << "User ID : " << (s64int)(Process::get().getUid()) << "\n";
 		} else if (cmd[0] == "help") {
 			while (cmd.size() > 1) cmd.pop();
 			cmd.push("/Applications/Shell/Help.txt");
