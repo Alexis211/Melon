@@ -34,16 +34,14 @@ void Heap::create(u32int start, u32int size, u32int idxsize) {
 	m_pagedir = pagedir;
 	m_user = user;
 	m_rw = rw;
-#endif
 	
 	//Allocate frames for heap
-#ifdef THIS_IS_MELON_KERNEL
-	for (u32int i = m_start ; i < m_end; i += 0x1000) {
+	for (u32int i = start ; i < m_end; i += 0x1000) {
 		m_pagedir->allocFrame(i, m_user, m_rw);
 	}
 	m_pagedir->switchTo();
 #else
-	m_process.allocPages(start, (m_end - start) / 0x1000);
+	m_process.allocPages(start, m_end);
 #endif
 
 	m_index.data = (heap_header_t **)start;		//Set index start. start == start of all heap
@@ -73,11 +71,11 @@ void Heap::expand(u32int quantity) {
 	u32int newEnd = m_end + quantity;
 
 #ifdef THIS_IS_MELON_KERNEL
-	for (u32int i = m_start ; i < m_end; i += 0x1000) {
+	for (u32int i = m_end ; i < newEnd; i += 0x1000) {
 		m_pagedir->allocFrame(i, m_user, m_rw);
 	}
 #else
-	m_process.allocPages(m_start, (m_end - m_start) / 0x1000);
+	m_process.allocPages(m_end, newEnd);
 #endif
 
 	heap_footer_t *last_footer = (heap_footer_t*) (m_end - sizeof(heap_footer_t));
@@ -136,7 +134,7 @@ void Heap::contract() {	//Automatically work out how much we can contract
 		m_pagedir->freeFrame(i);
 	}
 #else
-	m_process.freePages(newEnd, (m_end - newEnd) / 0x1000);
+	m_process.freePages(newEnd, m_end);
 #endif
 
 	m_end = newEnd;

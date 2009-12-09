@@ -11,8 +11,8 @@
 #define PRIF_SWAIT 2	//Wait for a process to end (i:return value) | R:process to wait for
 
 #define PRIF_EXIT 0x01	//Exit from current process (v) | no arguments
-#define PRIF_ALLOCPAGES 0x02	//Allocate frames for pages (v) | i:position, i:count
-#define PRIF_FREEPAGES 0x03	//Free frames for pages (v) | i:position, i:count
+#define PRIF_ALLOCPAGES 0x02	//Allocate frames for pages (v) | i:start, i:end
+#define PRIF_FREEPAGES 0x03	//Free frames for pages (v) | i:start, i:end
 #define PRIF_GETPID 0x04	//Get PID of a process (i) | no arguments
 #define PRIF_GETPPID 0x05	//Get PPID of a process (i) | no arguments
 #define PRIF_GETUID 0x06	//Get UID of a process (i) | no arguments

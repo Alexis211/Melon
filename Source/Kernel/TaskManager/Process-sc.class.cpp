@@ -9,8 +9,8 @@
 
 call_t Process::m_callTable[] = {
 	CALL0(PRIF_EXIT, &Process::exitSC),
-	CALL1(PRIF_ALLOCPAGES, &Process::allocPagesSC),
-	CALL1(PRIF_FREEPAGES, &Process::freePagesSC),
+	CALL2(PRIF_ALLOCPAGES, &Process::allocPagesSC),
+	CALL2(PRIF_FREEPAGES, &Process::freePagesSC),
 	CALL0(PRIF_GETPID, &Process::getPid),
 	CALL0(PRIF_GETPPID, &Process::getPpid),
 	CALL0(PRIF_GETUID, &Process::getUid),
@@ -51,12 +51,13 @@ u32int Process::exitSC() {
 	return 0;
 }
 
-u32int Process::allocPagesSC(u32int pos, u32int count) {
+u32int Process::allocPagesSC(u32int pos, u32int end) {
 	if (Task::currProcess() != this) return 1;
 	if ((pos & 0x00000FFF) != 0) pos = (pos & 0xFFFFF000) + 0x1000;
-	if (pos + (count - 1) * 0x1000 >= 0xC0000000) return 1;
-	for (u32int i = 0; i < count; i++)
-		m_pagedir->allocFrame(pos + (i * 0x1000), true, true);
+	if ((end & 0x00000FFF) != 0) end = (end & 0xFFFFF000) + 0x1000;
+	if (end - 1 >= 0xC0000000) return 1;
+	for (u32int i = pos; i < end; i += 0x1000)
+		m_pagedir->allocFrame(i, true, true);
 	return 0;
 }
 
@@ -75,12 +76,13 @@ u32int Process::argvSC(u32int idx) {
 	return (u32int) - 1;
 }
 
-u32int Process::freePagesSC(u32int pos, u32int count) {
+u32int Process::freePagesSC(u32int pos, u32int end) {
 	if (Task::currProcess() != this) return 1;
 	if ((pos & 0x00000FFF) != 0) pos = (pos & 0xFFFFF000) + 0x1000;
-	if (pos + (count - 1) * 0x1000 >= 0xC0000000) return 1;
-	for (u32int i = 0; i < count; i++)
-		m_pagedir->freeFrame(pos + (i * 0x1000));
+	if ((end & 0x00000FFF) != 0) end = (end & 0xFFFFF000) + 0x1000;
+	if (end - 1 >= 0xC0000000) return 1;
+	for (u32int i = pos; i < end; i += 0x1000)
+		m_pagedir->freeFrame(i);
 	return 0;
 }
 

@@ -21,11 +21,11 @@ class Process : public RessourceCaller {
 	void exit() {
 		doCall(PRIF_EXIT);
 	}
-	void allocPages(u32int pos, u32int count) {
-		doCall(PRIF_ALLOCPAGES, pos, count);
+	void allocPages(u32int pos, u32int end) {
+		doCall(PRIF_ALLOCPAGES, pos, end);
 	}
-	void freePages(u32int pos, u32int count) {
-		doCall(PRIF_FREEPAGES, pos, count);
+	void freePages(u32int pos, u32int end) {
+		doCall(PRIF_FREEPAGES, pos, end);
 	}
 	u32int getPid() {
 		return doCall(PRIF_GETPID);
