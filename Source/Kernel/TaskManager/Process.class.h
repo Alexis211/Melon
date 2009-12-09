@@ -57,8 +57,8 @@ class Process : public Ressource {
 	u32int exitSC();
 	u32int argcSC();
 	u32int argvSC(u32int);
-	u32int allocPageSC(u32int);
-	u32int freePageSC(u32int);
+	u32int allocPagesSC(u32int, u32int);
+	u32int freePagesSC(u32int, u32int);
 	u32int startSC();	//Permits parent process to start run of process
 	u32int autoDeleteSC(u32int);	//If true, process will auto-delete when it finishes. Else, it must be deleted by parent, while waiting for it.
 	u32int pushArgSC(u32int);

@@ -2,11 +2,6 @@
 
 #ifdef THIS_IS_MELON_KERNEL
 #include <MemoryManager/PageDirectory.class.h>
-#define ALLOC(x) m_pagedir->allocFrame(x, m_user, m_rw)
-#define FREE(x) m_pagedir->freeFrame(x)
-#else
-#define ALLOC(x) m_process.allocPage(x)
-#define FREE(x) m_process.freePage(x)
 #endif
 
 #ifdef THIS_IS_MELON_KERNEL
@@ -42,11 +37,13 @@ void Heap::create(u32int start, u32int size, u32int idxsize) {
 #endif
 	
 	//Allocate frames for heap
-	for (u32int i = start ; i < m_end; i += 0x1000) {
-		ALLOC(i);
-	}
 #ifdef THIS_IS_MELON_KERNEL
+	for (u32int i = m_start ; i < m_end; i += 0x1000) {
+		m_pagedir->allocFrame(i, m_user, m_rw);
+	}
 	m_pagedir->switchTo();
+#else
+	m_process.allocPages(start, (m_end - start) / 0x1000);
 #endif
 
 	m_index.data = (heap_header_t **)start;		//Set index start. start == start of all heap
@@ -75,9 +72,13 @@ void Heap::expand(u32int quantity) {
 
 	u32int newEnd = m_end + quantity;
 
-	for (u32int i = m_end; i < newEnd; i++) {
-		ALLOC(i);
+#ifdef THIS_IS_MELON_KERNEL
+	for (u32int i = m_start ; i < m_end; i += 0x1000) {
+		m_pagedir->allocFrame(i, m_user, m_rw);
 	}
+#else
+	m_process.allocPages(m_start, (m_end - m_start) / 0x1000);
+#endif
 
 	heap_footer_t *last_footer = (heap_footer_t*) (m_end - sizeof(heap_footer_t));
 	heap_header_t *last_header = last_footer->header;
@@ -130,9 +131,13 @@ void Heap::contract() {	//Automatically work out how much we can contract
 	last_footer->header = last_header;
 	insertIntoIndex(last_header);
 
+#ifdef THIS_IS_MELON_KERNEL
 	for (u32int i = newEnd; i < m_end; i += 0x1000) {
-		FREE(i);
+		m_pagedir->freeFrame(i);
 	}
+#else
+	m_process.freePages(newEnd, (m_end - newEnd) / 0x1000);
+#endif
 
 	m_end = newEnd;
 }
