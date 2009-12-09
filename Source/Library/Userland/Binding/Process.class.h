@@ -33,6 +33,9 @@ class Process : public RessourceCaller {
 	u32int getPpid() {
 		return doCall(PRIF_GETPPID);
 	}
+	u32int getUid() {
+		return doCall(PRIF_GETUID);
+	}
 	u32int argc() {
 		return doCall(PRIF_ARGC);
 	}

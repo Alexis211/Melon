@@ -15,6 +15,7 @@
 #define PRIF_FREEPAGES 0x03	//Free frames for pages (v) | i:position, i:count
 #define PRIF_GETPID 0x04	//Get PID of a process (i) | no arguments
 #define PRIF_GETPPID 0x05	//Get PPID of a process (i) | no arguments
+#define PRIF_GETUID 0x06	//Get UID of a process (i) | no arguments
 
 #define PRIF_ARGC 0x10	//Get argument count for a process (i) | no arguments
 #define PRIF_ARGV 0x11	//Get argument value for a process (S) | i:argument_index

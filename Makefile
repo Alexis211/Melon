@@ -1,4 +1,4 @@
-.PHONY: clean, mrproper, Init.rfs, commit
+.PHONY: clean, mrproper, Init.rfs, floppy, commit
 
 Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
 
@@ -70,7 +70,7 @@ floppy: $(Files)
 bochs:
 	bochs -f Bochs.cfg
 
-qemu:
+qemu: floppy
 	qemu -fda $(Floppy) -m 16
 
 qemu_debug:
