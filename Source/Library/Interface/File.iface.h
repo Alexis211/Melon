@@ -17,17 +17,17 @@ enum {
 
 #define FLIF_OBJTYPE 0x13
 
-#define FLIF_SOPEN 0x01
+#define FLIF_SOPEN 0x01	//Open a file (R:ressource id of opened file) | S:filename, i:mode (FM_*), r:start_node
 
-#define FLIF_CLOSE 0x05
-#define FLIF_VALID 0x06
+#define FLIF_CLOSE 0x05	//Close a file (v) | no arguments
+#define FLIF_VALID 0x06	//True if a file is valid (b) | no arguments
 
-#define FLIF_READ 0x0A
-#define FLIF_WRITE 0x0B
+#define FLIF_READ 0x0A	//Read from a file (i:number of bytes read) | i:length, *:data
+#define FLIF_WRITE 0x0B	//Write to a file (b) | i:length, *:data
 
-#define FLIF_SEEK 0x10
-#define FLIF_POSITION 0x11
-#define FLIF_LENGTH 0x12
-#define FLIF_EOF 0x13
+#define FLIF_SEEK 0x10	//Seek to a position in a file (b) | j:position, J:position, i:mode (SM_*)
+#define FLIF_POSITION 0x11	//Get position in a file (I) | no arguments
+#define FLIF_LENGTH 0x12	//Get length of a file (I) | no arguments
+#define FLIF_EOF 0x13	//Are we at end of file (b) | no arguments
 
 #endif
