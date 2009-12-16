@@ -1,10 +1,18 @@
 #include <Syscall/Syscall.wtf.h>
-#include <String.class.h>
-#include <Binding/VirtualTerminal.class.h>
 #include <Binding/Thread.class.h>
 #include <Binding/File.class.h>
 
-int main(const Vector<String>& args) {
+#include <App/ShellApp.proto.h>
+
+class CPPDemo : public ShellApp {
+	public:
+	CPPDemo() : ShellApp() {}
+	int run();
+};
+
+APP(CPPDemo);
+
+int CPPDemo::run() {
 	outvt << "Enter some text plz : ";
 	String s = invt.readLine();
 	outvt << s;

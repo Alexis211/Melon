@@ -71,6 +71,4 @@ class VirtualTerminal : public RessourceCaller {
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 };
 
-extern VirtualTerminal invt, outvt;
-
 #endif

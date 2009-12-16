@@ -1,9 +1,16 @@
-#include <Binding/Process.class.h>
-#include <String.class.h>
+#include <App/ShellApp.proto.h>
 
 #define DEFAULT_SHELL "/Applications/Shell/Shell.app"
 
-int main(Vector<String> args) {
+class PaperWork : public ShellApp {
+	public:
+	PaperWork() : ShellApp() {}
+	int run();
+};
+
+APP(PaperWork);
+
+int PaperWork::run() {
 	String act = "init";
 	if (args.size() == 2) {
 		if (args[1] == "login") {
