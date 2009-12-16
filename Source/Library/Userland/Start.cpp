@@ -13,13 +13,14 @@ VirtualTerminal invt(0), outvt(0);
 int main(const Vector<String>& args);
 
 extern "C" void start() {
+	heap.create(0x40000000, 0x00040000, 0x00004000);	//Initially create a 256ko heap with 16ko index
+
 	//Call static constructors
 	u32int i = 0;
     for(u32int * call = &start_ctors; call < &end_ctors; call++) {
         ((void (*)(void))*call)();
     }
 
-	heap.create(0x40000000, 0x00040000, 0x00004000);	//Initially create a 256ko heap with 16ko index
 	invt = VirtualTerminal::getIn(); outvt = VirtualTerminal::getOut();
 	if (!invt.valid()) threadFinishedSyscall(1);
 	if (!outvt.valid()) threadFinishedSyscall(2);
