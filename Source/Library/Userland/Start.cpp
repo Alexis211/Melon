@@ -9,8 +9,6 @@ extern u32int start_ctors, end_ctors;
 
 Heap *heap;
 
-VirtualTerminal invt(0), outvt(0);
-
 int main(const Vector<String>& args);
 
 extern "C" void start() {
@@ -24,6 +22,7 @@ extern "C" void start() {
         ((void (*)(void))*call)();
     }
 
+	app->init();
 	app->doEvents();
 	u32int r = app->run();
 	app->doEvents();

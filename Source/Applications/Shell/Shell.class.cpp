@@ -4,7 +4,7 @@
 
 APP(Shell);
 
-Shell::Shell() : ShellApp(), cwd(FS::cwdNode()) {
+Shell::Shell() : ShellApp("Shell.app", "The Melon command line interpreter"), cwd(FS::cwdNode()) {
 }
 
 int Shell::run() {

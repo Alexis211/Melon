@@ -6,7 +6,7 @@
 
 class CPPDemo : public ShellApp {
 	public:
-	CPPDemo() : ShellApp() {}
+	CPPDemo() : ShellApp("CPPDemo.app", "A demo application using the C++ Melon framework") {}
 	int run();
 };
 

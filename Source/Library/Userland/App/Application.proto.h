@@ -12,14 +12,13 @@ extern u32int start_dtors, end_dtors;
 class Application {
 	public:
 	Process pr;
-	Vector<String> args;
 
-	Application() : pr(Process::get()), args(pr.argc()) {
-		for (u32int i = 0; i < args.size(); i++) args[i] = pr.argv(i);
+	Application() : pr(Process::get()) {
 		//TODO : add default signal handlers
 	}
 	virtual ~Application() {}
 
+	virtual void init() {}	//Do anything that can't be done in the constructor
 	virtual int run() = 0; //Application's main loop
 
 	virtual void doEvents() {

@@ -6,7 +6,7 @@
 
 class GOL : public ShellApp {
 	public:
-	GOL() : ShellApp() {}
+	GOL() : ShellApp("GOL.app", "Melon's Game of Life simulator \\o/") {}
 	int run();
 };
 
