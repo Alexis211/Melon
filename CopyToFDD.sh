@@ -29,4 +29,4 @@ cp Source/Applications/Demos/GOL Mount/Applications/Demos/GOL.app
 cp Source/Applications/Demos/asmdemo Mount/Applications/Demos/ASM.dem
 
 #echo "*** Launching a BASH shell, if you want to do any maintenance ***"
-bash || exit 0
+#bash || exit 0

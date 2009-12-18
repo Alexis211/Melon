@@ -66,7 +66,7 @@ int Shell::run() {
 		} else if (cmd[0] == "free") {
 			outvt << "Free RAM : " << (s64int)Sys::freeRam() << " Kio of " << (s64int)Sys::totalRam() << " Kio\n"; 
 		} else if (cmd[0] == "uid") {
-			outvt << "User ID : " << (s64int)(Process::get().getUid()) << "\n";
+			outvt << "User ID : " << (s64int)(pr.getUid()) << "\n";
 		} else if (cmd[0] == "help") {
 			while (cmd.size() > 1) cmd.pop();
 			cmd.push("/Applications/Shell/Help.txt");
