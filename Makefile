@@ -1,6 +1,6 @@
 .PHONY: clean, mrproper, Init.rfs, floppy, commit
 
-Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
+Projects = Kernel Library UnixUserland Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
