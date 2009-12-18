@@ -24,7 +24,7 @@ struct call_t {
 	{UNIX_SC_WRITE, (call)uWrite},
 	{UNIX_SC_OPEN, (call)uOpen},
 	{UNIX_SC_CLOSE, (call)uClose},
-	{UNIX_SC_WAITPID, (call)uWaitpid},
+	{UNIX_SC_WAIT, (call)uWait},
 	{UNIX_SC_LINK, (call)uLink},
 	{UNIX_SC_UNLINK, (call)uUnlink},
 	{UNIX_SC_EXECVE, (call)uExecve},
@@ -125,7 +125,7 @@ int uClose(int file) {						//OK
 	return 0;
 }
 
-int uWaitpid(int *status) {					//TODO
+int uWait(int *status) {					//TODO
 	return -1;
 }
 

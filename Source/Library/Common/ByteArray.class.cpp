@@ -1,8 +1,5 @@
 #include "ByteArray.class.h"
 
-//Define size of a uchar_repr_t
-#define CHARSZ(x) (x.c[0] == 0 ? 0 : (x.c[1] == 0 ? 1 : (x.c[2] == 0 ? 2 : (x.c[3] == 0 ? 3 : 4))))
-
 using namespace CMem;
 
 ByteArray::ByteArray(const char* c) : BasicString<u8int>() {

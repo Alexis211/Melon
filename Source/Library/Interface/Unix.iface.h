@@ -7,7 +7,7 @@
 #define UNIX_SC_WRITE 4
 #define UNIX_SC_OPEN 5
 #define UNIX_SC_CLOSE 6
-#define UNIX_SC_WAITPID 7
+#define UNIX_SC_WAIT 7
 #define UNIX_SC_LINK 9
 #define UNIX_SC_UNLINK 10
 #define UNIX_SC_EXECVE 11

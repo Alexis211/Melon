@@ -15,7 +15,7 @@ extern "C" {
 	int uWrite(int file, char *ptr, int len);
 	int uOpen(const char* name, int flags, int mode);
 	int uClose(int file);
-	int uWaitpid(int *status);
+	int uWait(int *status);
 	int uLink(char *old, char *nnew);
 	int uUnlink(char *name);
 	int uExecve(char *name, char **argv, char **env);
