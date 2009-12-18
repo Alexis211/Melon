@@ -29,4 +29,4 @@ cp Source/Kernel/Melon.ke Mount/System
 cp Init.rfs Mount/System
 
 #echo "*** Launching a BASH shell, if you want to do any maintenance ***"
-bash || exit 0
+#bash || exit 0
