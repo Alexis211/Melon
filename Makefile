@@ -1,5 +1,9 @@
 .PHONY: clean, mrproper, Init.rfs, floppy, commit
 
+CC = i586-elf-gcc
+CXX = i586-elf-g++
+LD = i586-elf-ld
+
 Projects = Kernel Library UnixUserland Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
 
 Kernel = Source/Kernel/Melon.ke

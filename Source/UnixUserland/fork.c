@@ -5,7 +5,8 @@
 extern int errno;
 
 int fork() {
-	errno = EAGAIN;
-	asm volatile("int $63;" : : "a"(UNIX_SC_FORK));
-	return -1;
+	int ret;
+	asm volatile("int $63;" : "=a"(ret) : "a"(UNIX_SC_FORK));
+	if (ret != 0) errno = EAGAIN;
+	return ret;
 }

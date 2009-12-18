@@ -5,7 +5,8 @@
 extern int errno;
 
 int wait(int *status) {
-	errno = ECHILD;
-	asm volatile("int $63;" : : "a"(UNIX_SC_WAITPID), "b"(status));
-	return -1;
+	int ret;
+	asm volatile("int $63;" : "=a"(ret) : "a"(UNIX_SC_WAITPID), "b"(status));
+	if (ret != 0) errno = ECHILD;
+	return ret;
 }

@@ -3,10 +3,8 @@
 ASM = nasm
 ASMFLAGS = -f bin
 
-CXX = g++
 CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
 
-LD = ld
 LDFLAGS = -T ../../Library/App.ld -L ../../Library
 
 Applications = asmdemo cxxdemo GOL

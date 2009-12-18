@@ -13,6 +13,7 @@ namespace Mem {
 }
 
 Process::Process() : Ressource(PRIF_OBJTYPE, m_callTable) {	//Private constructor, does nothing
+	m_unixInfo = 0;
 }
 
 Process* Process::createKernel(String cmdline, VirtualTerminal *vt) {
@@ -59,6 +60,7 @@ Process* Process::run(String filename, u32int uid) {
 }
 
 Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTable), m_arguments() {
+	m_unixInfo = 0;
 	m_pid = Task::nextPid();
 	m_ppid = Task::currProcess()->getPid();
 	m_arguments.push(binfile);
@@ -80,6 +82,7 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 
 Process::~Process() {
 	exit();	//Kill all threads
+	if (m_unixInfo != 0) delete m_unixInfo;
 	delete m_pagedir;
 	delete m_userHeap;
 }

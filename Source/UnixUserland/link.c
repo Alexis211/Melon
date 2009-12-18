@@ -5,7 +5,8 @@
 extern int errno;
 
 int link(char *old, char *new) {
-	errno = EMLINK;
-	asm volatile("int $63;" : : "a"(UNIX_SC_LINK), "b"(old), "c"(new));
-	return -1;
+	int ret;
+	asm volatile("int $63;" : "=a"(ret) : "a"(UNIX_SC_LINK), "b"(old), "c"(new));
+	if (ret != 0) errno = EMLINK;
+	return ret;
 }

@@ -1,13 +1,11 @@
 .PHONY: clean, mrproper
 
-CXX = g++
 CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I Common -I Userland -I Interface -D THIS_IS_MELON_USERLAND -D RANDOM_SEED=1`date +%N`LL
 
 ASM = nasm
 ASMFLAGS = -f elf
 
 LDFLAGS = -r
-LD = ld
 
 Library = Melon.o
 Objects = Common/WChar.class.uo \

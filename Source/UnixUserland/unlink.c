@@ -5,7 +5,8 @@
 extern int errno;
 
 int unlink(char *name) {
-	errno = ENOENT;
-	asm volatile("int $63;" : : "a"(UNIX_SC_UNLINK), "b"(name));
-	return -1;
+	int ret;
+	asm volatile("int $63;" : "=a"(ret) : "a"(UNIX_SC_UNLINK), "b"(name));
+	if (ret != 0) errno = ENOENT;
+	return ret;
 }

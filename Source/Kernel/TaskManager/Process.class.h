@@ -11,6 +11,7 @@
 class DirectoryNode;
 
 #include <SyscallManager/Ressource.class.h>
+#include <SyscallManager/Unix/UnixInfo.class.h>
 
 #define P_ZOMBIE 0
 #define P_RUNNING 1
@@ -51,6 +52,8 @@ class Process : public Ressource {
 
 	Vector<Thread*> m_threads;
 	SimpleList<File*> *m_fileDescriptors;
+
+	UnixInfo *m_unixInfo;
 
 	//System calls
 	static call_t m_callTable[];
@@ -100,6 +103,13 @@ class Process : public Ressource {
 	void setInVT(VirtualTerminal* vt);
 	void setOutVT(VirtualTerminal* vt);
 	u32int getState() { return m_state; }
+
+	UnixInfo* getUnixInfo() {
+		if (m_unixInfo == 0) {
+			m_unixInfo = new UnixInfo(m_pid, m_inVT, m_outVT);
+		}
+		return m_unixInfo;
+	}
 };
 
 #endif

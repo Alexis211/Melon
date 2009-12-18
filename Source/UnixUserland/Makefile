@@ -1,9 +1,7 @@
 .PHONY: clean, mrproper
 
-CC = gcc
-CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -I../../Ports/newlib-1.15.0/newlib/libc/include -I ../Library/Interface
+CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -I../../Unix/i586-elf/include -I ../Library/Interface
 
-LD = ld
 LDFLAGS = -r
 
 OutFile = MelonUnix.o

@@ -19,7 +19,7 @@ extern "C" {
 	int uLink(char *old, char *nnew);
 	int uUnlink(char *name);
 	int uExecve(char *name, char **argv, char **env);
-	int uStat();
+	int uStat(const char *file);
 	int uLseek(int file, int ptr, int dir);
 	int uGetpid();
 	int uFstat(int file);

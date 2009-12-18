@@ -5,7 +5,8 @@
 extern int errno;
 
 int kill(int pid, int sig) {
-	errno = EINVAL;
-	asm volatile("int $63;" : : "a"(UNIX_SC_KILL), "b"(pid), "c"(sig));
-	return -1;
+	int ret;
+	asm volatile("int $63;" : "=a"(ret) : "a"(UNIX_SC_KILL), "b"(pid), "c"(sig));
+	if (ret != 0) errno = EINVAL;
+	return ret;
 }

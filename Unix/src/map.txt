@@ -1,0 +1,540 @@
+Archive member included because of file (symbol)
+
+../i586-elf/lib/libc.a(lib_a-printf.o)
+                              test.o (printf)
+../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+                              ../i586-elf/lib/libc.a(lib_a-printf.o) (_vfprintf_r)
+../i586-elf/lib/libc.a(lib_a-wcrtomb.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (_wcrtomb_r)
+../i586-elf/lib/libc.a(lib_a-wcsrtombs.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (_wcsrtombs_r)
+../i586-elf/lib/libc.a(lib_a-wctomb_r.o)
+                              ../i586-elf/lib/libc.a(lib_a-wcrtomb.o) (_wctomb_r)
+../i586-elf/lib/libc.a(lib_a-wsetup.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (__swsetup)
+../i586-elf/lib/libc.a(lib_a-dtoa.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (_dtoa_r)
+../i586-elf/lib/libc.a(lib_a-fflush.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (fflush)
+../i586-elf/lib/libc.a(lib_a-findfp.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (__sinit)
+../i586-elf/lib/libc.a(lib_a-freer.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (_free_r)
+../i586-elf/lib/libc.a(lib_a-fvwrite.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (__sfvwrite_r)
+../i586-elf/lib/libc.a(lib_a-fwalk.o)
+                              ../i586-elf/lib/libc.a(lib_a-fflush.o) (_fwalk)
+../i586-elf/lib/libc.a(lib_a-impure.o)
+                              ../i586-elf/lib/libc.a(lib_a-printf.o) (_impure_ptr)
+../i586-elf/lib/libc.a(lib_a-locale.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (localeconv)
+../i586-elf/lib/libc.a(lib_a-makebuf.o)
+                              ../i586-elf/lib/libc.a(lib_a-wsetup.o) (__smakebuf)
+../i586-elf/lib/libc.a(lib_a-mallocr.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (_malloc_r)
+../i586-elf/lib/libc.a(lib_a-memchr.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (memchr)
+../i586-elf/lib/libc.a(lib_a-memcpy.o)
+                              ../i586-elf/lib/libc.a(lib_a-dtoa.o) (memcpy)
+../i586-elf/lib/libc.a(lib_a-memmove.o)
+                              ../i586-elf/lib/libc.a(lib_a-fvwrite.o) (memmove)
+../i586-elf/lib/libc.a(lib_a-memset.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (memset)
+../i586-elf/lib/libc.a(lib_a-mlock.o)
+                              ../i586-elf/lib/libc.a(lib_a-freer.o) (__malloc_lock)
+../i586-elf/lib/libc.a(lib_a-mprec.o)
+                              ../i586-elf/lib/libc.a(lib_a-dtoa.o) (_Bfree)
+../i586-elf/lib/libc.a(lib_a-reallocr.o)
+                              ../i586-elf/lib/libc.a(lib_a-fvwrite.o) (_realloc_r)
+../i586-elf/lib/libc.a(lib_a-s_isinfd.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (__isinfd)
+../i586-elf/lib/libc.a(lib_a-s_isnand.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (__isnand)
+../i586-elf/lib/libc.a(lib_a-sbrkr.o)
+                              ../i586-elf/lib/libc.a(lib_a-freer.o) (_sbrk_r)
+../i586-elf/lib/libc.a(lib_a-stdio.o)
+                              ../i586-elf/lib/libc.a(lib_a-findfp.o) (__sclose)
+../i586-elf/lib/libc.a(lib_a-strcmp.o)
+                              ../i586-elf/lib/libc.a(lib_a-wctomb_r.o) (strcmp)
+../i586-elf/lib/libc.a(lib_a-strlen.o)
+                              ../i586-elf/lib/libc.a(lib_a-vfprintf.o) (strlen)
+../i586-elf/lib/libc.a(lib_a-writer.o)
+                              ../i586-elf/lib/libc.a(lib_a-stdio.o) (_write_r)
+../i586-elf/lib/libc.a(lib_a-callocr.o)
+                              ../i586-elf/lib/libc.a(lib_a-mprec.o) (_calloc_r)
+../i586-elf/lib/libc.a(lib_a-closer.o)
+                              ../i586-elf/lib/libc.a(lib_a-stdio.o) (_close_r)
+../i586-elf/lib/libc.a(lib_a-fclose.o)
+                              ../i586-elf/lib/libc.a(lib_a-findfp.o) (fclose)
+../i586-elf/lib/libc.a(lib_a-fstatr.o)
+                              ../i586-elf/lib/libc.a(lib_a-makebuf.o) (_fstat_r)
+../i586-elf/lib/libc.a(lib_a-lseekr.o)
+                              ../i586-elf/lib/libc.a(lib_a-stdio.o) (_lseek_r)
+../i586-elf/lib/libc.a(lib_a-readr.o)
+                              ../i586-elf/lib/libc.a(lib_a-stdio.o) (_read_r)
+../i586-elf/lib/libc.a(lib_a-reent.o)
+                              ../i586-elf/lib/libc.a(lib_a-sbrkr.o) (errno)
+
+Allocating common symbols
+Common symbol       size              file
+
+errno               0x4               ../i586-elf/lib/libc.a(lib_a-reent.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD test.o
+LOAD ../i586-elf/lib/libc.a
+LOAD ../../Source/UnixUserland/MelonUnix.o
+                0x10000000                . = 0x10000000
+
+.text           0x10000000     0x74cf
+ *(.text)
+ .text          0x10000000       0x33 test.o
+                0x10000000                main
+ *fill*         0x10000033        0xd 00
+ .text          0x10000040       0x3d ../i586-elf/lib/libc.a(lib_a-printf.o)
+                0x10000040                printf
+                0x10000060                _printf_r
+ *fill*         0x1000007d        0x3 00
+ .text          0x10000080     0x219f ../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+                0x100000d0                _vfprintf_r
+                0x10002200                vfprintf
+ *fill*         0x1000221f        0x1 00
+ .text          0x10002220       0x80 ../i586-elf/lib/libc.a(lib_a-wcrtomb.o)
+                0x10002220                _wcrtomb_r
+                0x10002280                wcrtomb
+ .text          0x100022a0      0x173 ../i586-elf/lib/libc.a(lib_a-wcsrtombs.o)
+                0x100022a0                _wcsrtombs_r
+                0x100023f0                wcsrtombs
+ *fill*         0x10002413        0xd 00
+ .text          0x10002420      0x3c0 ../i586-elf/lib/libc.a(lib_a-wctomb_r.o)
+                0x10002420                _wctomb_r
+ .text          0x100027e0      0x10b ../i586-elf/lib/libc.a(lib_a-wsetup.o)
+                0x100027e0                __swsetup
+ *fill*         0x100028eb        0x5 00
+ .text          0x100028f0     0x140d ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+                0x10002ad0                _dtoa_r
+ *fill*         0x10003cfd        0x3 00
+ .text          0x10003d00      0x179 ../i586-elf/lib/libc.a(lib_a-fflush.o)
+                0x10003d00                fflush
+ *fill*         0x10003e79        0x7 00
+ .text          0x10003e80      0x369 ../i586-elf/lib/libc.a(lib_a-findfp.o)
+                0x10003e80                __sinit
+                0x10003fd0                __sfp_lock_acquire
+                0x10003fe0                __sfp_lock_release
+                0x10003ff0                __sinit_lock_acquire
+                0x10004000                __sinit_lock_release
+                0x10004030                __fp_unlock_all
+                0x10004050                __fp_lock_all
+                0x10004070                _cleanup_r
+                0x10004090                _cleanup
+                0x100040b0                __sfmoreglue
+                0x10004110                __sfp
+ *fill*         0x100041e9        0x7 00
+ .text          0x100041f0      0x3b0 ../i586-elf/lib/libc.a(lib_a-freer.o)
+                0x100041f0                _malloc_trim_r
+                0x100042f0                _free_r
+ .text          0x100045a0      0x4b1 ../i586-elf/lib/libc.a(lib_a-fvwrite.o)
+                0x100045a0                __sfvwrite_r
+ *fill*         0x10004a51        0xf 00
+ .text          0x10004a60       0xf9 ../i586-elf/lib/libc.a(lib_a-fwalk.o)
+                0x10004a60                _fwalk_reent
+                0x10004ae0                _fwalk
+ *fill*         0x10004b59        0x3 00
+ .text          0x10004b5c        0x0 ../i586-elf/lib/libc.a(lib_a-impure.o)
+ *fill*         0x10004b5c        0x4 00
+ .text          0x10004b60       0xac ../i586-elf/lib/libc.a(lib_a-locale.o)
+                0x10004b60                __locale_charset
+                0x10004b70                _localeconv_r
+                0x10004b80                localeconv
+                0x10004b90                _setlocale_r
+                0x10004bf0                setlocale
+ *fill*         0x10004c0c        0x4 00
+ .text          0x10004c10      0x154 ../i586-elf/lib/libc.a(lib_a-makebuf.o)
+                0x10004c10                __smakebuf
+ *fill*         0x10004d64        0xc 00
+ .text          0x10004d70      0x7ef ../i586-elf/lib/libc.a(lib_a-mallocr.o)
+                0x10004d70                _malloc_r
+ *fill*         0x1000555f        0x1 00
+ .text          0x10005560       0x25 ../i586-elf/lib/libc.a(lib_a-memchr.o)
+                0x10005560                memchr
+ *fill*         0x10005585        0x3 00
+ .text          0x10005588       0x48 ../i586-elf/lib/libc.a(lib_a-memcpy.o)
+                0x10005588                memcpy
+ .text          0x100055d0       0x8d ../i586-elf/lib/libc.a(lib_a-memmove.o)
+                0x100055d0                memmove
+ *fill*         0x1000565d        0x3 00
+ .text          0x10005660       0x47 ../i586-elf/lib/libc.a(lib_a-memset.o)
+                0x10005660                memset
+ *fill*         0x100056a7        0x9 00
+ .text          0x100056b0       0x15 ../i586-elf/lib/libc.a(lib_a-mlock.o)
+                0x100056b0                __malloc_lock
+                0x100056c0                __malloc_unlock
+ *fill*         0x100056c5        0xb 00
+ .text          0x100056d0      0xe8a ../i586-elf/lib/libc.a(lib_a-mprec.o)
+                0x100056d0                _Bfree
+                0x100056f0                __hi0bits
+                0x10005750                __lo0bits
+                0x100057f0                __mcmp
+                0x10005850                __ulp
+                0x100058e0                __b2d
+                0x100059d0                __ratio
+                0x10005a60                _mprec_log10
+                0x10005aa0                __copybits
+                0x10005b20                __any_on
+                0x10005ba0                _Balloc
+                0x10005c20                __d2b
+                0x10005d60                __mdiff
+                0x10005f30                __lshift
+                0x10006040                __multiply
+                0x10006240                __i2b
+                0x10006260                __multadd
+                0x10006340                __pow5mult
+                0x10006460                __s2b
+ *fill*         0x1000655a        0x6 00
+ .text          0x10006560      0x54b ../i586-elf/lib/libc.a(lib_a-reallocr.o)
+                0x10006560                _realloc_r
+ *fill*         0x10006aab        0x5 00
+ .text          0x10006ab0       0x31 ../i586-elf/lib/libc.a(lib_a-s_isinfd.o)
+                0x10006ab0                __isinfd
+ *fill*         0x10006ae1        0xf 00
+ .text          0x10006af0       0x29 ../i586-elf/lib/libc.a(lib_a-s_isnand.o)
+                0x10006af0                __isnand
+ *fill*         0x10006b19        0x7 00
+ .text          0x10006b20       0x41 ../i586-elf/lib/libc.a(lib_a-sbrkr.o)
+                0x10006b20                _sbrk_r
+ *fill*         0x10006b61        0xf 00
+ .text          0x10006b70      0x11b ../i586-elf/lib/libc.a(lib_a-stdio.o)
+                0x10006b70                __sclose
+                0x10006b90                __sseek
+                0x10006be0                __swrite
+                0x10006c40                __sread
+ *fill*         0x10006c8b        0x5 00
+ .text          0x10006c90       0x64 ../i586-elf/lib/libc.a(lib_a-strcmp.o)
+                0x10006c90                strcmp
+ .text          0x10006cf4       0x1e ../i586-elf/lib/libc.a(lib_a-strlen.o)
+                0x10006cf4                strlen
+ *fill*         0x10006d12        0xe 00
+ .text          0x10006d20       0x41 ../i586-elf/lib/libc.a(lib_a-writer.o)
+                0x10006d20                _write_r
+ *fill*         0x10006d61        0xf 00
+ .text          0x10006d70       0xa4 ../i586-elf/lib/libc.a(lib_a-callocr.o)
+                0x10006d70                _calloc_r
+ *fill*         0x10006e14        0xc 00
+ .text          0x10006e20       0x41 ../i586-elf/lib/libc.a(lib_a-closer.o)
+                0x10006e20                _close_r
+ *fill*         0x10006e61        0xf 00
+ .text          0x10006e70      0x157 ../i586-elf/lib/libc.a(lib_a-fclose.o)
+                0x10006e70                _fclose_r
+                0x10006fb0                fclose
+ *fill*         0x10006fc7        0x9 00
+ .text          0x10006fd0       0x41 ../i586-elf/lib/libc.a(lib_a-fstatr.o)
+                0x10006fd0                _fstat_r
+ *fill*         0x10007011        0xf 00
+ .text          0x10007020       0x41 ../i586-elf/lib/libc.a(lib_a-lseekr.o)
+                0x10007020                _lseek_r
+ *fill*         0x10007061        0xf 00
+ .text          0x10007070       0x41 ../i586-elf/lib/libc.a(lib_a-readr.o)
+                0x10007070                _read_r
+ *fill*         0x100070b1        0xf 00
+ .text          0x100070c0      0x19e ../i586-elf/lib/libc.a(lib_a-reent.o)
+                0x100070c0                _wrapup_reent
+                0x10007130                cleanup_glue
+                0x10007160                _reclaim_reent
+ *fill*         0x1000725e        0x2 00
+ .text          0x10007260      0x26f ../../Source/UnixUserland/MelonUnix.o
+                0x10007260                _exit
+                0x10007274                _start
+                0x10007284                close
+                0x100072a4                execve
+                0x100072cc                fork
+                0x100072e8                fstat
+                0x1000730c                getpid
+                0x10007324                isatty
+                0x10007330                kill
+                0x10007358                link
+                0x10007380                lseek
+                0x1000739c                open
+                0x100073c0                read
+                0x100073e4                sbrk
+                0x10007434                stat
+                0x10007458                times
+                0x10007464                unlink
+                0x10007488                wait
+                0x100074ac                write
+
+.iplt           0x100074d0        0x0 load address 0x100074cf
+ .iplt          0x00000000        0x0 test.o
+
+.rodata         0x10008000      0x334
+ *(.rodata)
+ .rodata        0x10008000       0x10 test.o
+ .rodata        0x10008010      0x18c ../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+ .rodata        0x1000819c        0x4 ../i586-elf/lib/libc.a(lib_a-impure.o)
+                0x1000819c                _global_impure_ptr
+ .rodata        0x100081a0       0x34 ../i586-elf/lib/libc.a(lib_a-locale.o)
+ *fill*         0x100081d4        0xc 00
+ .rodata        0x100081e0      0x154 ../i586-elf/lib/libc.a(lib_a-mprec.o)
+                0x100081e0                __mprec_tens
+                0x100082c0                __mprec_bigtens
+                0x10008300                __mprec_tinytens
+
+.rodata.str1.1  0x10008334       0x74
+ .rodata.str1.1
+                0x10008334       0x3d ../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+ .rodata.str1.1
+                0x10008371       0x1d ../i586-elf/lib/libc.a(lib_a-wctomb_r.o)
+ .rodata.str1.1
+                0x1000838e        0xd ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+                                  0xf (size before relaxing)
+ .rodata.str1.1
+                0x1000839b        0x2 ../i586-elf/lib/libc.a(lib_a-impure.o)
+ .rodata.str1.1
+                0x1000839d        0xb ../i586-elf/lib/libc.a(lib_a-locale.o)
+                                 0x10 (size before relaxing)
+
+.rodata.cst4    0x100083a8       0x18
+ .rodata.cst4   0x100083a8       0x18 ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+ .rodata.cst4   0x00000000        0x4 ../i586-elf/lib/libc.a(lib_a-mprec.o)
+
+.rodata.cst8    0x100083c0       0x18
+ .rodata.cst8   0x100083c0       0x18 ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+
+.rel.dyn        0x100083d8        0x0
+ .rel.iplt      0x00000000        0x0 test.o
+ .rel.text      0x00000000        0x0 test.o
+
+.data           0x10009000      0x854
+                0x10009000                start_ctors = .
+ *(.ctor*)
+                0x10009000                end_ctors = .
+                0x10009000                start_dtors = .
+ *(.dtor*)
+                0x10009000                end_dtors = .
+ *(.data)
+ .data          0x10009000        0x0 test.o
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-printf.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-wcrtomb.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-wcsrtombs.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-wctomb_r.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-wsetup.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-fflush.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-findfp.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-freer.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-fvwrite.o)
+ .data          0x10009000        0x0 ../i586-elf/lib/libc.a(lib_a-fwalk.o)
+ .data          0x10009000      0x420 ../i586-elf/lib/libc.a(lib_a-impure.o)
+                0x10009000                _impure_ptr
+ .data          0x10009420       0x10 ../i586-elf/lib/libc.a(lib_a-locale.o)
+                0x10009420                __mb_cur_max
+                0x10009424                __lc_ctype
+ .data          0x10009430        0x0 ../i586-elf/lib/libc.a(lib_a-makebuf.o)
+ *fill*         0x10009430       0x10 00
+ .data          0x10009440      0x410 ../i586-elf/lib/libc.a(lib_a-mallocr.o)
+                0x10009440                __malloc_av_
+                0x10009848                __malloc_trim_threshold
+                0x1000984c                __malloc_sbrk_base
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-memchr.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-memcpy.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-memmove.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-memset.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-mlock.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-mprec.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-reallocr.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-s_isinfd.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-s_isnand.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-sbrkr.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-stdio.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-strcmp.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-strlen.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-writer.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-callocr.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-closer.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-fclose.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-fstatr.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-lseekr.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-readr.o)
+ .data          0x10009850        0x0 ../i586-elf/lib/libc.a(lib_a-reent.o)
+ .data          0x10009850        0x4 ../../Source/UnixUserland/MelonUnix.o
+                0x10009850                environ
+
+.igot.plt       0x10009854        0x0
+ .igot.plt      0x00000000        0x0 test.o
+
+.bss            0x10009860       0x70
+                0x10009860                sbss = .
+ *(COMMON)
+ COMMON         0x10009860        0x4 ../i586-elf/lib/libc.a(lib_a-reent.o)
+                0x10009860                errno
+ *(.bss)
+ .bss           0x10009864        0x0 test.o
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-printf.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-wcrtomb.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-wcsrtombs.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-wctomb_r.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-wsetup.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-fflush.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-findfp.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-freer.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-fvwrite.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-fwalk.o)
+ .bss           0x10009864        0x0 ../i586-elf/lib/libc.a(lib_a-impure.o)
+ .bss           0x10009864        0xc ../i586-elf/lib/libc.a(lib_a-locale.o)
+                0x10009864                __nlocale_changed
+                0x10009868                __mlocale_changed
+                0x1000986c                _PathLocale
+ .bss           0x10009870        0x0 ../i586-elf/lib/libc.a(lib_a-makebuf.o)
+ *fill*         0x10009870       0x10 00
+ .bss           0x10009880       0x48 ../i586-elf/lib/libc.a(lib_a-mallocr.o)
+                0x10009880                __malloc_top_pad
+                0x10009884                __malloc_max_sbrked_mem
+                0x10009888                __malloc_max_total_mem
+                0x100098a0                __malloc_current_mallinfo
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-memchr.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-memcpy.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-memmove.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-memset.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-mlock.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-mprec.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-reallocr.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-s_isinfd.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-s_isnand.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-sbrkr.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-stdio.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-strcmp.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-strlen.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-writer.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-callocr.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-closer.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-fclose.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-fstatr.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-lseekr.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-readr.o)
+ .bss           0x100098c8        0x0 ../i586-elf/lib/libc.a(lib_a-reent.o)
+ .bss           0x100098c8        0x8 ../../Source/UnixUserland/MelonUnix.o
+                0x100098c8                _env
+                0x100098d0                ebss = .
+                0x100098d0                end = .
+                0x100098d0                _end = .
+                0x100098d0                __end = .
+OUTPUT(test elf32-i386)
+
+.comment        0x00000000       0x38
+ .comment       0x00000000       0x11 test.o
+                                 0x12 (size before relaxing)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-printf.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-wcrtomb.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-wcsrtombs.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-wctomb_r.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-wsetup.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-fflush.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-findfp.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-freer.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-fvwrite.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-fwalk.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-impure.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-locale.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-makebuf.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-mallocr.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-mlock.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-mprec.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-reallocr.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-s_isinfd.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-s_isnand.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-sbrkr.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-stdio.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-strcmp.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-writer.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-callocr.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-closer.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-fclose.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-fstatr.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-lseekr.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-readr.o)
+ .comment       0x00000000       0x12 ../i586-elf/lib/libc.a(lib_a-reent.o)
+ .comment       0x00000011       0x27 ../../Source/UnixUserland/MelonUnix.o
+                                0x320 (size before relaxing)
+
+.note.GNU-stack
+                0x00000000        0x0
+ .note.GNU-stack
+                0x00000000        0x0 ../../Source/UnixUserland/MelonUnix.o
+
+.stab           0x00000000     0xf42c
+ .stab          0x00000000      0x774 ../i586-elf/lib/libc.a(lib_a-printf.o)
+ .stab          0x00000774     0x2298 ../i586-elf/lib/libc.a(lib_a-vfprintf.o)
+                               0x26d0 (size before relaxing)
+ .stab          0x00002a0c      0x354 ../i586-elf/lib/libc.a(lib_a-wcrtomb.o)
+                                0x7a4 (size before relaxing)
+ .stab          0x00002d60      0x600 ../i586-elf/lib/libc.a(lib_a-wcsrtombs.o)
+                                0xa50 (size before relaxing)
+ .stab          0x00003360      0x774 ../i586-elf/lib/libc.a(lib_a-wctomb_r.o)
+                                0x90c (size before relaxing)
+ .stab          0x00003ad4      0x39c ../i586-elf/lib/libc.a(lib_a-wsetup.o)
+                                0x798 (size before relaxing)
+ .stab          0x00003e70     0x1b9c ../i586-elf/lib/libc.a(lib_a-dtoa.o)
+                               0x1fc8 (size before relaxing)
+ .stab          0x00005a0c      0x5b8 ../i586-elf/lib/libc.a(lib_a-fflush.o)
+                                0x9f0 (size before relaxing)
+ .stab          0x00005fc4      0xb7c ../i586-elf/lib/libc.a(lib_a-findfp.o)
+                                0xfd8 (size before relaxing)
+ .stab          0x00006b40      0x7ec ../i586-elf/lib/libc.a(lib_a-freer.o)
+                                0xbac (size before relaxing)
+ .stab          0x0000732c      0x8e8 ../i586-elf/lib/libc.a(lib_a-fvwrite.o)
+                                0xd38 (size before relaxing)
+ .stab          0x00007c14      0x408 ../i586-elf/lib/libc.a(lib_a-fwalk.o)
+                                0x864 (size before relaxing)
+ .stab          0x0000801c      0x180 ../i586-elf/lib/libc.a(lib_a-impure.o)
+                                0x318 (size before relaxing)
+ .stab          0x0000819c      0x534 ../i586-elf/lib/libc.a(lib_a-locale.o)
+                                0x63c (size before relaxing)
+ .stab          0x000086d0      0x414 ../i586-elf/lib/libc.a(lib_a-makebuf.o)
+                                0x8ac (size before relaxing)
+ .stab          0x00008ae4      0xcfc ../i586-elf/lib/libc.a(lib_a-mallocr.o)
+                               0x10ec (size before relaxing)
+ .stab          0x000097e0      0x210 ../i586-elf/lib/libc.a(lib_a-mlock.o)
+                                0x360 (size before relaxing)
+ .stab          0x000099f0     0x27e4 ../i586-elf/lib/libc.a(lib_a-mprec.o)
+                               0x2cc4 (size before relaxing)
+ .stab          0x0000c1d4      0x9fc ../i586-elf/lib/libc.a(lib_a-reallocr.o)
+                                0xdec (size before relaxing)
+ .stab          0x0000cbd0      0x2d0 ../i586-elf/lib/libc.a(lib_a-s_isinfd.o)
+                                0x6cc (size before relaxing)
+ .stab          0x0000cea0      0x2a0 ../i586-elf/lib/libc.a(lib_a-s_isnand.o)
+                                0x6c0 (size before relaxing)
+ .stab          0x0000d140      0x27c ../i586-elf/lib/libc.a(lib_a-sbrkr.o)
+                                0x630 (size before relaxing)
+ .stab          0x0000d3bc      0x534 ../i586-elf/lib/libc.a(lib_a-stdio.o)
+                                0xa08 (size before relaxing)
+ .stab          0x0000d8f0      0x294 ../i586-elf/lib/libc.a(lib_a-strcmp.o)
+                                0x3f0 (size before relaxing)
+ .stab          0x0000db84      0x27c ../i586-elf/lib/libc.a(lib_a-writer.o)
+                                0x648 (size before relaxing)
+ .stab          0x0000de00      0x360 ../i586-elf/lib/libc.a(lib_a-callocr.o)
+                                0x750 (size before relaxing)
+ .stab          0x0000e160      0x264 ../i586-elf/lib/libc.a(lib_a-closer.o)
+                                0x630 (size before relaxing)
+ .stab          0x0000e3c4      0x3b4 ../i586-elf/lib/libc.a(lib_a-fclose.o)
+                                0x7f8 (size before relaxing)
+ .stab          0x0000e778      0x288 ../i586-elf/lib/libc.a(lib_a-fstatr.o)
+                                0x6b4 (size before relaxing)
+ .stab          0x0000ea00      0x27c ../i586-elf/lib/libc.a(lib_a-lseekr.o)
+                                0x648 (size before relaxing)
+ .stab          0x0000ec7c      0x27c ../i586-elf/lib/libc.a(lib_a-readr.o)
+                                0x648 (size before relaxing)
+ .stab          0x0000eef8      0x534 ../i586-elf/lib/libc.a(lib_a-reent.o)
+                                0x714 (size before relaxing)
+
+.stabstr        0x00000000     0x6545
+ .stabstr       0x00000000     0x6545 ../i586-elf/lib/libc.a(lib_a-printf.o)
