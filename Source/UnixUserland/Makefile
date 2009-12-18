@@ -1,7 +1,7 @@
 .PHONY: clean, mrproper
 
 CC = gcc
-CCFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I../../Ports/newlib-1.15.0/newlib/libc/include
+CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -I../../Ports/newlib-1.15.0/newlib/libc/include -I ../Library/Interface
 
 LD = ld
 LDFLAGS = -r

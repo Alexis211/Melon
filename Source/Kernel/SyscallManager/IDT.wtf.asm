@@ -97,6 +97,7 @@ IRQ	13,	45
 IRQ	14,	46
 IRQ	15,	47
 
+SYSCALL 63	; this syscall is the one for handling unix type calls.
 SYSCALL 64  ; this syscall is the one and only useful syscall. It does everything.
 ; The next syscalls are task-managing-specific
 SYSCALL 65	; this syscall requests a task switch

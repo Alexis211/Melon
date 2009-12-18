@@ -71,6 +71,7 @@ Objects = Core/loader.wtf.o \
 		SyscallManager/Ressource.class.o \
 		SyscallManager/Res.ns.o \
 		SyscallManager/IDT.wtf.o \
+		SyscallManager/Unix/Unix.ns.o \
 		Devices/Display/VGATextOutput.class.o \
 		Devices/Display/GraphicDisplay.proto.o \
 		Devices/Display/VESADisplay.class.o \

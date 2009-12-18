@@ -3,6 +3,7 @@
 #include <DeviceManager/Dev.ns.h>
 #include <TaskManager/Task.ns.h>
 #include <SyscallManager/Res.ns.h>
+#include <SyscallManager/Unix/Unix.ns.h>
 
 using namespace Sys; 	//For outb
 
@@ -56,6 +57,7 @@ extern "C" void irq13();
 extern "C" void irq14();
 extern "C" void irq15();
 
+extern "C" void int63();		//Handler for unix-related syscalls
 extern "C" void int64();		//Main syscall
 extern "C" void int65();		//Syscall to request a task switch
 extern "C" void int66();		//Syscall to signal that thread ended
@@ -76,6 +78,12 @@ extern "C" void interrupt_handler(registers_t regs) {
 		Dev::handleIRQ(regs, (regs.int_no - 32));
 		asm volatile("cli");
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
+	}
+	if (regs.int_no == 63) {
+		asm volatile("sti");
+		regs.eax = Unix::handleCall(regs);
+		Task::currProcess()->getPagedir()->switchTo();
+		asm volatile("cli");
 	}
 	if (regs.int_no == 64) {
 		asm volatile("sti");	//Make syscalls preemtible
@@ -184,6 +192,7 @@ void init() {
 	setGate(46, (u32int)irq14, 0x08, 0x8E);
 	setGate(47, (u32int)irq15, 0x08, 0x8E);
 
+	setGate(63, (u32int)int63, 0x08, 0x8E);
 	setGate(64, (u32int)int64, 0x08, 0x8E);
 	setGate(65, (u32int)int65, 0x08, 0x8E);
 	setGate(66, (u32int)int66, 0x08, 0x8E);

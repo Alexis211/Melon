@@ -13,6 +13,7 @@ class ByteArray : public BasicString<u8int> {
 			m_string[i] = bs[i];
 	}
 	ByteArray(const ByteArray& other) : BasicString<u8int>(other) {}
+	ByteArray(const char* c, u32int len) : BasicString<u8int>((u8int*)c, len) {}
 	ByteArray(const char* c);
 	ByteArray(u32int size) : BasicString<u8int>((u8int)0, size) {}
 	ByteArray(const String &string, u8int encoding = UE_UTF8) : BasicString<u8int>() { affect(string, encoding); }

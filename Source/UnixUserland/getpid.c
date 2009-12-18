@@ -1,3 +1,7 @@
+#include <Unix.iface.h>
+
 int getpid() {
-	return 1;
+	int ret;
+	asm volatile("int $63;" : "=a"(ret) : "a"(UNIX_SC_GETPID));
+	return ret;
 }

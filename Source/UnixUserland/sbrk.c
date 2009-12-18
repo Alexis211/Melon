@@ -1,3 +1,5 @@
+#include <Unix.iface.h>
+
 #include  <sys/types.h>
 
 caddr_t sbrk(int incr) {
@@ -9,8 +11,10 @@ caddr_t sbrk(int incr) {
 		heap_end = &end;
 	}
 	prev_heap_end = heap_end;
-
 	heap_end += incr;
+
+	asm volatile("int $63;" : : "a"(UNIX_SC_SBRK), "b"(prev_heap_end), "c"(heap_end));
+
 	return (caddr_t) prev_heap_end;
 
 }
