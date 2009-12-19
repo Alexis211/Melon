@@ -245,7 +245,24 @@ void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 		fgcolor = color & 0xF;
 		bgcolor = (color >> 4) & 0xF;
 	}
-		
+
+	if (c == WChar(" ")) {
+		u8int* p = memPos(sx, sy);
+		for (int y = 0; y < C_FONT_HEIGHT; y++) {
+			if (m_pixWidth == 1) memset(p, bgcolor, 9);
+			if (m_pixWidth == 2) memsetw((u16int*)p, bgcolor, 9);
+			if (m_pixWidth == 3) {
+				for (int i = 0; i < 9; i++) {
+					p[0] = (bgcolor >> 16);
+					p[1] = (bgcolor >> 8);
+					p[2] = (bgcolor);
+					p += 3;
+				}
+			}
+			p += m_currMode.pitch;
+		}
+		return;
+	}	
 
 	int y = 0;
 	for (u8int* p = memPos(sx, sy); p < memPos(sx, sy + C_FONT_HEIGHT); p += m_currMode.pitch) {
