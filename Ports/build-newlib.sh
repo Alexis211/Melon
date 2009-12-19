@@ -9,8 +9,11 @@ UNIXDIR=`pwd`/../Unix
 INCDIR=$UNIXDIR/i586-elf/include
 LIBDIR=$UNIXDIR/i586-elf/lib
 
+CROSSDIR=`pwd`/../Cross
+export PATH=$PATH:$CROSSDIR/bin
+
 echo " ==> FETCHING NEWLIB ARCHIVE <=="
-if [ ! -f newlib-1.15.0.tar.gz]; then wget ftp://sources.redhat.com/pub/newlib/newlib-1.15.0.tar.gz; fi
+if [ ! -f newlib-1.15.0.tar.gz ]; then wget ftp://sources.redhat.com/pub/newlib/newlib-1.15.0.tar.gz; fi
 
 echo " ==> EXTRACTING ARCHIVE <=="
 tar xzf newlib-1.15.0.tar.gz
