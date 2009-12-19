@@ -6,7 +6,7 @@ CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I .
 LD = ld
 LDFLAGS = -T ../../Library/Link.ld -L ../../Library
 
-Objects = main.o
+Objects = PaperWork.o
 OutFile = PaperWork
 
 all: $(OutFile)

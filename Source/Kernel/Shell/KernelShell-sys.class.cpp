@@ -77,7 +77,7 @@ void KernelShell::mount(Vector<String>& args) {
 			if (VFS::mount(args[1], m_vt)) *m_vt << "Ok, filesystem mounted.\n";
 		}
 	} else {
-		*m_vt << "Usage: mount [<device> <mountpoint>\n";
+		*m_vt << "Wrong options. Type 'mount help' for more info.\n";
 	}
 }
 

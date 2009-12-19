@@ -20,6 +20,7 @@ Objects = Common/WChar.class.uo \
 		  Common/ByteArray.class.uo \
 		  Common/Rand.ns.uo \
 		  Common/cppsupport.wtf.uo \
+		  Userland/App/ShellApp.proto.uo \
 		  Userland/Syscall/Syscall.wtf.uo \
 		  Userland/Syscall/RessourceCaller.class.uo \
 		  Userland/Start.uo

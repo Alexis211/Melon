@@ -1,10 +1,18 @@
-#include <Binding/VirtualTerminal.class.h>
 #include <Binding/Thread.class.h>
-#include <String.class.h>
 #include <ByteArray.class.h>
 #include <Rand.ns.h>
 
-int main(Vector<String> args) {
+#include <App/ShellApp.proto.h>
+
+class GOL : public ShellApp {
+	public:
+	GOL() : ShellApp("GOL.app", "Melon's Game of Life simulator \\o/") {}
+	int run();
+};
+
+APP(GOL);
+
+int GOL::run() {
 	if (!outvt.isBoxed()) {
 		outvt << "Error : cannot display GOL on a non-boxed terminal.\n";
 		return 1;

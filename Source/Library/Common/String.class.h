@@ -14,6 +14,7 @@ class String : public BasicString<WChar> {
 
 	String(const char* string, u8int encoding = UE_UTF8);
 	String() : BasicString<WChar>() {}
+	String(WChar c, u32int n = 1) : BasicString<WChar>(c, n) {}
 	String(const String &other) : BasicString<WChar> (other) {}
 
 	void affect(const char* string, u8int encoding = UE_UTF8);

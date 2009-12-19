@@ -1,10 +1,8 @@
-#include "Shell.ns.h"
+#include "Shell.class.h"
 #include <TextFile.class.h>
 #include <Binding/Process.class.h>
 
-namespace Shell {
-
-void ls(Vector<String>& args) {
+void Shell::ls(Vector<String>& args) {
 	FSNode d = cwd;
 	if (args.size() == 2) {
 		FSNode n = FS::find(args[1], cwd);
@@ -41,7 +39,7 @@ void ls(Vector<String>& args) {
 	}
 }
 
-void cd(Vector<String>& args) {
+void Shell::cd(Vector<String>& args) {
 	if (args.size() != 2) {
 		outvt << "Invalid argument count.\n";
 	} else {
@@ -57,11 +55,11 @@ void cd(Vector<String>& args) {
 	}
 }
 
-void pwd(Vector<String>& args) {
+void Shell::pwd(Vector<String>& args) {
 	outvt << "Current directory : " << cwd.path() << "\n";
 }
 
-void rm(Vector<String>& args) {
+void Shell::rm(Vector<String>& args) {
 	if (args.size() == 1) outvt << "No file to remove.\n";
 	for (u32int i = 1; i < args.size(); i++) {
 		if (!FS::find(args[i], cwd).remove()) {
@@ -70,7 +68,7 @@ void rm(Vector<String>& args) {
 	}
 }
 
-void mkdir(Vector<String>& args) {
+void Shell::mkdir(Vector<String>& args) {
 	if (args.size() == 1) outvt << "No directory to create.\n";
 	for (u32int i = 1; i < args.size(); i++) {
 		if (!FS::mkdir(args[i], cwd).valid()) {
@@ -79,7 +77,7 @@ void mkdir(Vector<String>& args) {
 	}
 }
 
-void cat(Vector<String>& args) {
+void Shell::cat(Vector<String>& args) {
 	if (args.size() == 1) outvt << "Meow.\n";
 	for (u32int i = 1; i < args.size(); i++) {
 		TextFile f(args[i], FM_READ, cwd);
@@ -94,7 +92,7 @@ void cat(Vector<String>& args) {
 	}
 }
 
-void wf(Vector<String>& args) {
+void Shell::wf(Vector<String>& args) {
 	if (args.size() == 1) {
 		outvt << "No file to write !\n";
 	} else {
@@ -113,7 +111,7 @@ void wf(Vector<String>& args) {
 	}
 }
 
-void run(Vector<String>& args) {
+void Shell::run(Vector<String>& args) {
 	if (args.size() == 1) {
 		outvt << "Nothing to run...\n";
 	} else {
@@ -131,6 +129,4 @@ void run(Vector<String>& args) {
 			outvt << "Error while launching process.\n";
 		}
 	}
-}
-
 }

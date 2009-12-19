@@ -1,25 +1,25 @@
-#include "Shell.ns.h"
+#include "Shell.class.h"
 #include <Binding/Sys.ns.h>
 #include <Binding/Process.class.h>
 
-namespace Shell {
+APP(Shell);
 
-FSNode cwd(0);
+Shell::Shell() : ShellApp("Shell.app", "The Melon command line interpreter"), cwd(FS::cwdNode()) {
+}
 
-
-u32int run() {
+int Shell::run() {
 	struct {	//Command list
 		String name;
-		void (*cmd)(Vector<String>&);
+		void (Shell::*cmd)(Vector<String>&);
 	} commands[] = {
-		{"ls",		ls},
-		{"cd",		cd},
-		{"pwd",		pwd},
-		{"rm",		rm},
-		{"mkdir",	mkdir},
-		{"cat",		cat},
-		{"wf",		wf},
-		{"run",		run},
+		{"ls",		&Shell::ls},
+		{"cd",		&Shell::cd},
+		{"pwd",		&Shell::pwd},
+		{"rm",		&Shell::rm},
+		{"mkdir",	&Shell::mkdir},
+		{"cat",		&Shell::cat},
+		{"wf",		&Shell::wf},
+		{"run",		&Shell::run},
 		{"",		0}
 	};
 
@@ -66,7 +66,7 @@ u32int run() {
 		} else if (cmd[0] == "free") {
 			outvt << "Free RAM : " << (s64int)Sys::freeRam() << " Kio of " << (s64int)Sys::totalRam() << " Kio\n"; 
 		} else if (cmd[0] == "uid") {
-			outvt << "User ID : " << (s64int)(Process::get().getUid()) << "\n";
+			outvt << "User ID : " << (s64int)(pr.getUid()) << "\n";
 		} else if (cmd[0] == "help") {
 			while (cmd.size() > 1) cmd.pop();
 			cmd.push("/Applications/Shell/Help.txt");
@@ -80,7 +80,7 @@ u32int run() {
 					if (commands[i].cmd == 0) {
 						outvt << "Not implemented yet.\n";
 					} else {
-						commands[i].cmd(cmd);
+						(this->*(commands[i].cmd))(cmd);
 					}
 					break;
 				}
@@ -89,8 +89,6 @@ u32int run() {
 			if (!found) outvt << "Unknown command : " << cmd[0] << "\n";
 		}
 	}
-}
-
 }
 
 

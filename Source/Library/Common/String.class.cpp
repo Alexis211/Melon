@@ -195,6 +195,7 @@ String String::substr(s32int start, s32int size) {
 	if (size == 0) return String();
 	if (start < 0) start = m_length - start;
 	if (size == -1) size = m_length - start;
+	if (start + size >= (int)m_length) size = m_length - start;
 	String ret;
 	ret.m_string = new WChar[size + 1];
 	ret.m_length = size;

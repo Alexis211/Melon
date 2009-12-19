@@ -1,17 +1,22 @@
-#include <Binding/Process.class.h>
-#include <String.class.h>
+#include <App/ShellApp.proto.h>
 
 #define DEFAULT_SHELL "/Applications/Shell/Shell.app"
 
-int main(Vector<String> args) {
-	String act = "init";
-	if (args.size() == 2) {
-		if (args[1] == "login") {
-			act = "login";
-		} else if (args[1] == "init") {
-			act = "init";
-		}
+class PaperWork : public ShellApp {
+	public:
+	PaperWork() : ShellApp("PaperWork.app", "Melon's init/login manager") {
+		addFlag("s", "shell", "Define the default shell to launch", FT_STR, DEFAULT_SHELL);
+		addFlag("l", "login", "Act as a login manager");
+		addFlag("i", "init", "Act as a init manager", FT_BOOL, "on");
 	}
+	int run();
+};
+
+APP(PaperWork);
+
+int PaperWork::run() {
+	String act = "init";
+	if (bFlag("login")) act = "login";
 
 	if (act == "init") {
 		while (1) {
@@ -19,7 +24,7 @@ int main(Vector<String> args) {
 			if (p.valid()) {
 				p.setInVT(invt);
 				p.setOutVT(outvt);
-				p.pushArg("login");
+				p.pushArg("--login");
 				p.start();
 				p.wait();	
 			} else {
@@ -38,9 +43,9 @@ int main(Vector<String> args) {
 				outvt << "Authentication failed.\n\n";
 				continue;
 			}
-			outvt << "What shell to run [" << DEFAULT_SHELL << "]? ";
+			outvt << "What shell to run [" << sFlag("shell") << "]? ";
 			String sh = invt.readLine();
-			if (sh == "") sh = DEFAULT_SHELL;
+			if (sh == "") sh = sFlag("shell");
 			Process p = Process::run(sh);
 			if (p.valid()) {
 				p.setInVT(invt);

@@ -2,7 +2,7 @@
 #include <types.h>
 
 namespace CMem {
-	u8int* memcpy(u8int*, const u8int*, int);
+	u8int* memcpy(u8int*, const u8int*, u32int);
 };
 
 using namespace CMem;
