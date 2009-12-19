@@ -1,10 +1,11 @@
 .PHONY: clean, mrproper, Init.rfs, floppy, commit
 
+export NEWPATH=$(PATH):`pwd`/Cross
 CC = i586-elf-gcc
 CXX = i586-elf-g++
 LD = i586-elf-ld
 
-Projects = Kernel Library UnixUserland Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
+Projects = Kernel Library UnixUserland/Library Tools/MakeRamFS Applications/Shell Applications/PaperWork Applications/Demos
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
@@ -30,7 +31,7 @@ HDD = HDD.img
 all:
 	for p in $(Projects); do \
 		echo "=> Building $$p"; \
-		make -C Source/$$p -s; \
+		PATH=$(NEWPATH) make -C Source/$$p -s; \
 	done
 
 $(Files): all
@@ -38,7 +39,7 @@ $(Files): all
 rebuild:
 	for p in $(Projects); do \
 		echo "=> Building $$p"; \
-		make -C Source/$$p rebuild -s; \
+		PATH=$(NEWPATH) make -C Source/$$p rebuild -s; \
 	done
 
 clean:

@@ -4,8 +4,8 @@
 Init.rfs
 Source/Kernel/Map.txt
 Source/Kernel/Melon.ke
-Ports/build-*
-Ports/*.tar.gz
-Ports/*.tar.bz2
-Ports/*.tgz
-Ports/*.tbz2
+Ports/*
+!Ports/build-*.sh
+Cross/*
+!Cross/build-cross.sh
+Unix/*

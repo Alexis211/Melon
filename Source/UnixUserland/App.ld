@@ -1,5 +1,5 @@
 ENTRY (_start)
-INPUT (MelonUnix.o)
+INPUT (Library/MelonUnix.o)
 
 SECTIONS{
     . = 0x10000000;

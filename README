@@ -11,19 +11,23 @@ You need :
 If you haven't yet downloaded the source code, then commit the GIT repository :
 $ git clone git://github.com/Alexis211/Melon.git
 
+First, you have to build the i586-elf cross-compiler :
+$ Cross/build-cross.sh
+This should be long (from half an hour to several hours)
+
 Then, rebuild everything :
 $ make mrproper
 $ make
 
-Create the floppy image :
-$ make floppy
-You will probably be prompted for your password. We need it to mount the floppy image as a loopback device.
 
 And run it with Qemu :
 $ make qemu
 	OR
 $ make qemu-hdd
 The second option boots from the HDD instead of the floppy
+You will probably be prompted for your password. We need it to mount the floppy/HDD image as a loopback device.
+
+You can build newlib using Ports/build-newlib.sh, but this will not be used by anything, it's not necessary.
 
 ** HOW TO CONFIGURE THE GRUB ENTRIES : **
 If you want to change the entries that appear when you `make qemu`, then edit the Grub-menu.cfg and `make floppy` again.
