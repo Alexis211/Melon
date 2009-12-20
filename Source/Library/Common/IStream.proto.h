@@ -10,6 +10,7 @@ class IStream : private Mutex {
 	SimpleList<String> *m_buffer;
 	int m_ptr;
 	void operator =(IStream& other);
+	bool m_eof;
 
 	bool populate();
 
@@ -20,6 +21,8 @@ class IStream : private Mutex {
 	IStream();
 	IStream(const IStream& other);
 	virtual ~IStream();
+
+	bool eof() const { return m_eof && (m_buffer == NULL); }
 
 	WChar getChar();
 	String get(WChar delimiter = "\n");

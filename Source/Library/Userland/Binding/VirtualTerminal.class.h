@@ -11,6 +11,9 @@
 #include <WChar.class.h>
 
 class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
+	private:
+	bool m_eof;
+
 	public:
 	static VirtualTerminal getIn() {
 		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPRINVT);
@@ -20,7 +23,7 @@ class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
 		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPROUTVT);
 		return VirtualTerminal(id);
 	}
-	VirtualTerminal(u32int id) : RessourceCaller(id, VTIF_OBJTYPE) {}
+	VirtualTerminal(u32int id) : RessourceCaller(id, VTIF_OBJTYPE) { m_eof = false; }
 
 	/*void writeHex(u32int number) {
 		doCall(VTIF_WRITEHEX, number);
@@ -32,7 +35,13 @@ class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
 		doCall(VTIF_WRITE, (u32int)&s);
 	}
 	String read() {
-		return String::unserialize(doCall(VTIF_READLINE, 1)) += "\n";
+		if (m_eof) return "";
+		String ret = String::unserialize(doCall(VTIF_READLINE, 1));
+		if (ret[ret.size() - 1] == WChar(EOF)) {
+			ret = ret.substr(0, ret.size() - 1);
+			m_eof = true;
+		}
+		return ret += "\n";
 	}
 	keypress_t getKeypress(bool show = true, bool block = true) {
 		keypress_t* ptr = (keypress_t*)doCall(VTIF_GETKEYPRESS, (show ? 1 : 0) | (block ? 2 : 0));

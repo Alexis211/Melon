@@ -55,6 +55,9 @@ OStream& OStream::operator<< (ostream_modifiers_e m) {
 		flush();
 	} else if (m == ENDL) {
 		put("\n");
+	} else if (m == END) {
+		put(String(EOF, 1));
+		flush();
 	}
 	return *this;
 }

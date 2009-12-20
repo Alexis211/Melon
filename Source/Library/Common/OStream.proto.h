@@ -7,7 +7,8 @@
 
 enum ostream_modifiers_e {
 	FLUSH,
-	ENDL
+	ENDL,
+	END
 };
 
 class OStream : private Mutex {

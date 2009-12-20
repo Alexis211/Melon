@@ -9,6 +9,10 @@ ShellApp::ShellApp(String name, String desc)
 	addFlag("h", "help", "Show this help screen");
 }
 
+ShellApp::~ShellApp() {
+	outvt << END;
+}
+
 void ShellApp::init() {
 	//Parse flags
 	u32int argc = pr.argc();

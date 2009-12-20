@@ -7,6 +7,8 @@
 #include <common.h>
 #endif
 
+#define EOF "\3"
+
 enum {
 	UE_UTF8,
 	UE_UTF16_LE,

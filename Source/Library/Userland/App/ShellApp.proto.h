@@ -24,6 +24,7 @@ class ShellApp : public Application {
 	Vector<flag_t> flags;
 	String appName, appDesc;
 	ShellApp(String name, String desc);
+	~ShellApp();
 
 	virtual void init();
 

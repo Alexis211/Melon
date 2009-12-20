@@ -3,6 +3,7 @@
 IStream::IStream() {
 	m_buffer = NULL;
 	m_ptr = 0;
+	m_eof = false;
 }
 
 IStream::IStream(const IStream& other) {
@@ -15,8 +16,12 @@ IStream::~IStream() {
 }
 
 bool IStream::populate() {
+	if (m_eof) return false;
 	String s = read();
-	if (s.empty()) return false;
+	if (s.empty()) {
+		m_eof = true;
+		return false;
+	}
 	if (m_buffer == NULL) {
 		m_buffer = new SimpleList<String>(s);
 	} else {

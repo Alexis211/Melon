@@ -21,6 +21,8 @@ Objects = Common/WChar.class.uo \
 		  Common/Rand.ns.uo \
 		  Common/OStream.proto.uo \
 		  Common/IStream.proto.uo \
+		  Common/FileStream.class.uo \
+		  Common/StringStream.class.uo \
 		  Common/cppsupport.wtf.uo \
 		  Userland/App/ShellApp.proto.uo \
 		  Userland/Syscall/Syscall.wtf.uo \
