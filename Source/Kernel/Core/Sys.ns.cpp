@@ -85,9 +85,9 @@ void dumpRegs(registers_t *regs, VirtualTerminal& vt) {
 	vt << "eflags=" << (u32int)regs->eflags << ", useresp=" << (u32int)regs->useresp << ", ss=" << (u32int)regs->ss << "\n";
 }
 
-void stackTrace(u32int ebp, VirtualTerminal& vt, u32int maxframes) {
+void stackTrace(u32int ebp, VirtualTerminal& vt, u32int maxframes, bool isUser) {
 	u32int *stack = (u32int*)ebp;
-	for (u32int i = 0; i < maxframes and (u32int)stack > 0xC0000000 and (u32int)stack < (ebp + 0x10000); i++) {
+	for (u32int i = 0; i < maxframes and (isUser or ((u32int)stack > 0xC0000000)) and (u32int)stack < (ebp + 0x10000); i++) {
 		vt << "Frame: " << (u32int)stack << " n:" << stack[0] << " r:" << stack[1] << "\n";
 		stack = (u32int*)stack[0];
 	}

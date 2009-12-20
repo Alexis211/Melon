@@ -30,7 +30,7 @@ namespace Sys {
 	u8int inb(u16int port);
 	u16int inw(u16int port);
 	void dumpRegs(registers_t *regs, VirtualTerminal& vt);
-	void stackTrace(u32int ebp, VirtualTerminal& vt, u32int maxframes);
+	void stackTrace(u32int ebp, VirtualTerminal& vt, u32int maxframes, bool isUser = false);
 	void panic(char* message, char *file, u32int line);
 	void panic(char* message, registers_t *regs, char *file, u32int line);
 	void panic_assert(char* file, u32int line, char *desc);

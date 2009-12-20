@@ -25,6 +25,19 @@ class SimpleList {
 		return new SimpleList<T>(value, this);
 	}
 
+	SimpleList<T>* addAtEnd(const T& value) {
+		if (this == 0) {
+			return new SimpleList<T>(value);
+		} else {
+			if (m_next == 0) {
+				m_next = new SimpleList<T>(value);
+				return m_next;
+			} else {
+				return m_next->addAtEnd(value);
+			}
+		}
+	}
+
 	SimpleList<T>* next() {
 		return m_next;
 	}

@@ -1,6 +1,7 @@
 #include <App/ShellApp.proto.h>
 
 #define DEFAULT_SHELL "/Applications/Shell/Shell.app"
+#define PAPERWORK_PATH "/System/Applications/PaperWork.app"
 
 class PaperWork : public ShellApp {
 	public:
@@ -20,7 +21,7 @@ int PaperWork::run() {
 
 	if (act == "init") {
 		while (1) {
-			Process p = Process::run("/System/Applications/PaperWork.app");
+			Process p = Process::run(PAPERWORK_PATH);
 			if (p.valid()) {
 				p.setInVT(invt);
 				p.setOutVT(outvt);
@@ -35,15 +36,15 @@ int PaperWork::run() {
 		outvt << "Logging in to Melon\n";
 		String user, pw;
 		while (1) {
-			outvt << "Username: ";
+			outvt << "Username: " << FLUSH;
 			user = invt.readLine();
-			outvt << "Password: ";
+			outvt << "Password: " << FLUSH;
 			pw = invt.readLine(false);
 			if (!Process::get().authenticatePW(user, pw)) {
 				outvt << "Authentication failed.\n\n";
 				continue;
 			}
-			outvt << "What shell to run [" << sFlag("shell") << "]? ";
+			outvt << "What shell to run [" << sFlag("shell") << "]? "<< FLUSH;
 			String sh = invt.readLine();
 			if (sh == "") sh = sFlag("shell");
 			Process p = Process::run(sh);
