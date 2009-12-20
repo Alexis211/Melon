@@ -24,6 +24,7 @@ void VGATextOutput::getModes(Vector<mode_t> &to) {
 	m.identifier = 1;
 	m.graphWidth = 0;
 	m.graphHeight = 0;
+	m.graphDepth = 0;
 	m.device = this;
 	to.push(m);
 	m.textCols = 80;
@@ -59,4 +60,14 @@ void VGATextOutput::moveCursor(u16int line, u16int col) {
 void VGATextOutput::clear() {
 	u16int* where = (u16int*)RAM_ADDR;
 	for (int i = 0; i < 25 * 80; i++) where[i] = 0;
+}
+
+bool VGATextOutput::textScroll(u16int line, u16int col, u16int height, u16int width, u8int color) {
+	u8int* where = (u8int*)RAM_ADDR;
+	for (u32int i = 1; i < height; i++) {
+		memcpy(where + ((line + i - 1) * (m_cols * 2)) + (col * 2), where + ((line + i) * (m_cols * 2)) + (col * 2), width * 2);
+	}
+	u16int* w = (u16int*)where;
+	memsetw(w + ((line + height - 1) * m_cols) + col, 0x20 | (color << 8), width);
+	return true;
 }
