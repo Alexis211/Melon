@@ -214,12 +214,12 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	
 	//***************************************	LOAD SYSTEM STUFF
 
-	if (keymap != "builtin") {
-		if (!Kbd::loadKeymap(keymap)) *kvt << "WARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";
-	}
-
 	Log::init(KL_STATUS);	//Setup logging
 	Log::log(KL_STATUS, "kmain : Melon booting.");
+
+	if (keymap != "builtin") {
+		if (!Kbd::loadKeymap(keymap)) Log::log(KL_WARNING, String("WARNING : Could not load keymap ") += keymap += ", using built-in keymap instead.");
+	}
 
 	Usr::load();			//Setup user managment
 	Log::log(KL_STATUS, "kmain : User list loaded");

@@ -6,3 +6,7 @@ Source/Kernel/Map.txt
 Source/Kernel/Melon.ke
 Ports
 Ports/*
+Cross
+Cross/*
+Unix
+Unix/*
