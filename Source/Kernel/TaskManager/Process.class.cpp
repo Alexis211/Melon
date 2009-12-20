@@ -76,12 +76,14 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 	m_userHeap = new Heap();
 	u32int heapIdxSize = PhysMem::total() * 16 + 0x10000;
 	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize, heapIdxSize, m_pagedir, true, true);
+	Task::registerProcess(this);
 }
 
 Process::~Process() {
 	exit();	//Kill all threads
 	delete m_pagedir;
 	delete m_userHeap;
+	Task::unregisterProcess(this);
 }
 
 void Process::start() {

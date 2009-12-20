@@ -7,6 +7,7 @@
 #include <UserManager/Usr.ns.h>
 #include <MemoryManager/PhysMem.ns.h>
 #include <DeviceManager/Time.ns.h>
+#include <Core/SB.ns.h>
 
 #define DEBUGVT(x) SimpleVT *x = new SimpleVT(4, 56, PANIC_FGCOLOR, PANIC_BGCOLOR); x->map(); x->put('\n');
 
@@ -95,6 +96,7 @@ void stackTrace(u32int ebp, VirtualTerminal& vt, u32int maxframes, bool isUser) 
 
 //Used by PANIC() macro (see common.wtf.h)
 void panic(char *message, char *file, u32int line) {
+	SB::message("PANIC");
 	asm volatile("cli");
 
 	DEBUGVT(vt);
@@ -106,6 +108,7 @@ void panic(char *message, char *file, u32int line) {
 }
 
 void panic(char *message, registers_t *regs, char *file, u32int line) {
+	SB::message("PANIC");
 	asm volatile("cli");
 
 	SimpleVT vt(15, 70, BSOD_FGCOLOR, BSOD_BGCOLOR);
@@ -129,6 +132,7 @@ void panic(char *message, registers_t *regs, char *file, u32int line) {
 
 //Used by ASSERT() macro (see common.wtf.h)
 void panic_assert(char *file, u32int line, char *desc) {
+	SB::message("ASSERTION FAILED");
 	asm volatile("cli");
 
 	DEBUGVT(vt);
@@ -140,17 +144,20 @@ void panic_assert(char *file, u32int line, char *desc) {
 }
 
 void shutdown_cleanup() {
+	SB::message("Cleaning up system");
 	asm volatile("cli");
 	Log::close();
 }
 
 void reboot() {
 	shutdown_cleanup();
+	SB::message("Rebooting...");
 	outb(0x64, 0xFE);
 }
 
 void halt() {
 	shutdown_cleanup();
+	SB::message("Halting");
 	String message("MELON SEZ : KTHXBYE, U CAN NAOW TURNZ OFF UR COMPUTER.");
 	SimpleVT vt(3, message.size() + 16, HALT_FGCOLOR, HALT_BGCOLOR);
 	vt.map();

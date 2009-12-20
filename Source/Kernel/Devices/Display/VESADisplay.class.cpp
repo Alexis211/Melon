@@ -313,7 +313,7 @@ bool VESADisplay::textScroll(u16int line, u16int col, u16int height, u16int widt
 	for (u32int i = 0; i < width; i++) {
 		drawChar(line + height - 1, col + i, " ", color);
 	}
-	m_csrBuff.line--;
+	if (m_csrBuff.line == line + height - 1) m_csrBuff.line--;
 	drawCsr();
 	return true;
 }

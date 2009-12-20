@@ -9,6 +9,9 @@ namespace Task {
 	Thread* currThread();
 	Process* currProcess();
 
+	extern SimpleList <Process*> *processes;
+	extern SimpleList <Thread*> *threads;
+
 	void initialize(String cmdline, VirtualTerminal *vt);	//cmdline should be the bootloader kernel command line, if anybody needs it
 	void doSwitch();
 	void triggerSwitch();

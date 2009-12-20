@@ -9,6 +9,7 @@ SimpleVT::SimpleVT(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) : Vir
 	m_rows = rows;
 	m_cols = cols;
 	m_mapped = false;
+	m_hideCursor = false;
 	setColor(fgcolor, bgcolor);
 	clear();
 
@@ -87,6 +88,7 @@ void SimpleVT::scroll() {
 
 void SimpleVT::updateCursor() {
 	if (!m_mapped) return;
+	if (m_hideCursor) return;
 	Disp::moveCursor(m_csrlin + m_maprow, m_csrcol + m_mapcol);
 }
 

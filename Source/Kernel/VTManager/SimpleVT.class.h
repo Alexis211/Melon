@@ -10,7 +10,7 @@ class SimpleVT : public VirtualTerminal {
 	u8int m_color;
 
 	u32int m_maprow, m_mapcol;
-	bool m_mapped;
+	bool m_mapped, m_hideCursor;
 	
 	u32int m_csrlin, m_csrcol;
 
@@ -26,6 +26,8 @@ class SimpleVT : public VirtualTerminal {
 	u8int width() { return m_cols; }
 	u8int csrlin() { return m_csrlin; }
 	u8int csrcol() { return m_csrcol; }
+
+	void hideCursor(bool hide = true) { m_hideCursor = hide; }
 
 	void map(s32int row = -1, s32int col = -1);
 	void unmap();
