@@ -4,8 +4,13 @@
 //										INPUT FILE STREAM
 //																********************
 
-FileIStream::FileIStream(const String &filename, u8int encoding, FSNode start) {
+FileIStream::FileIStream(const String &filename, u8int encoding, FSNode start) : m_start(start) {
 	m_file = new File(filename, FM_READ, start);
+	m_encoding = encoding;
+}
+
+FileIStream::FileIStream(u8int encoding, FSNode start) : m_start(start) {
+	m_file = 0;
 	m_encoding = encoding;
 }
 
@@ -33,11 +38,7 @@ String FileIStream::read() {
 		if (m_filenames == 0) {
 			return "";
 		} else {
-#ifdef THIS_IS_MELON_KERNEL
-			m_file = new File(m_filenames->v(), FM_READ);
-#else
-			m_file = new File(m_filenames->v(), FM_READ, FS::cwdNode());
-#endif
+			m_file = new File(m_filenames->v(), FM_READ, m_start);
 			m_filenames = m_filenames->delThis();
 		}
 	}

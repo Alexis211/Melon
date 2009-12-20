@@ -25,6 +25,7 @@ Objects = Common/WChar.class.uo \
 		  Common/StringStream.class.uo \
 		  Common/cppsupport.wtf.uo \
 		  Userland/App/ShellApp.proto.uo \
+		  Userland/App/StreamApp.proto.uo \
 		  Userland/Syscall/Syscall.wtf.uo \
 		  Userland/Syscall/RessourceCaller.class.uo \
 		  Userland/Start.uo

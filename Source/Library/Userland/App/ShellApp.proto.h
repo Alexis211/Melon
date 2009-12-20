@@ -23,7 +23,7 @@ class ShellApp : public Application {
 	Vector<String> args;
 	Vector<flag_t> flags;
 	String appName, appDesc;
-	ShellApp(String name, String desc);
+	ShellApp(const String &name, const String &desc);
 	~ShellApp();
 
 	virtual void init();

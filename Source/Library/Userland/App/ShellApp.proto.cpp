@@ -1,6 +1,6 @@
 #include "ShellApp.proto.h"
 	
-ShellApp::ShellApp(String name, String desc)
+ShellApp::ShellApp(const String &name, const String &desc)
    	: Application(), invt(VirtualTerminal::getIn()), outvt(VirtualTerminal::getOut()) {
 	appName = name, appDesc = desc;
 	if (!invt.valid()) exit(1);

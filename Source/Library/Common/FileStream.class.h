@@ -18,9 +18,11 @@ class FileIStream : public IStream {
 
 	File *m_file;
 	u8int m_encoding;
+	FSNode m_start;
 	
 	public:
 	FileIStream(const String &filename, u8int encoding = UE_UTF8, FSNode start = FSNode(0));
+	FileIStream(u8int encoding = UE_UTF8, FSNode start = FSNode(0));
 	~FileIStream();
 
 	void appendFile(const String &filename);
