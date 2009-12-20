@@ -208,7 +208,7 @@ void VESADisplay::putPix(u16int x, u16int y, u32int c) {
 
 u32int VESADisplay::getPix(u16int x, u16int y) {
 	if (x >= m_currMode.Xres or y >= m_currMode.Yres) return 0;
-	u32int ret;
+	u32int ret = 0;
 	union {
 		u8int* c;
 	   	u16int* w;
@@ -258,6 +258,7 @@ void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 					p[2] = (bgcolor);
 					p += 3;
 				}
+				p -= (9 * 3);
 			}
 			p += m_currMode.pitch;
 		}

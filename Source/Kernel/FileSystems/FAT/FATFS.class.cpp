@@ -70,7 +70,7 @@ u32int FATFS::nextCluster(u32int cluster) {
 		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->blockSize());
 		u32int ent_offset = fat_offset % m_part->blockSize();
 		m_fatCache.readBlocks(fat_sector, 1, fat_table);
-		u16int tblval = *(u16int*)&fat_table[ent_offset];
+		u16int tblval = *((u16int*)(fat_table + ent_offset));
 		if (cluster & 1) val = tblval >> 4;
 		else val = tblval & 0x0FFF;
 		if (val >= 0xFF7) val = 0;
@@ -79,7 +79,7 @@ u32int FATFS::nextCluster(u32int cluster) {
 		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->blockSize());
 		u32int ent_offset = fat_offset % m_part->blockSize();
 		m_fatCache.readBlocks(fat_sector, 1, fat_table);
-		u16int tblval = *(u16int*)&fat_table[ent_offset];
+		u16int tblval = *(u16int*)(fat_table + ent_offset);
 		val = tblval;
 		if (tblval >= 0xFFF7) val = 0;
 	} else if (m_fatType == 32) {
@@ -87,8 +87,10 @@ u32int FATFS::nextCluster(u32int cluster) {
 		u32int fat_sector = m_bs.reserved_sector_count + (fat_offset / m_part->blockSize());
 		u32int ent_offset = fat_offset % m_part->blockSize();
 		m_fatCache.readBlocks(fat_sector, 1, fat_table);
-		val = *(u32int*)&fat_table[ent_offset] & 0x0FFFFFFF;
+		val = *(u32int*)(fat_table + ent_offset) & 0x0FFFFFFF;
 		if (val >= 0x0FFFFFF7) val = 0;
+	} else {
+		val = 0;
 	}
 	return val;
 }
