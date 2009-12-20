@@ -10,6 +10,7 @@ extern u32int consoleColor[16];
 #define C_FONT_HEIGHT 16
 
 class GraphicDisplay : public Display {
+	protected:
 	struct {
 		int line, col;
 		u32int buff[C_FONT_WIDTH][C_FONT_HEIGHT];
