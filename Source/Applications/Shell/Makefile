@@ -10,7 +10,9 @@ Objects = Shell.class.o \
 		  Shell-fs.class.o
 OutFile = Shell
 
-all: $(OutFile)
+Applets = Applets/rot13
+
+all: $(OutFile) $(Applets)
 	echo "* Done with $(OutFile)."
 
 rebuild: mrproper all
@@ -18,6 +20,10 @@ rebuild: mrproper all
 $(OutFile): $(Objects)
 	echo "* Linking $@..."
 	$(LD) $(LDFLAGS) $^ -o $@
+
+Applets/%: Applets/%.o
+	echo "* Linking $@..."
+	$(LD) $(LDFLAGS) $^ -o $@ -Map $@.map
 
 %.o: %.cpp
 	echo "* Compiling $<..."

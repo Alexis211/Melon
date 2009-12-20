@@ -6,10 +6,14 @@
 #include <VirtualTerminal.iface.h>
 #include <Kbd.iface.h>
 
-#include <String.class.h>
+#include <OStream.proto.h>
+#include <IStream.proto.h>
 #include <WChar.class.h>
 
-class VirtualTerminal : public RessourceCaller {
+class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
+	private:
+	bool m_eof;
+
 	public:
 	static VirtualTerminal getIn() {
 		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPRINVT);
@@ -19,22 +23,33 @@ class VirtualTerminal : public RessourceCaller {
 		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPROUTVT);
 		return VirtualTerminal(id);
 	}
-	VirtualTerminal(u32int id) : RessourceCaller(id, VTIF_OBJTYPE) {}
+	VirtualTerminal(u32int id) : RessourceCaller(id, VTIF_OBJTYPE) { m_eof = false; }
 
-	void writeHex(u32int number) {
+	/*void writeHex(u32int number) {
 		doCall(VTIF_WRITEHEX, number);
 	}
 	void writeDec(s64int number) {
 		doCall(VTIF_WRITEDEC, (number >> 32), number);
-	}
-	void write(String s) {
+	}*/
+	void write(const String &s) {
 		doCall(VTIF_WRITE, (u32int)&s);
+	}
+	String read() {
+		if (m_eof) return "";
+		String ret = String::unserialize(doCall(VTIF_READLINE, 1));
+		if (ret[ret.size() - 1] == WChar(EOF)) {
+			ret = ret.substr(0, ret.size() - 1);
+			if (ret.empty()) return "";
+			m_eof = true;
+		}
+		return ret += "\n";
 	}
 	keypress_t getKeypress(bool show = true, bool block = true) {
 		keypress_t* ptr = (keypress_t*)doCall(VTIF_GETKEYPRESS, (show ? 1 : 0) | (block ? 2 : 0));
 		return *ptr;
 	}
 	String readLine(bool show = true) {
+		flush();
 		return String::unserialize(doCall(VTIF_READLINE, (show ? 1 : 0)));
 	}
 	void setColor(u8int fg, u8int bg = 0xFF) {
@@ -64,11 +79,6 @@ class VirtualTerminal : public RessourceCaller {
 	void put(u8int line, u8int col, WChar c) {
 		moveCursor(line, col); put(c);
 	}
-	
-	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }
-	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
-	inline VirtualTerminal& operator<<(s64int i) { writeDec(i); return *this; }
-	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
 };
 
 #endif

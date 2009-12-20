@@ -2,11 +2,12 @@
 *.o
 *.uo
 Init.rfs
-Source/Kernel/Map.txt
+Map.txt
+Source/Applications/Shell/Applets/*.map
 Source/Kernel/Melon.ke
 Ports
 Ports/*
-Cross
-Cross/*
 Unix
 Unix/*
+Cross
+Cross/*

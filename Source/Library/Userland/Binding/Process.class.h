@@ -54,10 +54,10 @@ class Process : public RessourceCaller {
 	void pushArg(const String& arg) {
 		doCall(PRIF_PUSHARG, (u32int)&arg);
 	}
-	void setInVT(VirtualTerminal vt) {
+	void setInVT(const VirtualTerminal& vt) {
 		doCall(PRIF_SETINVT, vt.resId());
 	}
-	void setOutVT(VirtualTerminal vt) {
+	void setOutVT(const VirtualTerminal& vt) {
 		doCall(PRIF_SETOUTVT, vt.resId());
 	}
 	bool authenticatePW(String user, String pw) {

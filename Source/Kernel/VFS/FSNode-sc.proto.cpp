@@ -90,6 +90,7 @@ bool FSNode::readable(User* user) {
 }
 
 bool FSNode::writable(User* user) {
+	if (!m_fs->isWritable()) return false;
 	if (ISROOT) return true;
 	if (user == 0) user = Usr::user();
 	if (user->getUid() == m_uid)

@@ -182,9 +182,11 @@ void Thread::handleException(registers_t *regs, int no) {
 		if (rw) vt << "R/W ";
 		if (us) vt << "User ";
 		if (rsvd) vt << "Rsvd ";
-		vt << "At:" << (u32int)faddr;
+		vt << "At:" << (u32int)faddr << "\n";
 
-		vt << "\nThread finishing.\n";
+		Sys::stackTrace(regs->ebp, vt, 5, true);
+
+		vt << "Thread finishing.\n";
 		Task::currentThreadExits(E_PAGEFAULT);	//Calling this will setup a new stack
 		return;
 	}

@@ -1,6 +1,6 @@
 #include "ShellApp.proto.h"
 	
-ShellApp::ShellApp(String name, String desc)
+ShellApp::ShellApp(const String &name, const String &desc)
    	: Application(), invt(VirtualTerminal::getIn()), outvt(VirtualTerminal::getOut()) {
 	appName = name, appDesc = desc;
 	if (!invt.valid()) exit(1);
@@ -9,11 +9,17 @@ ShellApp::ShellApp(String name, String desc)
 	addFlag("h", "help", "Show this help screen");
 }
 
+ShellApp::~ShellApp() {
+	outvt << END;
+}
+
 void ShellApp::init() {
 	//Parse flags
 	u32int argc = pr.argc();
-	for (u32int i = 0; i < argc; i++) {
+	args.clear();
+	for (u32int i = 1; i < argc; i++) {
 		String arg = pr.argv(i);
+		if (arg.empty()) continue;
 		if (arg == "-") {
 			i++;
 			if (i == argc) {
@@ -26,13 +32,13 @@ void ShellApp::init() {
 				bool found = false;
 				for (u32int i = 0; i < flags.size(); i++) {
 					if (flags[i].type == FT_BOOL) {
-						if (arg == String("--no-") + flags[i].lName) {
+						if (arg == (String("--no-") += flags[i].lName)) {
 							flags[i].boolVal = false;
 							found = true;
 						}
 					}
 				}
-				if (!found) outvt << "Unknown option : " << arg << "\n";
+				if (!found) outvt << "Unknown option : " << arg << ENDL;
 			} else if (arg.substr(0, 2) == "--") {
 				bool found = false;
 				for (u32int i = 0; i < flags.size(); i++) {
@@ -49,21 +55,29 @@ void ShellApp::init() {
 						}
 					}
 				}
-				if (!found) outvt << "Unknown option : " << arg << "\n";
+				if (!found) outvt << "Unknown option : " << arg << ENDL;
 			} else {
 				for (u32int j = 1; j < arg.size(); j++) {
 					bool found = false;
 					for (u32int k = 0; k < flags.size(); k++) {
 						if (flags[k].sName == arg[j]) {
 							found = true;
-							if (flags[k].type == FT_BOOL) flags[k].boolVal = true;
-							if (flags[k].type == FT_INT) flags[k].intVal = pr.argv(++i).toInt();
-							if (flags[k].type == FT_STR) flags[k].strVal = pr.argv(++i);
+							if (flags[k].type == FT_BOOL) {
+								flags[k].boolVal = true;
+							} else {
+								i++;
+								if (i >= argc) {
+									outvt << "Missing argument for flag : -" << String(arg[j], 1) << ENDL;
+								} else {
+									flags[k].strVal = pr.argv(i);
+									if (flags[k].type == FT_INT) flags[k].intVal = flags[k].strVal.toInt();
+								}
+							}
 							break;
 						}
 					}
 					if (!found) {
-						outvt << "Unknown option : -" << String(arg[j]) << "\n";
+						outvt << "Unknown option : -" << String(arg[j], 1) << ENDL;
 						exit(-1);
 					}
 				}
@@ -76,7 +90,7 @@ void ShellApp::init() {
 	//Eventually show help screen
 	if (bFlag("help")) {
 		outvt << appName << ": " << appDesc << "\n";
-		outvt << "Usage: \t" << appName << " <flags> [-] <arguments>\n\n";
+		outvt << "Usage: \t" << pr.argv(0) << " <flags> [-] <arguments>\n\n";
 		outvt << "Possible flags :\n";
 		for (u32int i = 0; i < flags.size(); i++) {
 			outvt << "   --" << flags[i].lName << "\t" << (flags[i].sName != 0 ? "-" : "") << String(flags[i].sName) << "\t";

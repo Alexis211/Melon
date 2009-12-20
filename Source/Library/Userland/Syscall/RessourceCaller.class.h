@@ -28,8 +28,8 @@ class RessourceCaller {
 
 	public:
 	static u32int sCall(u32int type, u8int wat, u32int a = 0, u32int b = 0, u32int c = 0, u32int d = 0);	
-	u32int resId() { return m_id; }
-	u32int resType() { return m_type; }
+	u32int resId() const { return m_id; }
+	u32int resType() const { return m_type; }
 	bool valid() { return m_type != 0; }
 };
 

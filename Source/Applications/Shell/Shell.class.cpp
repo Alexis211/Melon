@@ -25,8 +25,9 @@ int Shell::run() {
 
 	cwd = FS::cwdNode();
 	while (1) {
-		outvt << "{" << cwd.getName() << "}: ";
-		String s = invt.readLine();
+		outvt << "{" << cwd.getName() << "}: " << FLUSH;
+		String s = invt.get();
+		if (s.contains(EOF)) return 0;
 		if (s.empty()) continue;
 		while (s[0] == WChar(" ") or s[0] == WChar("\t")) {
 			s = s.substr(1, s.size() - 1);

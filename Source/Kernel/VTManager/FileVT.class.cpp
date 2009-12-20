@@ -39,7 +39,7 @@ keypress_t FileVT::getKeypress(bool show, bool block) {
 		ret.hascmd = true;
 		ret.command = KBDC_ENTER;
 		if (m_file.eof()) {
-			m_buffer = ".";
+			m_buffer = EOF;
 		} else {
 			m_buffer = m_file.readLine();
 		}

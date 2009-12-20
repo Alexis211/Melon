@@ -4,20 +4,15 @@ Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperW
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
-RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keymaps \
-	:/Applications :/Applications/Demos :/Applications/Shell :/Mount \
+RamFSFiles = :/System :/System/Configuration :/System/Keymaps \
 	Source/Kernel/Ressources/Configuration/Users:/System/Configuration/Users \
 	Source/Kernel/Ressources/Configuration/Groups:/System/Configuration/Groups \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
-	Source/Applications/Demos/asmdemo:/Applications/Demos/ASMDemo.app \
-	Source/Applications/Demos/cxxdemo:/Applications/Demos/CPPDemo.app \
-	Source/Applications/Demos/GOL:/Applications/Demos/GOL.app \
-	Source/Applications/Shell/Shell:/Applications/Shell/Shell.app \
-	Source/Applications/Shell/Help.txt:/Applications/Shell/Help.txt \
-	Source/Applications/PaperWork/PaperWork:/System/Applications/PaperWork.app \
-	:/Useless \
-   	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 
+	Source/Applications/Shell/Shell:/Shell.app \
+	Source/Applications/Shell/Help.txt:/Shell-Help.txt \
+	Source/Applications/Shell/Applets/rot13:/rot13 \
+   	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Melon-logo 
 
 Files = $(Kernel) $(RamFS)
 Floppy = Melon.img
