@@ -7,9 +7,10 @@
 #include <Kbd.iface.h>
 
 #include <OStream.proto.h>
+#include <IStream.proto.h>
 #include <WChar.class.h>
 
-class VirtualTerminal : public RessourceCaller, public OStream {
+class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
 	public:
 	static VirtualTerminal getIn() {
 		u32int id = RessourceCaller::sCall(VTIF_OBJTYPE, VTIF_SGETPRINVT);
@@ -29,6 +30,9 @@ class VirtualTerminal : public RessourceCaller, public OStream {
 	}*/
 	void write(const String &s) {
 		doCall(VTIF_WRITE, (u32int)&s);
+	}
+	String read() {
+		return String::unserialize(doCall(VTIF_READLINE, 1)) += "\n";
 	}
 	keypress_t getKeypress(bool show = true, bool block = true) {
 		keypress_t* ptr = (keypress_t*)doCall(VTIF_GETKEYPRESS, (show ? 1 : 0) | (block ? 2 : 0));

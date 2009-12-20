@@ -37,7 +37,7 @@ int PaperWork::run() {
 		String user, pw;
 		while (1) {
 			outvt << "Username: " << FLUSH;
-			user = invt.readLine();
+			user = invt.get();
 			outvt << "Password: " << FLUSH;
 			pw = invt.readLine(false);
 			if (!Process::get().authenticatePW(user, pw)) {
@@ -45,7 +45,7 @@ int PaperWork::run() {
 				continue;
 			}
 			outvt << "What shell to run [" << sFlag("shell") << "]? "<< FLUSH;
-			String sh = invt.readLine();
+			String sh = invt.get();
 			if (sh == "") sh = sFlag("shell");
 			Process p = Process::run(sh);
 			if (p.valid()) {

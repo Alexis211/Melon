@@ -14,6 +14,7 @@ void ShellApp::init() {
 	u32int argc = pr.argc();
 	for (u32int i = 0; i < argc; i++) {
 		String arg = pr.argv(i);
+		if (arg.empty()) continue;
 		if (arg == "-") {
 			i++;
 			if (i == argc) {
@@ -26,13 +27,13 @@ void ShellApp::init() {
 				bool found = false;
 				for (u32int i = 0; i < flags.size(); i++) {
 					if (flags[i].type == FT_BOOL) {
-						if (arg == String("--no-") + flags[i].lName) {
+						if (arg == (String("--no-") += flags[i].lName)) {
 							flags[i].boolVal = false;
 							found = true;
 						}
 					}
 				}
-				if (!found) outvt << "Unknown option : " << arg << "\n";
+				if (!found) outvt << "Unknown option : " << arg << ENDL;
 			} else if (arg.substr(0, 2) == "--") {
 				bool found = false;
 				for (u32int i = 0; i < flags.size(); i++) {
@@ -49,21 +50,29 @@ void ShellApp::init() {
 						}
 					}
 				}
-				if (!found) outvt << "Unknown option : " << arg << "\n";
+				if (!found) outvt << "Unknown option : " << arg << ENDL;
 			} else {
 				for (u32int j = 1; j < arg.size(); j++) {
 					bool found = false;
 					for (u32int k = 0; k < flags.size(); k++) {
 						if (flags[k].sName == arg[j]) {
 							found = true;
-							if (flags[k].type == FT_BOOL) flags[k].boolVal = true;
-							if (flags[k].type == FT_INT) flags[k].intVal = pr.argv(++i).toInt();
-							if (flags[k].type == FT_STR) flags[k].strVal = pr.argv(++i);
+							if (flags[k].type == FT_BOOL) {
+								flags[k].boolVal = true;
+							} else {
+								i++;
+								if (i >= argc) {
+									outvt << "Missing argument for flag : -" << String(arg[j], 1) << ENDL;
+								} else {
+									flags[k].strVal = pr.argv(i);
+									if (flags[k].type == FT_INT) flags[k].intVal = flags[k].strVal.toInt();
+								}
+							}
 							break;
 						}
 					}
 					if (!found) {
-						outvt << "Unknown option : -" << String(arg[j]) << "\n";
+						outvt << "Unknown option : -" << String(arg[j], 1) << ENDL;
 						exit(-1);
 					}
 				}

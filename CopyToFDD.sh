@@ -17,8 +17,6 @@ cp Init.rfs Mount/System
 
 # Copy system files
 cp Source/Kernel/Ressources/Configuration/* Mount/System/Configuration
-cp Source/Applications/PaperWork/PaperWork Mount/System/Applications/PaperWork.app
-cp Source/Applications/Shell/Shell Mount/Applications/Shell/Shell.app
 
 # Create mount configuration file
 echo "/Volumes/InitRFS:ramfs:0" > Mount/System/Configuration/Mount
@@ -27,6 +25,10 @@ echo "/Volumes/HDD:block.ata:0:1" >> Mount/System/Configuration/Mount
 # Copy demo apps
 cp Source/Applications/Demos/GOL Mount/Applications/Demos/GOL.app
 cp Source/Applications/Demos/asmdemo Mount/Applications/Demos/ASM.dem
+
+# Copy system apps
+cp Source/Applications/PaperWork/PaperWork Mount/System/Applications/PaperWork.app
+cp Source/Applications/Shell/Shell Mount/Applications/Shell/Shell.app
 
 #echo "*** Launching a BASH shell, if you want to do any maintenance ***"
 #bash || exit 0

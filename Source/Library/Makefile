@@ -20,6 +20,7 @@ Objects = Common/WChar.class.uo \
 		  Common/ByteArray.class.uo \
 		  Common/Rand.ns.uo \
 		  Common/OStream.proto.uo \
+		  Common/IStream.proto.uo \
 		  Common/cppsupport.wtf.uo \
 		  Userland/App/ShellApp.proto.uo \
 		  Userland/Syscall/Syscall.wtf.uo \
