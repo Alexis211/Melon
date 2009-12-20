@@ -46,7 +46,8 @@ int GOL::run() {
 			}
 		}
 		outvt.moveCursor(0, 0);
-		outvt << tmp.toString() << "Press Ctrl+h for help";
+		outvt.write(tmp.toString());	//BYPASS buffering
+		outvt<< "Press Ctrl+h for help" << FLUSH;
 
 		//Compute next generation
 		for (int y = 0; y < h; y++) {
@@ -92,7 +93,7 @@ int GOL::run() {
 					cells[x * h + y] = true;
 				}
 			} else if (kp.character == WChar("p")) {
-				outvt << " [PAUSED] press a key to resume";
+				outvt << " [PAUSED] press a key to resume" << FLUSH;
 				invt.getKeypress();
 			} else if (kp.character == WChar("h")) {
 				outvt << "\n\n** Melon's demo Game Of Life Simulator help :\n";
@@ -101,7 +102,7 @@ int GOL::run() {
 				outvt << " - ctrl+p : pause\n";
 				outvt << " - ctrl+r : add some random cells\n";
 				outvt << " - ctrl+R : add more cells, still random\n\n";
-				outvt << "Press any key to return to simultaor...";
+				outvt << "Press any key to return to simultaor..." << FLUSH;
 				invt.getKeypress();
 			}
 			kp = invt.getKeypress(false, false);

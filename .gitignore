@@ -3,6 +3,7 @@
 *.uo
 Init.rfs
 Map.txt
+Source/Applications/Shell/Applets/*.map
 Source/Kernel/Melon.ke
 Ports
 Ports/*

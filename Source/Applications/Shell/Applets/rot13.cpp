@@ -11,6 +11,7 @@ APP(rot13);
 int rot13::run() {
 	while (!in->eof()) {
 		String s = in->get();
+		if (in->eof() && s.empty()) break;
 		for (u32int i = 0; i < s.size(); i++) {
 			WChar &c = s[i];
 			if (c >= WChar('A') and c <= WChar('Z')) {
@@ -22,7 +23,6 @@ int rot13::run() {
 				if (c > WChar('z')) c -= 26;
 			}
 		}
-		if (in->eof() && s.empty()) break;
 		*out << s << ENDL;
 	}
 	return 0;
