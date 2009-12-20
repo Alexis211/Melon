@@ -116,8 +116,28 @@ void selectVideoMode(SimpleVT& v) {
 	}
 }
 
+#define STATUS(stat) { \
+	progress++;		\
+	kvt->setColor(STATUSBAR_FGCOLOR, STATUSBAR_BGCOLOR);	\
+	line = kvt->csrlin();	\
+	kvt->moveCursor(0, 0);	\
+	*kvt << "Melon is loading :       {";	\
+	for (u32int i = 0; i < progress; i++) *kvt << ":";	\
+	*kvt << ".              ";	\
+	kvt->moveCursor(0, 42);	\
+	*kvt << "}                                    ";	\
+	kvt->moveCursor(0, 51);	\
+	*kvt << "[" << stat;	\
+	kvt->moveCursor(0, 78);	\
+	*kvt << "] ";	\
+	kvt->setColor(KVT_FGCOLOR, KVT_BGCOLOR);	\
+	kvt->moveCursor(line, 0);	\
+}
+
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
+
+	u16int progress = 0, line;	//For logger
 
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC) {
 		Mem::placementAddress = (u32int)&end;	//Setup basic stuff so that PANIC will work
@@ -146,27 +166,34 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	//Create a VT for logging what kernel does
 	kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(0, 0);
-	*kvt << "Melon is loading...\n";
+	*kvt << "Melon is loading :\n";
 
+	STATUS("IDT");
 	IDT::init();		//Setup interrupts 
 
+	STATUS("Paging");
 	u32int totalRam = ((mbd->mem_upper + mbd->mem_lower) * 1024);
 	PhysMem::initPaging(totalRam);		//Setup paging 
 
+	STATUS("GDT");
 	GDT::init();		//Initialize real GDT, not fake one from loader.wtf.asm
 	PhysMem::removeTemporaryPages(); 	//Remove useless page mapping
 
+	STATUS("Heap");
 	Mem::createHeap();		//Create kernel heap 
 	Dev::registerDevice(vgaout);
 
+	STATUS("Timer");
 	Dev::registerDevice(new Timer()); 	//Initialize timer
 	String kcmdline((char*)mbd->cmdline);
+	STATUS("Multitasking");
 	Task::initialize(kcmdline, kvt);	//Initialize multitasking 
 
 	asm volatile("sti");
 
 	//***************************************	PARSE COMMAND LINE
 	
+	STATUS("Parse command line");
 	Vector<String> opts = kcmdline.split(" ");
 	String keymap = "builtin", init = "/System/Applications/PaperWork.app";
 	String root = "ramfs:0";
@@ -183,14 +210,15 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	//*************************************** 	DEVICE SETUP
 
-	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
+	STATUS("Keyboard");		Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
-	if (enableVESA) Dev::registerDevice(new VESADisplay());
-	FloppyController::detect();
-	ATAController::detect();
+	STATUS("VESA");			if (enableVESA) Dev::registerDevice(new VESADisplay());
+	STATUS("Floppy");		FloppyController::detect();
+	STATUS("Hard disk drives");	ATAController::detect();
 
 	//***************************************	MOUNT FILESYSTEMS
 
+	STATUS("Root filesystem");
 	{	// mount root filesystem
 		if (!VFS::mount(String("/:") += root, kvt, mbd)) PANIC("Cannot mount root filesystem.");
 	}
@@ -198,6 +226,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	cwd = VFS::getRootNode();
 	Task::currProcess()->setCwd(cwd);
 
+	STATUS("File systems");
 	// mount other filesystems
 	for (u32int i = 0; i < mount.size(); i++) {
 		VFS::mount(mount[i], kvt, mbd);
@@ -214,17 +243,21 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	
 	//***************************************	LOAD SYSTEM STUFF
 
+	STATUS("Logging");
 	Log::init(KL_STATUS);	//Setup logging
 	Log::log(KL_STATUS, "kmain : Melon booting.");
 
 	if (keymap != "builtin") {
+		STATUS("Keymap");
 		if (!Kbd::loadKeymap(keymap)) Log::log(KL_WARNING, String("WARNING : Could not load keymap ") += keymap += ", using built-in keymap instead.");
 	}
 
+	STATUS("Users");
 	Usr::load();			//Setup user managment
 	Log::log(KL_STATUS, "kmain : User list loaded");
 
 	if (init.empty()) {
+		STATUS("= LAUNCHING KERNEL SHELL =");
 		*kvt << "\n";
 		new KernelShell(cwd, kvt);
 		while (KernelShell::getInstances() > 0) {
@@ -232,6 +265,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 		}
 		Sys::halt();
 	} else {
+		STATUS("=  VIDEO MODE DETECTION  =");
 		selectVideoMode(*kvt);
 		//Create a VT for handling the Melon bootup logo
 		SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);

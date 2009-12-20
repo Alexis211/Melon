@@ -24,6 +24,8 @@ class SimpleVT : public VirtualTerminal {
 	bool isBoxed() { return true; }
 	u8int height() { return m_rows; }
 	u8int width() { return m_cols; }
+	u8int csrlin() { return m_csrlin; }
+	u8int csrcol() { return m_csrcol; }
 
 	void map(s32int row = -1, s32int col = -1);
 	void unmap();
