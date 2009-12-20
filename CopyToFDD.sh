@@ -5,6 +5,13 @@
 # Update GRUB's menu.cfg
 cp Grub-menu-fdd.cfg Mount/boot/menu.cfg
 
+# Cleanup old stuff
+cd Mount
+for a in `ls`; do
+	if [ $a != boot ]; then rm -rf $a; fi
+done
+cd ..
+
 # Create directories
 mkdir Mount/{System,Applications,Volumes}
 mkdir Mount/Applications/{Shell,Demos}

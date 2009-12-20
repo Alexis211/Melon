@@ -6,11 +6,13 @@
 
 FileIStream::FileIStream(const String &filename, u8int encoding, FSNode start) : m_start(start) {
 	m_file = new File(filename, FM_READ, start);
+	m_filenames = 0;
 	m_encoding = encoding;
 }
 
 FileIStream::FileIStream(u8int encoding, FSNode start) : m_start(start) {
 	m_file = 0;
+	m_filenames = 0;
 	m_encoding = encoding;
 }
 
@@ -30,10 +32,11 @@ void FileIStream::appendFile(const String &filename) {
 }
 
 String FileIStream::read() {
-	if (m_file == 0) return "";
-	while (m_file->eof() or !m_file->valid()) {
-		m_file->close();
-		delete m_file;
+	while (m_file == 0 or m_file->eof() or !m_file->valid()) {
+		if (m_file != 0) {
+			m_file->close();
+			delete m_file;
+		}
 		m_file = 0;
 		if (m_filenames == 0) {
 			return "";

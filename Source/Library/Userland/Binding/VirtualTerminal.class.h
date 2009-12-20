@@ -39,6 +39,7 @@ class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
 		String ret = String::unserialize(doCall(VTIF_READLINE, 1));
 		if (ret[ret.size() - 1] == WChar(EOF)) {
 			ret = ret.substr(0, ret.size() - 1);
+			if (ret.empty()) return "";
 			m_eof = true;
 		}
 		return ret += "\n";

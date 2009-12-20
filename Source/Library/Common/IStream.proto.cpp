@@ -51,7 +51,10 @@ WChar IStream::getChar() {
 String IStream::get(WChar delimiter) {
 	waitLock();
 	//calculate length of string to read
-	if (m_buffer == 0) populate();
+	if (m_buffer == 0) {
+		unlock();
+		if (!populate()) return "";
+	}
 	int length = 0, ptr = m_ptr;
 	for (SimpleList<String> *iter = m_buffer; iter != 0;) {
 		if (iter->v()[ptr] == delimiter) break;

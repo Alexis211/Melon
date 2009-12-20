@@ -16,6 +16,7 @@ RamFSFiles = :/System :/System/Applications :/System/Configuration :/System/Keym
 	Source/Applications/Shell/Shell:/Applications/Shell/Shell.app \
 	Source/Applications/Shell/Help.txt:/Applications/Shell/Help.txt \
 	Source/Applications/PaperWork/PaperWork:/System/Applications/PaperWork.app \
+	Source/Applications/Shell/Applets/rot13:/rot13 \
 	:/Useless \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Useless/Melon-logo 
 

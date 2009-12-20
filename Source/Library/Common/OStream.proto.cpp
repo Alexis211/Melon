@@ -11,6 +11,7 @@ OStream::OStream(const OStream& other) {
 }
 
 void OStream::put(const String &s) {
+	if (s.empty()) return;
 	waitLock();
 	if (m_buffer == NULL or m_last == NULL) {
 		m_buffer = m_last = new SimpleList<String>(s);
@@ -55,8 +56,9 @@ OStream& OStream::operator<< (ostream_modifiers_e m) {
 		flush();
 	} else if (m == ENDL) {
 		put("\n");
+		flush();
 	} else if (m == END) {
-		put(String(EOF, 1));
+		put(EOF);
 		flush();
 	}
 	return *this;

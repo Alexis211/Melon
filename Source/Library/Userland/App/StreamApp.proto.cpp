@@ -6,6 +6,7 @@ StreamApp::StreamApp(const String& name, const String& desc)
 	: ShellApp(name, desc) {
 	addFlag("o", "output", "Set the output to a file instead of the text output", FT_STR, "");
 	addFlag("e", "encoding", "Set the encoding for files (input and output)", FT_STR, "utf8");
+	addFlag("a", "append", "When writing to a file, append instead of truncating", FT_BOOL, "");
 }
 
 StreamApp::~StreamApp() {
@@ -13,7 +14,7 @@ StreamApp::~StreamApp() {
 
 void StreamApp::init() {
 	ShellApp::init();
-
+	
 	u8int encoding = UE_UTF8;
 	if (sFlag("encoding") == "utf8") encoding = UE_UTF8;
 	if (sFlag("encoding") == "utf16be") encoding = UE_UTF16_BE;
@@ -24,7 +25,7 @@ void StreamApp::init() {
 	if (sFlag("output") == "") {
 		out = &outvt;
 	} else {
-		out = new FileOStream(sFlag("output"), FM_TRUNCATE, encoding, FS::cwdNode());
+		out = new FileOStream(sFlag("output"), (bFlag("append") ? FM_APPEND : FM_TRUNCATE), encoding, FS::cwdNode());
 	}
 
 	if (args.size() == 0) {

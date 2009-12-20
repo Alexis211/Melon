@@ -16,7 +16,8 @@ ShellApp::~ShellApp() {
 void ShellApp::init() {
 	//Parse flags
 	u32int argc = pr.argc();
-	for (u32int i = 0; i < argc; i++) {
+	args.clear();
+	for (u32int i = 1; i < argc; i++) {
 		String arg = pr.argv(i);
 		if (arg.empty()) continue;
 		if (arg == "-") {
@@ -89,7 +90,7 @@ void ShellApp::init() {
 	//Eventually show help screen
 	if (bFlag("help")) {
 		outvt << appName << ": " << appDesc << "\n";
-		outvt << "Usage: \t" << appName << " <flags> [-] <arguments>\n\n";
+		outvt << "Usage: \t" << pr.argv(0) << " <flags> [-] <arguments>\n\n";
 		outvt << "Possible flags :\n";
 		for (u32int i = 0; i < flags.size(); i++) {
 			outvt << "   --" << flags[i].lName << "\t" << (flags[i].sName != 0 ? "-" : "") << String(flags[i].sName) << "\t";
