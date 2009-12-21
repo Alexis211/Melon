@@ -1,6 +1,8 @@
 #include "Disp.ns.h"
 #include <DeviceManager/Dev.ns.h>
 #include <VTManager/VT.ns.h>
+#include <VTManager/ScrollableVT.class.h>
+#include <Core/SB.ns.h>
 
 namespace Disp {
 
@@ -50,6 +52,43 @@ bool setMode(mode_t& newmode) {
 		return true;
 	}
 	return false;
+}
+
+void selectMode() {
+	getModes();
+	*kvt << "\nPlease select a graphic mode in the list below:\n";
+
+	for (u32int i = 0; i < Disp::modes.size(); i++) {
+		Disp::mode_t& m = Disp::modes[i];
+		*kvt << (s32int)i << ":\t" << "Text " << m.textRows << "x" << m.textCols;
+		kvt->setCursorCol(21);
+		if (m.graphWidth != 0 and m.graphHeight != 0) {
+			*kvt << "Graphics " << m.graphWidth << "x" << m.graphHeight << "x" << m.graphDepth << "\t";
+		} else {
+			*kvt << "No graphics";
+		}
+		kvt->setCursorCol(45);
+		*kvt << m.device->getName() << "\n";
+	}
+
+	while (1) {
+		*kvt << "\nYour selection: ";
+		String answer = kvt->readLine();
+		u32int n = answer.toInt();
+		kvt->unmap();
+		if (n >= 0 and n < Disp::modes.size() and Disp::setMode(Disp::modes[n])) {
+			delete kvt;
+			SB::reinit();
+			kvt = new ScrollableVT(Disp::mode.textRows - SB::height, Disp::mode.textCols, 100, KVT_FGCOLOR, KVT_BGCOLOR);
+			kvt->map(SB::height);
+			Kbd::setFocus(kvt);
+			return;
+		} else {
+			Disp::setMode(Disp::modes[1]);
+			kvt->map();
+			*kvt << "Error while switching video mode, please select another one.";
+		}
+	}
 }
 
 void setText(VGATextOutput* o) {

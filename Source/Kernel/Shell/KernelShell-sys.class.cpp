@@ -81,6 +81,28 @@ void KernelShell::mount(Vector<String>& args) {
 	}
 }
 
+void KernelShell::unmount(Vector<String>& args) {
+	if (args.size() == 2) {
+		FSNode* n = VFS::find(args[1], m_cwd);
+		bool ok = false;
+		if (n == 0) {
+			ok = false;
+		} else {
+			String p = VFS::path(n);
+			for (u32int i = 0; i < VFS::filesystems.size(); i++) {
+				if (VFS::path(VFS::filesystems[i]->getRootNode()) == p) {
+					ok = VFS::unmount(VFS::filesystems[i]);
+					break;
+				}
+			}
+		}
+		if (ok) *m_vt << "Ok, filesystem unmounted.\n";
+		else *m_vt << "Error.\n";
+	} else {
+		*m_vt << "Usage: unmount <mountpoint>\n";
+	}
+}
+
 void KernelShell::readblock(Vector<String>& args) {
 	if (args.size() == 3) {
 		Vector<Device*> devcs = Dev::findDevices("block");
