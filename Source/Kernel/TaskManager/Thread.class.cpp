@@ -154,6 +154,12 @@ void Thread::handleException(registers_t *regs, int no) {
 		"", "", "",
 		"", ""};
 
+	u32int faddr = 0;
+	if (no == 14) {		//Page fault.
+		asm volatile("mov %%cr2, %0" : "=r"(faddr));
+		if (PageDirectory::handlePageFault(faddr)) return;	//Some segment mapped that page - everything OK
+	}
+
 	VirtualTerminal &vt = *(m_process->m_outVT);
 
 	vt << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs->cs << ":" <<
@@ -174,8 +180,6 @@ void Thread::handleException(registers_t *regs, int no) {
 		int rw = regs->err_code & 0x2;
 		int us = regs->err_code & 0x4;
 		int rsvd = regs->err_code & 0x8;
-		u32int faddr;
-		asm volatile("mov %%cr2, %0" : "=r"(faddr));
 		vt << "\n   ";
 		if (present) vt << "Present ";
 		if (rw) vt << "R/W ";
@@ -183,7 +187,7 @@ void Thread::handleException(registers_t *regs, int no) {
 		if (rsvd) vt << "Rsvd ";
 		vt << "At:" << (u32int)faddr;
 
-		if (m_isKernel) PANIC_DUMP("Exception in kernel thread", regs);
+		if (m_isKernel) PANIC("Exception in kernel thread");
 		Sys::stackTrace(regs->ebp, vt, 5, true);
 
 		vt << "\nThread finishing.\n";

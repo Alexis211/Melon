@@ -30,6 +30,8 @@ struct PageDirectory {
 	static void map(page_t *p, u32int frame, bool is_user, bool is_writable);
 	static void unmap(page_t *p, bool physFree = false);
 
+	static bool handlePageFault(u32int addr);
+
 	PageDirectory();
 	//PageDirectory(PageDirectory* other);	//Clones the other pagedir
 	~PageDirectory();
@@ -43,6 +45,8 @@ struct PageDirectory {
 	private:
 	PageDirectory(const PageDirectory& other);
 	void operator=(const PageDirectory& other);
+
+	static PageDirectory* currPD;
 };
 
 

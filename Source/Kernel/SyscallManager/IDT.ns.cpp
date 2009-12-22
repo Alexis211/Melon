@@ -64,11 +64,11 @@ extern "C" void idt_flush(u32int);
 
 extern "C" void interrupt_handler(registers_t regs) {
 	bool doSwitch = (regs.int_no == 32 or regs.int_no >= 65);	//SYSCALLS >= 65 are task-managing-related
-	if (regs.int_no < 32) {
+	if (regs.int_no < 32) {				//************	HANDLE AN EXCEPTION
 		if ((u32int)Task::currThread() == 0xFFFFFFFF or Task::currThread() == 0)
 			PANIC_DUMP("Exception cannot be handled.", &regs);
 		Task::currThread()->handleException(&regs, regs.int_no);
-	} else if (regs.int_no < 48) {
+	} else if (regs.int_no < 48) {		//************	HANDLE AN IRQ
 		if (regs.int_no >= 40)
 			outb(0xA0, 0x20);
 		outb(0x20, 0x20);
@@ -76,8 +76,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 		Dev::handleIRQ(regs, (regs.int_no - 32));
 		asm volatile("cli");
 		doSwitch = doSwitch or Task::IRQwakeup(regs.int_no - 32);
-	}
-	if (regs.int_no == 64) {
+	} else if (regs.int_no == 64) {		//************	HANDLE A SYSCALL
 		asm volatile("sti");	//Make syscalls preemtible
 		u32int res = (regs.eax >> 8);
 		u8int wat = (regs.eax & 0xFF);
@@ -95,8 +94,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 		//Some syscalls have maybee modified current page directory, set it back to one for current process
 		Task::currProcess()->getPagedir()->switchTo();
 		asm volatile("cli");
-	}
-	if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
+	} else if (regs.int_no == 66) {	//This syscall signals to kernel that thread ended.
 		Task::currentThreadExits(regs.eax);	//DO NOT COUNT ON COMMING BACK FROM HERE
 	}
 	if (doSwitch) Task::doSwitch();	//DO NOT COUNT ON COMMING BACK FROM HERE EITHER

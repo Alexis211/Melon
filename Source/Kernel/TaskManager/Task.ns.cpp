@@ -136,13 +136,14 @@ void currentThreadExits(u32int errcode) {	//Call currThreadExitProceed with a wo
 	*stack = 0;
 	u32int esp = (u32int)(stack), ebp = (u32int)(stack + 1), eip = (u32int)currThreadExitProceed;
 
+	kernelPageDirectory->switchTo();
+
 	asm volatile("			\
 			mov %0, %%ebp;	\
 			mov %1, %%esp;	\
 			mov %2, %%ecx;	\
-			mov %3, %%cr3;	\
 			jmp *%%ecx;"
-		: : "r"(ebp), "r"(esp), "r"(eip), "r"(kernelPageDirectory->physicalAddr));
+		: : "r"(ebp), "r"(esp), "r"(eip));
 }
 
 void registerThread(Thread* t) {

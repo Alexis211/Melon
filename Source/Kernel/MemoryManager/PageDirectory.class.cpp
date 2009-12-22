@@ -4,7 +4,7 @@
 #include <TaskManager/Task.ns.h>
 #include <VTManager/SimpleVT.class.h>
 
-extern "C" void copy_page_physical(u32int src, u32int dest);
+PageDirectory* PageDirectory::currPD;
 
 /* 			FOR MAPPING FRAMES TO PAGES     */
 void PageDirectory::map(page_t* p, u32int frame, bool is_user, bool is_writable) {
@@ -22,6 +22,19 @@ void PageDirectory::unmap(page_t *p, bool freePhys) {
 	p->frame = 0;
 }
 
+/*			FOR HANDLING PAGE FAULTS		*/
+bool PageDirectory::handlePageFault(u32int addr) {
+	if (currPD == 0) return false;
+	for (u32int i = 0; i < currPD->mappedSegs.size(); i++) {
+		seg_map_t *m = currPD->mappedSegs[i];
+		*kvt << m->start << "+" << m->len << " handle pf " << addr << "\n";
+		if (addr >= m->start && addr < m->start + m->len) {
+			if (m->seg->handleFault(addr, m)) return true;
+		}
+	}
+	return false;
+}
+
 /* 			FOR PAGE DIRECTORES				*/
 PageDirectory::PageDirectory() {
 	tablesPhysical = (u32int*)PageAlloc::alloc(&physicalAddr);
@@ -30,38 +43,6 @@ PageDirectory::PageDirectory() {
 		tablesPhysical[i] = 0;
 	}
 }
-
-/*
-PageDirectory::PageDirectory(PageDirectory* other) {
-	tablesPhysical = (u32int*)PageAlloc::alloc(&physicalAddr);
-	for (u32int i = 0; i < 768; i++) {
-		if (other->tablesPhysical[i] != 0) {
-			u32int tmp;
-			tables[i] = (page_table_t*)PageAlloc::alloc(&tmp);
-			tablesPhysical[i] = tmp | 0x07;
-			for (u32int j = 0; j < 1024; j++) {
-				if (!(other->tables[i]->pages[j].frame))
-					continue;
-				if (i == 0 and j < 256) continue;	//Frame is below 1M, probably used by some V86 stuff. Ignore it.
-				map(&tables[i]->pages[j], PhysMem::getFrame(), true, true);
-				tables[i]->pages[j].present = other->tables[i]->pages[j].present;
-				tables[i]->pages[j].rw = other->tables[i]->pages[j].rw;
-				tables[i]->pages[j].user = other->tables[i]->pages[j].user;
-				tables[i]->pages[j].accessed = other->tables[i]->pages[j].accessed;
-				tables[i]->pages[j].dirty = other->tables[i]->pages[j].dirty;
-				copy_page_physical(other->tables[i]->pages[j].frame * 0x1000, tables[i]->pages[j].frame * 0x1000);
-			}
-		} else {
-			tables[i] = 0;
-			tablesPhysical[i] = 0;
-		}
-	}
-	for (u32int i = 768; i < 1024; i++)	{	//Link kernel page tables
-		tablesPhysical[i] = other->tablesPhysical[i];
-		tables[i] = other->tables[i];
-	}
-}
-*/
 
 PageDirectory::~PageDirectory() {
 	for (u32int i = 0; i < mappedSegs.size(); i++) {
@@ -113,6 +94,7 @@ page_t *PageDirectory::getPage(u32int address, bool make) {
 }
 
 void PageDirectory::switchTo() {
+	currPD = this;
 	asm volatile("mov %0, %%cr3" :: "r"(physicalAddr));
 	u32int cr0;
 	asm volatile("mov %%cr0, %0" : "=r"(cr0));
