@@ -163,7 +163,11 @@ void Thread::handleException(registers_t *regs, int no) {
 	VirtualTerminal &vt = *(m_process->m_outVT);
 
 	vt << "\nUnhandled exception " << (s32int)no << " at " << (u32int)regs->cs << ":" <<
-		(u32int)regs->eip << "\n:: " << exceptions[no];
+		(u32int)regs->eip << "\nProcess:";
+	for (u32int i = 0; i < m_process->args().size(); i++) {
+		vt << " " << m_process->args()[i];
+	}
+	vt << "\n:: " << exceptions[no];
 	if (no == 3) {
 		vt << "\n\nBreakpoint data :\n";
 		Sys::dumpRegs(regs, vt);
@@ -185,12 +189,12 @@ void Thread::handleException(registers_t *regs, int no) {
 		if (rw) vt << "R/W ";
 		if (us) vt << "User ";
 		if (rsvd) vt << "Rsvd ";
-		vt << "At:" << (u32int)faddr;
+		vt << "At:" << (u32int)faddr << "\n";
 
-		if (m_isKernel) PANIC("Exception in kernel thread");
+		if (m_isKernel) PANIC_DUMP("Exception in kernel thread", regs);
 		Sys::stackTrace(regs->ebp, vt, 5, true);
 
-		vt << "\nThread finishing.\n";
+		vt << "Thread finishing.\n";
 		Task::currentThreadExits(E_PAGEFAULT);	//Calling this will setup a new stack
 		return;
 	}

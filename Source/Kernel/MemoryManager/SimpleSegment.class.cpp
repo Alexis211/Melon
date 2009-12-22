@@ -26,8 +26,11 @@ void SimpleSegment::unmap(seg_map_t *mapping) {
 
 bool SimpleSegment::handleFault(u32int addr, seg_map_t *mapping) {
 	if (m_mapping != mapping) return false;
+	if (addr & 0xFFF) addr &= 0xFFFFF000;
 	if (addr >= mapping->start and addr < mapping->start + mapping->len) {
-		PageDirectory::map(mapping->pd->getPage(addr, true), PhysMem::getFrame(), m_user, m_rw);
+		page_t *p = mapping->pd->getPage(addr, true);
+		if (p->frame != 0) return false;	//If we segfaulted here, it was because of a write
+		PageDirectory::map(p, PhysMem::getFrame(), m_user, m_rw);
 		return true;
 	}
 	return false;
@@ -35,6 +38,7 @@ bool SimpleSegment::handleFault(u32int addr, seg_map_t *mapping) {
 
 bool SimpleSegment::allocFrame(u32int addr) {
 	if (addr & 0xFFF) addr &= 0xFFFFF000;
+	if (m_mapping == 0) return false;
 	if (addr < m_mapping->start) {
 		m_mapping->len += (m_mapping->start - addr);
 		m_mapping->start = addr;

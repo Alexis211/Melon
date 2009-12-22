@@ -27,7 +27,6 @@ bool PageDirectory::handlePageFault(u32int addr) {
 	if (currPD == 0) return false;
 	for (u32int i = 0; i < currPD->mappedSegs.size(); i++) {
 		seg_map_t *m = currPD->mappedSegs[i];
-		*kvt << m->start << "+" << m->len << " handle pf " << addr << "\n";
 		if (addr >= m->start && addr < m->start + m->len) {
 			if (m->seg->handleFault(addr, m)) return true;
 		}

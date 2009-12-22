@@ -52,6 +52,7 @@ String String::number(s32int number) {
 String String::unserialize(u32int w) {
 	if (w == (u32int) - 1) return String();
 	u32int* a = (u32int*)w;
+	if (a[0] == 0) return String();
 	String ret;
 	ret.m_length = a[0];
 	ret.m_string = (WChar*)Mem::alloc(a[0] * sizeof(WChar));

@@ -46,7 +46,7 @@ int PaperWork::run() {
 			}
 			outvt << "What shell to run [" << sFlag("shell") << "]? "<< FLUSH;
 			String sh = invt.get();
-			if (sh == "") sh = sFlag("shell");
+			if (sh.empty()) sh = sFlag("shell");
 			Process p = Process::run(sh);
 			if (p.valid()) {
 				p.setInVT(invt);

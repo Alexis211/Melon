@@ -81,6 +81,7 @@ class Process : public Ressource {
 
 	Heap& heap() { return *m_userHeap; }
 	SimpleSegment *dataSeg() { return m_dataSeg; }
+	const Vector<String> &args() { return m_arguments; }
 
 	void start();	//Starts thread execution - sets m_state to P_RUNNING if == P_STARTING
 	void pushArg(const String& arg);
