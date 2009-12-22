@@ -34,6 +34,8 @@
 #include <Core/SB.ns.h>
 #include <Shell/KernelShell.class.h>
 
+#include <Map.class.h>
+
 #include <Ressources/Graphics/logo.text.cxd>
 
 extern u32int end;	//Placement address
