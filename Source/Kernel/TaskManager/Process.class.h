@@ -25,6 +25,7 @@ class DirectoryNode;
 #define STACKSIZE 4096	//Could change
 
 #define USERHEAPINITSIZE 0x00010000	//Heap initially is 64k, but can grow
+#define USERHEAPIDXSIZE 0x00001000	//4k index is way enough, all we keep in it is stacks and share space
 #define USERHEAPSTART 0xB7000000	//Heap is at 0xB7000000, 128Mo before kernel space.
 
 class Thread;

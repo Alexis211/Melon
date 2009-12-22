@@ -78,11 +78,9 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 
 	//Create a user heap
 	m_userHeap = new Heap();
-	u32int heapIdxSize = PhysMem::total() * 16 + 0x10000;
-	heapIdxSize &= 0xFFFFF000;
-	m_heapSeg = new SimpleSegment(true, true, USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize);
+	m_heapSeg = new SimpleSegment(true, true, USERHEAPSTART, USERHEAPINITSIZE + USERHEAPIDXSIZE);
 	m_pagedir->map(m_heapSeg);
-	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize, heapIdxSize, m_heapSeg);
+	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + USERHEAPIDXSIZE, USERHEAPIDXSIZE, m_heapSeg);
 
 	//Create a user data segment
 	m_dataSeg = new SimpleSegment(true, true, 0x10000000, 0x10000);
