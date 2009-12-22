@@ -19,13 +19,6 @@ void biosInt(u8int int_no, v86_regs_t &regs) {
 	while (!ret.finished) Task::currThread()->sleep(10);
 }
 
-void map(Process* p) {
-	if (p == 0) p = Task::currProcess();
-	for (u32int i = 0x00000; i < 0xFFFFF; i += 0x1000) {
-		p->getPagedir()->allocFrame(i, true, true);
-	}
-}
-
 u16int allocSeg(u16int length) {
 	if (length & 0xF) length = (length & 0xFFFF0) + 0x10;
 	u16int segments = length / 16;

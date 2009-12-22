@@ -2,6 +2,8 @@
 #define DEF_PAGEDIRECTORY_CLASS_H
 
 #include <common.h>
+#include <Vector.class.h>
+#include <MemoryManager/Segment.proto.h>
 
 struct page_t {
 	u32int present		: 1;
@@ -22,14 +24,21 @@ struct PageDirectory {
 	u32int *tablesPhysical;
 	u32int physicalAddr;
 
+	Vector<seg_map_t> mappedSegs;
+
+	//For mapping a page to a frame
+	static void map(page_t *p, u32int frame, bool is_user, bool is_writable);
+	static void unmap(page_t *p, bool physFree = false);
+
 	PageDirectory();
 	PageDirectory(PageDirectory* other);	//Clones the other pagedir
 	~PageDirectory();
-	page_t *getPage(u32int address, bool make);
-	void map(page_t *p, u32int frame, bool is_user, bool is_writable);
-	void allocFrame(u32int address, bool is_user, bool is_writable);
-	void freeFrame(u32int address);
 	void switchTo();
+	page_t *getPage(u32int address, bool make);
+
+	//For mapping memory segments to the page directory
+	void map(Segment* seg);
+	void unmap(Segment* seg);
 
 	private:
 	PageDirectory(const PageDirectory& other);

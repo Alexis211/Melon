@@ -20,7 +20,7 @@ void *kallocInternal(size_t sz, bool align) {
 	u32int temp = placementAddress;
 	placementAddress += sz;
 	for (u32int i = temp; i < placementAddress; i += 0x1000) {
-		if (pagingEnabled) kernelPageDirectory->allocFrame(i, false, false);
+		if (pagingEnabled) PhysMem::keSeg.allocFrame(i);
 	}
 	return (void*)temp;
 }
@@ -34,7 +34,7 @@ void createHeap() {
 	u32int heapSize = HEAP_MIN_SIZE + heapIndexSize;							//Calculate heap size
 
 	for (u32int i = (placementAddress & 0xFFFFF000); i < heapStart; i += 0x1000) {
-		kernelPageDirectory->allocFrame(i, false, false);
+		PhysMem::keSeg.allocFrame(i);
 	}
 
 	kheap.create(heapStart, heapSize, heapIndexSize, kernelPageDirectory, false, false);
