@@ -37,6 +37,7 @@ class KernelShell {
 	void part(Vector<String>& args);
 	void readblock(Vector<String>& args);
 	void mount(Vector<String>& args);
+	void unmount(Vector<String>& args);
 
 	void setup(DirectoryNode* cwd, VirtualTerminal *vt);
 

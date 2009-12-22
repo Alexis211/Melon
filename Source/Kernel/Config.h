@@ -7,6 +7,9 @@
 #define TXTLOGO_FGCOLOR 9	//Colors for the melon logo
 #define TXTLOGO_BGCOLOR 0
 
+#define STATUSBAR_BGCOLOR 7
+#define STATUSBAR_FGCOLOR 0
+
 #define KVT_FGCOLOR 7		//Colors for the vt for selecting a screen mode
 #define KVT_BGCOLOR 0
 #define KVT_LIGHTCOLOR 9

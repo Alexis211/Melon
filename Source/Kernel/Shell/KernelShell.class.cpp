@@ -5,6 +5,7 @@
 #include <MemoryManager/PhysMem.ns.h>
 #include <TaskManager/Task.ns.h>
 #include <VFS/VFS.ns.h>
+#include <DeviceManager/Disp.ns.h>
 
 u32int KernelShell::m_instances = 0;
 
@@ -62,6 +63,7 @@ u32int KernelShell::run() {
 		{"part", &KernelShell::part},
 		{"readblock", &KernelShell::readblock},
 		{"mount", &KernelShell::mount},
+		{"unmount", &KernelShell::unmount},
 		{"hexdump", &KernelShell::hexdump},
 
 		{0, 0}
@@ -98,26 +100,10 @@ u32int KernelShell::run() {
 		} else if (tokens[0] == "exit") {
 			if (tokens.size() == 1) return 0;
 			return tokens[1].toInt();
-		} else if (tokens[0] == "unmount") {
-			if (tokens.size() == 2) {
-				FSNode* n = VFS::find(tokens[1], m_cwd);
-				bool ok = false;
-				if (n == 0) {
-					ok = false;
-				} else {
-					String p = VFS::path(n);
-					for (u32int i = 0; i < VFS::filesystems.size(); i++) {
-						if (VFS::path(VFS::filesystems[i]->getRootNode()) == p) {
-							ok = VFS::unmount(VFS::filesystems[i]);
-							break;
-						}
-					}
-				}
-				if (ok) *m_vt << "Ok, filesystem unmounted.\n";
-				else *m_vt << "Error.\n";
-			} else {
-				*m_vt << "Usage: unmount <mountpoint>\n";
-			}
+		} else if (tokens[0] == "mode") {
+			bool ch = (m_vt == kvt);
+			Disp::selectMode();
+			if (ch) m_vt = kvt;
 		} else if (tokens[0] != "" or tokens.size() != 1) {
 			u32int i = 0;
 			bool found = false;

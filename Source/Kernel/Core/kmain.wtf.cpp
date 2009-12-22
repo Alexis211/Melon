@@ -31,6 +31,7 @@
 #include <VFS/VFS.ns.h>
 #include <VFS/DirectoryNode.class.h>
 #include <Core/Log.ns.h>
+#include <Core/SB.ns.h>
 #include <Shell/KernelShell.class.h>
 
 #include <Map.class.h>
@@ -87,37 +88,6 @@ u32int logoAnimation(void* p) {
 	return 0;
 }
 
-void selectVideoMode(SimpleVT& v) {
-	Disp::getModes();
-	v << "\nPlease select a graphic mode in the list below:\n";
-
-	for (u32int i = 0; i < Disp::modes.size(); i++) {
-		Disp::mode_t& m = Disp::modes[i];
-		v << (s32int)i << ":\t" << "Text " << m.textRows << "x" << m.textCols << "\t";
-		if (m.graphWidth != 0 and m.graphHeight != 0) {
-			v << "Graphics " << m.graphWidth << "x" << m.graphHeight << "x" << m.graphDepth << "\t";
-		} else {
-			v << "No graphics";
-		}
-		v.setCursorCol(50);
-		v << m.device->getName() << "\n";
-	}
-
-	while (1) {
-		v << "\nYour selection: ";
-		String answer = v.readLine();
-		u32int n = answer.toInt();
-		v.unmap();
-		if (n >= 0 and n < Disp::modes.size() and Disp::setMode(Disp::modes[n])) {
-			return;
-		} else {
-			Disp::setMode(Disp::modes[1]);
-			v.map();
-			v << "Error while switching video mode, please select another one.";
-		}
-	}
-}
-
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
 
@@ -145,30 +115,46 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	VGATextOutput *vgaout = new VGATextOutput();
 	Disp::setText(vgaout);
 
-	//Create a VT for logging what kernel does
-	kvt = new ScrollableVT(25, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
-	kvt->map(0, 0);
-	*kvt << "Melon is loading...\n";
+	SB::init();
 
+	//Create a VT for logging what kernel does
+	SB::progress("Create kernel VT");
+	kvt = new ScrollableVT(24, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
+	kvt->map(1, 0);
+	kvt->setColor(TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
+	for (int i = 0; i < melonLogoLines; i++) {
+		kvt->setCursorCol(40 - (melonLogoCols / 2));
+		*kvt << melonLogo[i] << "\n";
+	}
+	kvt->setColor(KVT_FGCOLOR, KVT_BGCOLOR);
+
+	SB::progress("IDT");
 	IDT::init();		//Setup interrupts 
 
+	SB::progress("Paging");
 	u32int totalRam = ((mbd->mem_upper + mbd->mem_lower) * 1024);
 	PhysMem::initPaging(totalRam);		//Setup paging 
 
+	SB::progress("GDT");
 	GDT::init();		//Initialize real GDT, not fake one from loader.wtf.asm
 	PhysMem::removeTemporaryPages(); 	//Remove useless page mapping
 
+	SB::progress("Heap");
 	Mem::createHeap();		//Create kernel heap 
 	Dev::registerDevice(vgaout);
 
+	SB::progress("Timer");
 	Dev::registerDevice(new Timer()); 	//Initialize timer
 	String kcmdline((char*)mbd->cmdline);
+	SB::progress("Multitasking");
 	Task::initialize(kcmdline, kvt);	//Initialize multitasking 
+	SB::gomulti();
 
 	asm volatile("sti");
 
 	//***************************************	PARSE COMMAND LINE
 	
+	SB::progress("Parse command line");
 	Vector<String> opts = kcmdline.split(" ");
 	String keymap = "builtin", init = "/System/Applications/PaperWork.app";
 	String root = "ramfs:0";
@@ -185,14 +171,15 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	//*************************************** 	DEVICE SETUP
 
-	Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
+	SB::progress("Keyboard");		Dev::registerDevice(new PS2Keyboard());	//Initialize keyboard driver
 	Kbd::setFocus(kvt);	//Set focus to virtual terminal
-	if (enableVESA) Dev::registerDevice(new VESADisplay());
-	FloppyController::detect();
-	ATAController::detect();
+	SB::progress("VESA");			if (enableVESA) Dev::registerDevice(new VESADisplay());
+	SB::progress("Floppy");		FloppyController::detect();
+	SB::progress("Hard disk drives");	ATAController::detect();
 
 	//***************************************	MOUNT FILESYSTEMS
 
+	SB::progress("Root filesystem");
 	{	// mount root filesystem
 		if (!VFS::mount(String("/:") += root, kvt, mbd)) PANIC("Cannot mount root filesystem.");
 	}
@@ -200,6 +187,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	cwd = VFS::getRootNode();
 	Task::currProcess()->setCwd(cwd);
 
+	SB::progress("File systems");
 	// mount other filesystems
 	for (u32int i = 0; i < mount.size(); i++) {
 		VFS::mount(mount[i], kvt, mbd);
@@ -212,46 +200,44 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 			if (!m.empty() && m[0] != WChar("#")) VFS::mount(m, kvt, mbd);
 		}
 	}
-
 	
 	//***************************************	LOAD SYSTEM STUFF
 
-	if (keymap != "builtin") {
-		if (!Kbd::loadKeymap(keymap)) *kvt << "WARNING : Could not load keymap " << keymap << ", using built-in keymap instead.";
-	}
-
+	SB::progress("Logging");
 	Log::init(KL_STATUS);	//Setup logging
 	Log::log(KL_STATUS, "kmain : Melon booting.");
 
+	if (keymap != "builtin") {
+		SB::progress("Keymap");
+		if (!Kbd::loadKeymap(keymap)) Log::log(KL_WARNING, String("WARNING : Could not load keymap ") += keymap += ", using built-in keymap instead.");
+	}
+
+	SB::progress("Users");
 	Usr::load();			//Setup user managment
 	Log::log(KL_STATUS, "kmain : User list loaded");
 
+	SB::progress("Video mode selection");
+	Disp::selectMode();
 	if (init.empty()) {
+		SB::progress("Start kernel shell");
 		*kvt << "\n";
 		new KernelShell(cwd, kvt);
+		SB::message("Melon is running");
 		while (KernelShell::getInstances() > 0) {
 			Task::currThread()->sleep(100);
 		}
 		Sys::halt();
 	} else {
-		selectVideoMode(*kvt);
-		//Create a VT for handling the Melon bootup logo
-		SimpleVT *melonLogoVT = new SimpleVT(melonLogoLines, melonLogoCols, TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
-		melonLogoVT->map(1);
-		new Thread(logoAnimation, (void*)melonLogoVT, true);
-
+		SB::progress("Launch INIT");
 		Process* p = Process::run(init, 0);
 		if (p == 0) {
 			PANIC((char*)(u8int*)ByteArray(String("Could not launch init : ") += init));
 		} else {
 			Log::log(KL_STATUS, String("kmain : Starting init : ") += init);
-			VirtualTerminal* vt = new ScrollableVT(Disp::textRows() - 10, Disp::textCols() - 4,
-					200, SHELL_FGCOLOR, SHELL_BGCOLOR);
-			Kbd::setFocus(vt);
-			((ScrollableVT*)vt)->map(9);
-			p->setInVT(vt);
-			p->setOutVT(vt);
+			p->setInVT(kvt);
+			p->setOutVT(kvt);
 			p->start();
+			SB::message("Init started");
 			while (p->getState() != P_FINISHED) Task::currThread()->sleep(100);
 			PANIC("Init has terminated");
 		}

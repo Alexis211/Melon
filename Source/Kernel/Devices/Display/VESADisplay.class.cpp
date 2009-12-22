@@ -109,7 +109,7 @@ bool VESADisplay::setMode(mode_t &mode) {
 	regs.ax = 0x4F02;
 	regs.bx = mode.identifier | 0x4000;
 	V86::biosInt(0x10, regs);
-	if (regs.ax != 0x004F) return false;
+	if ((regs.ax & 0xFF00) != 0) return false;
 
 	if (m_currMode.bpp == 8) {
 		//Set palette to 8 bit
@@ -299,4 +299,21 @@ void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 		}
 		y++;
 	}
+}
+
+bool VESADisplay::textScroll(u16int line, u16int col, u16int height, u16int width, u8int color) {
+	u8int* start = memPos(col * C_FONT_WIDTH, line * C_FONT_HEIGHT);
+	u32int count = width * C_FONT_WIDTH * m_pixWidth;
+	u32int diff = C_FONT_HEIGHT * m_currMode.pitch;
+	putCsrBuff();
+	for (int i = 0; i < (height - 1) * C_FONT_HEIGHT; i++) {
+		memcpy(start, start + diff, count);
+		start += m_currMode.pitch;
+	}
+	for (u32int i = 0; i < width; i++) {
+		drawChar(line + height - 1, col + i, " ", color);
+	}
+	if (m_csrBuff.line == line + height - 1) m_csrBuff.line--;
+	drawCsr();
+	return true;
 }

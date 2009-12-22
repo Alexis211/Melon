@@ -77,6 +77,7 @@ class VESADisplay : public GraphicDisplay {
 
 	//Advanced graphical functions, recoded for being optimized
 	virtual void drawChar(u16int line, u16int col, WChar c, u8int color);
+	bool textScroll(u16int line, u16int col, u16int height, u16int width, u8int color);
 };
 
 #endif

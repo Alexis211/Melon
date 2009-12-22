@@ -18,6 +18,8 @@ class VGATextOutput : public Display {
 	void putChar(u16int line, u16int col, WChar c, u8int color);
 	void moveCursor(u16int line, u16int col);
 	void clear();
+
+	bool textScroll(u16int line, u16int col, u16int height, u16int width, u8int color);
 };
 
 #endif

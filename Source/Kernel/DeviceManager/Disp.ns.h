@@ -25,6 +25,7 @@ namespace Disp {
 
 	void getModes();
 	bool setMode(mode_t& mode);
+	void selectMode();
 
 	void setText(VGATextOutput* o);	//To use only once : when display is initializing
 }

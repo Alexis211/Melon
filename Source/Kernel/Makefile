@@ -14,6 +14,7 @@ Objects = Core/loader.wtf.o \
 		Core/kmain.wtf.o \
 		Core/Sys.ns.o \
 		Core/Log.ns.o \
+		Core/SB.ns.o \
 		MemoryManager/Mem.ns.o \
 		MemoryManager/PhysMem.ns.o \
 		MemoryManager/GDT.wtf.o \

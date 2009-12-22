@@ -78,7 +78,7 @@ class SimpleList {
 
 	u32int size() {
 		if (m_next == 0)
-			return 0;
+			return 1;
 		return m_next->size() + 1;
 	}
 };
