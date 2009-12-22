@@ -21,8 +21,6 @@ Objects = Core/loader.wtf.o \
 		MemoryManager/GDT.ns.o \
 		MemoryManager/PageDirectory.class.o \
 		MemoryManager/PageAlloc.ns.o \
-		MemoryManager/KernelSegment.class.o \
-		MemoryManager/V86Segment.class.o \
 		DeviceManager/Disp.ns.o \
 		DeviceManager/Dev.ns.o \
 		DeviceManager/Time.ns.o \
