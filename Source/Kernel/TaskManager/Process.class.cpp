@@ -70,12 +70,23 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 	m_inVT = Task::currProcess()->getInVT();
 	m_outVT = Task::currProcess()->getOutVT();
 	m_fileDescriptors = 0;
-	//Create page directory and user heap
-	m_pagedir = new PageDirectory(kernelPageDirectory);
+
+	//Create page directory
+	m_pagedir = new PageDirectory();
+	m_pagedir->map(&PhysMem::keSeg);
 	m_pagedir->switchTo();
+
+	//Create a user heap
 	m_userHeap = new Heap();
 	u32int heapIdxSize = PhysMem::total() * 16 + 0x10000;
-	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize, heapIdxSize, m_pagedir, true, true);
+	m_heapSeg = new SimpleSegment(true, false, USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize);
+	m_pagedir->map(m_heapSeg);
+	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + heapIdxSize, heapIdxSize, m_heapSeg);
+
+	//Create a user data segment
+	m_dataSeg = new SimpleSegment(true, true, 0x10000000, 0x10000);
+	m_pagedir->map(m_heapSeg);
+
 	Task::registerProcess(this);
 }
 

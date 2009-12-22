@@ -1,10 +1,6 @@
 #include "Heap.class.h"
 
 #ifdef THIS_IS_MELON_KERNEL
-#include <MemoryManager/PageDirectory.class.h>
-#endif
-
-#ifdef THIS_IS_MELON_KERNEL
 Heap::Heap() : m_mutex(MUTEX_FALSE) {
 #else
 Heap::Heap() : m_mutex(MUTEX_FALSE), m_process(Process::get()) {
@@ -19,7 +15,7 @@ Heap::~Heap() {
 }
 
 #ifdef THIS_IS_MELON_KERNEL
-void Heap::create(u32int start, u32int size, u32int idxsize, PageDirectory* pagedir, bool user, bool rw) {
+void Heap::create(u32int start, u32int size, u32int idxsize, AllocaterSegment *seg) {
 #else
 void Heap::create(u32int start, u32int size, u32int idxsize) {
 #endif
@@ -31,15 +27,14 @@ void Heap::create(u32int start, u32int size, u32int idxsize) {
 	m_end = start + size;
 
 #ifdef THIS_IS_MELON_KERNEL
-	m_pagedir = pagedir;
-	m_user = user;
-	m_rw = rw;
+	m_seg = seg;
 	
 	//Allocate frames for heap
 	for (u32int i = start ; i < m_end; i += 0x1000) {
-		m_pagedir->allocFrame(i, m_user, m_rw);
+		m_seg->allocFrame(i);
 	}
-	m_pagedir->switchTo();
+
+	m_seg->switchToPd();
 #else
 	m_process.allocPages(start, m_end);
 #endif
@@ -72,7 +67,7 @@ void Heap::expand(u32int quantity) {
 
 #ifdef THIS_IS_MELON_KERNEL
 	for (u32int i = m_end ; i < newEnd; i += 0x1000) {
-		m_pagedir->allocFrame(i, m_user, m_rw);
+		m_seg->allocFrame(i);
 	}
 #else
 	m_process.allocPages(m_end, newEnd);
@@ -131,7 +126,7 @@ void Heap::contract() {	//Automatically work out how much we can contract
 
 #ifdef THIS_IS_MELON_KERNEL
 	for (u32int i = newEnd; i < m_end; i += 0x1000) {
-		m_pagedir->freeFrame(i);
+		m_seg->freeFrame(i);
 	}
 #else
 	m_process.freePages(newEnd, m_end);

@@ -2,6 +2,7 @@
 #include <MemoryManager/PhysMem.ns.h>
 #include <MemoryManager/PageAlloc.ns.h>
 #include <TaskManager/Task.ns.h>
+#include <VTManager/SimpleVT.class.h>
 
 extern "C" void copy_page_physical(u32int src, u32int dest);
 
@@ -30,6 +31,7 @@ PageDirectory::PageDirectory() {
 	}
 }
 
+/*
 PageDirectory::PageDirectory(PageDirectory* other) {
 	tablesPhysical = (u32int*)PageAlloc::alloc(&physicalAddr);
 	for (u32int i = 0; i < 768; i++) {
@@ -59,10 +61,11 @@ PageDirectory::PageDirectory(PageDirectory* other) {
 		tables[i] = other->tables[i];
 	}
 }
+*/
 
 PageDirectory::~PageDirectory() {
 	for (u32int i = 0; i < mappedSegs.size(); i++) {
-		mappedSegs[i].seg->unmap(this, &mappedSegs[i]);
+		mappedSegs[i]->seg->unmap(mappedSegs[i]);
 	}
 	for (int i = 0; i < 768; i++) {		//Only free addresses below 0xC0000000, upper is kernel space
 		if (tables[i] != 0) {
@@ -73,13 +76,19 @@ PageDirectory::~PageDirectory() {
 }
 
 void PageDirectory::map(Segment* seg) {
-	mappedSegs.push(seg->map(this));
+	for (u32int i = 0; i < mappedSegs.size(); i++) {
+		if (mappedSegs[i]->seg == seg) return;
+	}
+	seg_map_t *map = seg->map(this);
+	if (map == 0) return;
+	mappedSegs.push(map);
 }
 
 void PageDirectory::unmap(Segment* seg) {
 	for (u32int i = 0; i < mappedSegs.size(); i++) {
-		if (mappedSegs[i].seg == seg) {
-			seg->unmap(this, &mappedSegs[i]);
+		if (mappedSegs[i]->seg == seg) {
+			seg->unmap(mappedSegs[i]);
+			delete mappedSegs[i];
 			mappedSegs[i] = mappedSegs.back();
 			return;
 		}
@@ -92,7 +101,7 @@ page_t *PageDirectory::getPage(u32int address, bool make) {
 	if (tables[tableIdx] != 0) {
 		return &(tables[tableIdx]->pages[address % 1024]);
 	} else if (make) {
-		if (address >= 0xC0000000) return 0;
+		if (address >= 0xC0000) return 0;	//Creating tables up there is the responsibility of KernelSegment.class
 		u32int tmp;
 		tables[tableIdx] = (page_table_t*)PageAlloc::alloc(&tmp);
 		CMem::memset((u8int*)tables[tableIdx], 0, 0x1000);

@@ -5,6 +5,7 @@
 #include <Vector.class.h>
 #include <SimpleList.class.h>
 #include <MemoryManager/PageDirectory.class.h>
+#include <MemoryManager/SimpleSegment.class.h>
 #include <Heap.class.h>
 #include <VTManager/VirtualTerminal.proto.h>
 #include <VFS/File.class.h>
@@ -45,6 +46,8 @@ class Process : public Ressource {
 	VirtualTerminal *m_inVT, *m_outVT;
 	DirectoryNode *m_cwd;
 
+	SimpleSegment *m_heapSeg, *m_dataSeg;
+
 	bool m_autodelete;
 
 	Heap *m_userHeap;
@@ -77,6 +80,7 @@ class Process : public Ressource {
 	~Process();
 
 	Heap& heap() { return *m_userHeap; }
+	SimpleSegment *dataSeg() { return m_dataSeg; }
 
 	void start();	//Starts thread execution - sets m_state to P_RUNNING if == P_STARTING
 	void pushArg(const String& arg);

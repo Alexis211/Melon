@@ -58,7 +58,7 @@ void V86Thread::setup() {
 	m_process->getPagedir()->switchTo();
 
 	//Map all lower memory
-	V86::map();
+	V86::map(m_process);
 
 	//Allocate space for v86 stack
 	m_ret->regs->ss = V86::allocSeg(V86_STACKSIZE);

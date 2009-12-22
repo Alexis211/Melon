@@ -23,6 +23,7 @@ Objects = Core/loader.wtf.o \
 		MemoryManager/PageAlloc.ns.o \
 		MemoryManager/KernelSegment.class.o \
 		MemoryManager/V86Segment.class.o \
+		MemoryManager/SimpleSegment.class.o \
 		DeviceManager/Disp.ns.o \
 		DeviceManager/Dev.ns.o \
 		DeviceManager/Time.ns.o \
@@ -46,9 +47,6 @@ Objects = Core/loader.wtf.o \
 		Shell/KernelShell.class.o \
 		Shell/KernelShell-fs.class.o \
 		Shell/KernelShell-sys.class.o \
-		Linker/Binary.proto.o \
-		Linker/MelonBinary.class.o \
-		Linker/ElfBinary.class.o \
 		../Library/Common/cppsupport.wtf.o \
 		../Library/Common/Bitset.class.o \
 		../Library/Common/String.class.o \
@@ -60,6 +58,9 @@ Objects = Core/loader.wtf.o \
 		../Library/Common/Heap-index.class.o \
 		../Library/Common/Mutex.class.o \
 		../Library/Common/TextFile.class.o \
+		Linker/Binary.proto.o \
+		Linker/MelonBinary.class.o \
+		Linker/ElfBinary.class.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \
 		VFS/VFS.ns.o \

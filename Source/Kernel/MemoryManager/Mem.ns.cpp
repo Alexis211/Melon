@@ -2,6 +2,7 @@
 #include <MemoryManager/PhysMem.ns.h>
 #include <TaskManager/Task.ns.h>
 #include <Heap.class.h>
+#include <VTManager/SimpleVT.class.h>
 
 namespace Mem {
 
@@ -37,7 +38,7 @@ void createHeap() {
 		PhysMem::keSeg.allocFrame(i);
 	}
 
-	kheap.create(heapStart, heapSize, heapIndexSize, kernelPageDirectory, false, false);
+	kheap.create(heapStart, heapSize, heapIndexSize, &PhysMem::keSeg);
 }
 
 void *alloc(size_t sz, bool align) {

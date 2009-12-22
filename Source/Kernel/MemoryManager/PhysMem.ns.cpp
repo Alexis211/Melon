@@ -1,6 +1,6 @@
 #include "PhysMem.ns.h"
 #include <Bitset.class.h>
-#include <VTManager/VirtualTerminal.proto.h>
+#include <VTManager/SimpleVT.class.h>
 
 PageDirectory* kernelPageDirectory;
 
@@ -16,17 +16,15 @@ void initPaging(u32int mem_size) {
 	
 	frames = new Bitset(nframes);
 
-	for (u32int i = 0; i < Mem::placementAddress / 0x1000; i++) frames->setBit(i);
-
-	kernelPageDirectory = new (Mem::alloc(sizeof(PageDirectory), true)) PageDirectory();
+	kernelPageDirectory = new PageDirectory();
 	kernelPageDirectory->map(&keSeg);
 
 	u32int i = 0xC0000000;
 	while (i < Mem::placementAddress) {
-		keSeg.identityMap(i);
+		if (!keSeg.allocFrame(i)) PANIC("Error allocating kernel frame.");
 		i += 0x1000;
 	}
-	//Also map thoses pages at begning of virtual memory
+	//Also map thoses pages at begning of virtual memory. This is a very temporary mechanism, before setting up the real GDT
 	for (u32int i = 0; i < (Mem::placementAddress - 0xC0000000) / 0x100000; i++) {
 		kernelPageDirectory->tablesPhysical[i] = kernelPageDirectory->tablesPhysical[768 + i];
 		kernelPageDirectory->tables[i] = kernelPageDirectory->tables[768 + i];

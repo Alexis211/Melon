@@ -18,7 +18,6 @@ namespace Task {
 	u32int nextPid();
 	bool IRQwakeup(u8int irq);
 
-	void allocKernelPageTable(u32int id, page_table_t *table, u32int tablePhys);
 	Process* getKernelProcess();	//Returns first registered process
 
 	void currentThreadExits(u32int errcode); 	//Syscall called when a thread finishes

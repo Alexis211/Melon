@@ -131,9 +131,7 @@ bool VESADisplay::setMode(mode_t &mode) {
 
 	m_fb = (u8int*)0xF0000000;
 	for (u32int i = 0; i < (u32int)(m_currMode.Yres * m_currMode.pitch); i += 0x1000) {
-		kernelPageDirectory->map(
-				kernelPageDirectory->getPage((u32int)(m_fb + i), true),
-			   	(m_currMode.physbase + i) / 0x1000, false, false);
+		PhysMem::keSeg.mapFrame((u32int)(m_fb) + i, m_currMode.physbase + i);
 	}
 	m_pixWidth = (m_currMode.bpp + 1) / 8;
 	clear();
@@ -142,8 +140,7 @@ bool VESADisplay::setMode(mode_t &mode) {
 
 void VESADisplay::unsetMode() {
 	for (u32int i = 0; i < (u32int)(m_currMode.Yres * m_currMode.pitch); i += 0x1000) {
-		page_t* p = kernelPageDirectory->getPage((u32int)(m_fb + i), false);
-		if (p != 0) p->present = 0, p->frame = 0;
+		PhysMem::keSeg.freeFrame((u32int)(m_fb) + i);
 	}
 }
 

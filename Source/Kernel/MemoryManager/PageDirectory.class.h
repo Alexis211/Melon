@@ -20,18 +20,18 @@ struct page_table_t {
 };
 
 struct PageDirectory {
-	page_table_t *tables[1024];	
-	u32int *tablesPhysical;
-	u32int physicalAddr;
+	page_table_t *tables[1024];		//Logical address of each page tables
+	u32int *tablesPhysical;			//Logical adress of the page directory = physical address of each page table
+	u32int physicalAddr;			//Physical address of the page directory
 
-	Vector<seg_map_t> mappedSegs;
+	Vector<seg_map_t*> mappedSegs;
 
 	//For mapping a page to a frame
 	static void map(page_t *p, u32int frame, bool is_user, bool is_writable);
 	static void unmap(page_t *p, bool physFree = false);
 
 	PageDirectory();
-	PageDirectory(PageDirectory* other);	//Clones the other pagedir
+	//PageDirectory(PageDirectory* other);	//Clones the other pagedir
 	~PageDirectory();
 	void switchTo();
 	page_t *getPage(u32int address, bool make);

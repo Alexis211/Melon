@@ -1,13 +1,13 @@
 #include "PageAlloc.ns.h"
 #include <MemoryManager/PhysMem.ns.h>
 
-#define CACHED_PAGES 3
+#define CACHED_PAGES 4
 
 // This mechanism is supposed to make it impossible to run out of free pages to use as a page table
 
 namespace PageAlloc {
 
-void* freePage[CACHED_PAGES];
+void* freePage[CACHED_PAGES];	//Logical addresses of the cached pages
 int freec = 0;
 bool usable = false, locked = false;
 

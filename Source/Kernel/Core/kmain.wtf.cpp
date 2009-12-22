@@ -139,11 +139,12 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	GDT::init();		//Initialize real GDT, not fake one from loader.wtf.asm
 	PhysMem::removeTemporaryPages(); 	//Remove useless page mapping
 
-	SB::progress("Heap");
+	SB::progress("Kernel heap");
 	Mem::createHeap();		//Create kernel heap 
+	kernelPageDirectory->tables[0] = 0;
 	Dev::registerDevice(vgaout);
 
-	SB::progress("Timer");
+	SB::progress("Programmable interrupt timer");
 	Dev::registerDevice(new Timer()); 	//Initialize timer
 	String kcmdline((char*)mbd->cmdline);
 	SB::progress("Multitasking");
@@ -178,7 +179,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	SB::progress("Hard disk drives");	ATAController::detect();
 
 	//***************************************	MOUNT FILESYSTEMS
-
+	
 	SB::progress("Root filesystem");
 	{	// mount root filesystem
 		if (!VFS::mount(String("/:") += root, kvt, mbd)) PANIC("Cannot mount root filesystem.");

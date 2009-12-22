@@ -121,16 +121,6 @@ bool IRQwakeup(u8int irq) {
 	return r;
 }
 
-void allocKernelPageTable(u32int id, page_table_t *table, u32int tablePhys) {
-	kernelPageDirectory->tables[id] = table;
-	kernelPageDirectory->tablesPhysical[id] = tablePhys;
-	if (id < 768) return;	//this would be a BUG
-	for (SimpleList<Process*> *iter = processes; iter != 0; iter = iter->next()) {
-		iter->v()->getPagedir()->tables[id] = table;
-		iter->v()->getPagedir()->tablesPhysical[id] = tablePhys;
-	}
-}
-
 void currThreadExitProceed(u32int errcode) {
 	currentThread->v()->finish(errcode);
 	currentThread = (SimpleList<Thread*>*)INVALID_TASK_MAGIC;

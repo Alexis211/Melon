@@ -27,6 +27,7 @@ struct heap_index_t {
 
 #ifdef THIS_IS_MELON_KERNEL
 class PageDirectory;
+#include <MemoryManager/Segment.proto.h>
 #else
 #include <Binding/Process.class.h>
 #endif
@@ -37,8 +38,7 @@ class Heap {
 	bool m_usable;
 	heap_index_t m_index;
 #ifdef THIS_IS_MELON_KERNEL
-	bool m_user, m_rw;
-	PageDirectory* m_pagedir;
+	AllocaterSegment *m_seg;
 #else
 	Process m_process;
 #endif
@@ -58,7 +58,7 @@ class Heap {
 	~Heap();
 
 #ifdef THIS_IS_MELON_KERNEL
-	void create(u32int start, u32int size, u32int idxsize, PageDirectory* pagedir, bool user, bool rw);
+	void create(u32int start, u32int size, u32int idxsize, AllocaterSegment *seg);
 #else
 	void create(u32int start, u32int size, u32int idxsize);
 #endif

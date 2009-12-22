@@ -1,6 +1,8 @@
 #include "V86.ns.h"
 #include <TaskManager/Task.ns.h>
 
+#include <MemoryManager/V86Segment.class.h>
+
 namespace V86 {
 
 u16int seg = V86_ALLOC_START;
@@ -17,6 +19,11 @@ void biosInt(u8int int_no, v86_regs_t &regs) {
 	ret.regs = &regs;
 	new V86Thread(int_no, &ret);
 	while (!ret.finished) Task::currThread()->sleep(10);
+}
+
+void map(Process *p) {
+	if (p == 0) p = Task::currProcess();
+	p->getPagedir()->map(&V86Segment::seg);
 }
 
 u16int allocSeg(u16int length) {

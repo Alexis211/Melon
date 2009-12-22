@@ -168,7 +168,6 @@ void Thread::handleException(registers_t *regs, int no) {
 		vt << "\n";
 		return;
 	}
-	if (m_isKernel) PANIC_DUMP("Exception in kernel thread", regs);
 
 	if (no == 14) {	//Page fault
 		int present = !(regs->err_code & 0x1);
@@ -182,14 +181,16 @@ void Thread::handleException(registers_t *regs, int no) {
 		if (rw) vt << "R/W ";
 		if (us) vt << "User ";
 		if (rsvd) vt << "Rsvd ";
-		vt << "At:" << (u32int)faddr << "\n";
+		vt << "At:" << (u32int)faddr;
 
+		if (m_isKernel) PANIC_DUMP("Exception in kernel thread", regs);
 		Sys::stackTrace(regs->ebp, vt, 5, true);
 
-		vt << "Thread finishing.\n";
+		vt << "\nThread finishing.\n";
 		Task::currentThreadExits(E_PAGEFAULT);	//Calling this will setup a new stack
 		return;
 	}
+	if (m_isKernel) PANIC_DUMP("Exception in kernel thread", regs);
 	vt << "\nThread finishing.\n";
 	Task::currentThreadExits(E_UNHANDLED_EXCEPTION);
 }

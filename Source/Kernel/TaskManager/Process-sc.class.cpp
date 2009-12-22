@@ -57,7 +57,7 @@ u32int Process::allocPagesSC(u32int pos, u32int end) {
 	if ((end & 0x00000FFF) != 0) end = (end & 0xFFFFF000) + 0x1000;
 	if (end - 1 >= 0xC0000000) return 1;
 	for (u32int i = pos; i < end; i += 0x1000)
-		m_pagedir->allocFrame(i, true, true);
+		m_dataSeg->allocFrame(i);
 	return 0;
 }
 
@@ -82,7 +82,7 @@ u32int Process::freePagesSC(u32int pos, u32int end) {
 	if ((end & 0x00000FFF) != 0) end = (end & 0xFFFFF000) + 0x1000;
 	if (end - 1 >= 0xC0000000) return 1;
 	for (u32int i = pos; i < end; i += 0x1000)
-		m_pagedir->freeFrame(i);
+		m_dataSeg->freeFrame(i);
 	return 0;
 }
 

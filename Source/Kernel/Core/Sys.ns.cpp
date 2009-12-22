@@ -111,7 +111,7 @@ void panic(char *message, registers_t *regs, char *file, u32int line) {
 	SB::message("PANIC");
 	asm volatile("cli");
 
-	SimpleVT vt(15, 70, BSOD_FGCOLOR, BSOD_BGCOLOR);
+	SimpleVT vt(17, 70, BSOD_FGCOLOR, BSOD_BGCOLOR);
 	vt.map();
 	vt.write("\n");
 
