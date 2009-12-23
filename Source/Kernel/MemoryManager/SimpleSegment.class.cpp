@@ -24,12 +24,12 @@ void SimpleSegment::unmap(seg_map_t *mapping) {
 	}
 }
 
-bool SimpleSegment::handleFault(u32int addr, seg_map_t *mapping) {
+bool SimpleSegment::handleFault(u32int addr, bool write, seg_map_t *mapping) {
 	if (m_mapping != mapping) return false;
 	if (addr & 0xFFF) addr &= 0xFFFFF000;
 	if (addr >= mapping->start and addr < mapping->start + mapping->len) {
 		page_t *p = mapping->pd->getPage(addr, true);
-		if (p->frame != 0) return false;	//If we segfaulted here, it was because of a write
+		if (p->frame != 0) return false;	//If we segfaulted here, it was because of a write to a RO segment
 		PageDirectory::map(p, PhysMem::getFrame(), m_user, m_rw);
 		return true;
 	}

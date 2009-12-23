@@ -10,7 +10,7 @@ class V86Segment : public Segment {
 	public:
 	seg_map_t* map(PageDirectory *pd);
 	void unmap(seg_map_t *mapping);
-	bool handleFault(u32int addr, seg_map_t *mapping) { return false; }
+	bool handleFault(u32int addr, bool write, seg_map_t *mapping) { return false; }
 
 	static V86Segment seg;
 };

@@ -157,7 +157,8 @@ void Thread::handleException(registers_t *regs, int no) {
 	u32int faddr = 0;
 	if (no == 14) {		//Page fault.
 		asm volatile("mov %%cr2, %0" : "=r"(faddr));
-		if (PageDirectory::handlePageFault(faddr)) return;	//Some segment mapped that page - everything OK
+		bool write = ((regs->err_code & 0x2) != 0);
+		if (PageDirectory::handlePageFault(faddr, write)) return;	//Some segment mapped that page - everything OK
 	}
 
 	VirtualTerminal &vt = *(m_process->m_outVT);
@@ -181,12 +182,12 @@ void Thread::handleException(registers_t *regs, int no) {
 
 	if (no == 14) {	//Page fault
 		int present = !(regs->err_code & 0x1);
-		int rw = regs->err_code & 0x2;
+		int write = regs->err_code & 0x2;
 		int us = regs->err_code & 0x4;
 		int rsvd = regs->err_code & 0x8;
 		vt << "\n   ";
 		if (present) vt << "Present ";
-		if (rw) vt << "R/W ";
+		if (write) vt << "Write ";
 		if (us) vt << "User ";
 		if (rsvd) vt << "Rsvd ";
 		vt << "At:" << (u32int)faddr << "\n";

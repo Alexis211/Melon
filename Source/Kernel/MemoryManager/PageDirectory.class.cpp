@@ -23,12 +23,12 @@ void PageDirectory::unmap(page_t *p, bool freePhys) {
 }
 
 /*			FOR HANDLING PAGE FAULTS		*/
-bool PageDirectory::handlePageFault(u32int addr) {
+bool PageDirectory::handlePageFault(u32int addr, bool write) {
 	if (currPD == 0) return false;
 	for (u32int i = 0; i < currPD->mappedSegs.size(); i++) {
 		seg_map_t *m = currPD->mappedSegs[i];
 		if (addr >= m->start && addr < m->start + m->len) {
-			if (m->seg->handleFault(addr, m)) return true;
+			if (m->seg->handleFault(addr, write, m)) return true;
 		}
 	}
 	return false;

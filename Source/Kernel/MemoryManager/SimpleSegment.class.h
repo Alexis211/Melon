@@ -20,7 +20,7 @@ class SimpleSegment : public AllocaterSegment {
 
 	seg_map_t *map(PageDirectory* pd);
 	void unmap(seg_map_t *mapping);
-	bool handleFault(u32int addr, seg_map_t *mapping);
+	bool handleFault(u32int addr, bool write, seg_map_t *mapping);
 
 	bool allocFrame(u32int addr);
 	void freeFrame(u32int addr);

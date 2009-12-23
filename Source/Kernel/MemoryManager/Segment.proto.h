@@ -17,7 +17,7 @@ class Segment {
 	public:
 	virtual seg_map_t* map(PageDirectory *pd) = 0;
 	virtual void unmap(seg_map_t *mapping) = 0;
-	virtual bool handleFault(u32int addr, seg_map_t *mapping) = 0;	//true = ok, false = app segfaulted
+	virtual bool handleFault(u32int addr, bool write, seg_map_t *mapping) = 0;	//true = ok, false = app segfaulted
 
 	virtual Segment* clone() { return this; }
 };
