@@ -4,7 +4,7 @@
 #include <Linker/Binary.proto.h>
 #include <SimpleList.class.h>
 
-/* p_type */
+/* elf_phdr_t :: p_type : program header entries types */
 #define	PT_NULL             0
 #define	PT_LOAD             1
 #define	PT_DYNAMIC          2
@@ -14,6 +14,11 @@
 #define	PT_PHDR             6
 #define	PT_LOPROC  0x70000000
 #define	PT_HIPROC  0x7fffffff
+
+/* elf_phdr_t :: p_flags : program header entries flags */
+#define PF_X	(1 << 0)
+#define PF_W	(1 << 1)
+#define PF_R	(1 << 2)
 
 struct elf_ehdr_t {
 	u8int e_ident[16];      /* ELF identification */
