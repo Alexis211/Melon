@@ -10,7 +10,7 @@ SimpleVT::SimpleVT(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) : Vir
 	m_cols = cols;
 	m_mapped = false;
 	m_hideCursor = false;
-	setColor(fgcolor, bgcolor);
+	m_color = ((bgcolor & 0x0F) << 4) | (fgcolor & 0x0F);	
 	clear();
 
 	m_csrcol = 0;
@@ -20,14 +20,6 @@ SimpleVT::SimpleVT(u32int rows, u32int cols, u8int fgcolor, u8int bgcolor) : Vir
 SimpleVT::~SimpleVT() {
 	if (m_mapped) VT::unmap(this);
 	delete [] m_buff;
-}
-
-void SimpleVT::setColor(u8int fgcolor, u8int bgcolor) {
-	if (bgcolor == 0xFF) {
-		m_color = (m_color & 0xF0) | fgcolor;
-	} else {
-		m_color = (bgcolor << 4) | fgcolor;	
-	}
 }
 
 void SimpleVT::putChar(u32int row, u32int col, WChar c) {
@@ -92,22 +84,44 @@ void SimpleVT::updateCursor() {
 	Disp::moveCursor(m_csrlin + m_maprow, m_csrcol + m_mapcol);
 }
 
-void SimpleVT::moveCursor(u32int row, u32int col) {
-	m_csrlin = row;
-	m_csrcol = col;
-	updateCursor();
+//Command handling
+void SimpleVT::handleEscape(mvt_esc_cmd_t cmd) {
+	switch (cmd.cmd) {
+		case MVTCMD_CLEAR:
+			clear();
+			break;
+		case MVTCMD_SCROLL:
+			scroll();
+			break;
+		case MVTCMD_SETFGCOLOR:
+			m_color = (m_color & 0xF0) | (cmd.a & 0x0F);
+			break;
+		case MVTCMD_SETBGCOLOR:
+			m_color = (m_color & 0x0F) | ((cmd.a & 0x0F) << 4);
+			break;
+		case MVTCMD_SETCOLOR:
+			m_color = ((cmd.b & 0x0F) << 4) | (cmd.a & 0x0F);	
+			break;
+		case MVTCMD_MOVECSR:
+			m_csrlin = cmd.a; m_csrcol = cmd.b;
+			updateCursor();
+			break;
+		case MVTCMD_SETCSRLIN:
+			m_csrlin = cmd.a;
+			updateCursor();
+			break;
+		case MVTCMD_SETCSRCOL:
+			m_csrcol = cmd.a;
+			updateCursor();
+			break;
+		case MVTCMD_HIDECSR:
+			m_hideCursor = true;
+			break;
+		case MVTCMD_SHOWCSR:
+			m_hideCursor = false;
+			break;
+	}
 }
-
-void SimpleVT::setCursorLine(u32int line) {
-	m_csrlin = line;
-	updateCursor();
-}
-
-void SimpleVT::setCursorCol(u32int col) {
-	m_csrcol = col;
-	updateCursor();
-}
-
 
 // Display functionn
 void SimpleVT::put(WChar c, bool updatecsr) {

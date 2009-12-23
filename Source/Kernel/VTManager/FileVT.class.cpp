@@ -11,10 +11,12 @@ FileVT::FileVT(String filename, u8int mode, FSNode *start, u8int encoding) :
 	}
 }
 	
-void FileVT::setCursorCol(u32int col) {
+void FileVT::handleEscape(mvt_esc_cmd_t cmd) {
 	if (!m_isWriting) return;
-	while (m_buffer.size() < col) {
-		put(" ");
+	if (cmd.cmd == MVTCMD_SETCSRCOL) {
+		while ((int)m_buffer.size() < cmd.a) {
+			put(" ");
+		}
 	}
 }
 

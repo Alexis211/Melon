@@ -21,12 +21,10 @@ void KernelShell::ls(Vector<String>& args) {
 		FSNode* n = d->getChild(i);
 		if (n->type() == NT_FILE) {
 			FileNode* f = (FileNode*)n;
-			*m_vt << " - FILE\t" << f->getName();
-			m_vt->setCursorCol(30);
+			*m_vt << " - FILE\t" << f->getName() << MVT::setcsrcol(30);
 			*m_vt << (s32int)f->getLength() << " bytes.\n";
 		} else if (n->type() == NT_DIRECTORY) {
-			*m_vt << " - DIR\t" << n->getName() << "/";
-			m_vt->setCursorCol(30);
+			*m_vt << " - DIR\t" << n->getName() << "/" << MVT::setcsrcol(30);
 			*m_vt << (s32int)n->getLength() << " items.\n";
 		}
 	}

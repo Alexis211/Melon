@@ -11,8 +11,7 @@ void KernelShell::devices(Vector<String>& args) {
 	Vector<Device*> dev = Dev::findDevices();
 	*m_vt << " - Detected devices :\n";
 	for (u32int i = 0; i < dev.size(); i++) {
-		*m_vt << "  - " << dev[i]->getClass();
-		m_vt->setCursorCol(25);
+		*m_vt << "  - " << dev[i]->getClass() << MVT::setcsrcol(25);
 		*m_vt << dev[i]->getName() << "\n";
 	}
 }
@@ -47,8 +46,7 @@ void KernelShell::part(Vector<String>& args) {
 		if (Part::devices[i] == 0) {
 			*m_vt << "[none]\n";
 		} else {
-			*m_vt << Part::devices[i]->getClass();
-			m_vt->setCursorCol(33);
+			*m_vt << Part::devices[i]->getClass() << MVT::setcsrcol(33);
 			*m_vt << Part::devices[i]->getName() << "\n";
 			for (u32int j = 0; j < Part::partitions.size(); j++) {
 				if (Part::partitions[j]->getDevice() == Part::devices[i]) {

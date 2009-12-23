@@ -45,7 +45,7 @@ int GOL::run() {
 				}
 			}
 		}
-		outvt.moveCursor(0, 0);
+		outvt << MVT::movecsr(0, 0);
 		outvt.write(tmp.toString());	//BYPASS buffering
 		outvt<< "Press Ctrl+h for help" << FLUSH;
 

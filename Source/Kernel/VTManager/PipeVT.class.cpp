@@ -5,9 +5,11 @@ PipeVT::PipeVT() {
 	m_col = 0;
 }
 
-void PipeVT::setCursorCol(u32int col) {
-	while (col > m_col) {
-		put(" ");
+void PipeVT::handleEscape(mvt_esc_cmd_t cmd) {
+	if (cmd.cmd == MVTCMD_SETCSRCOL) {
+		while (cmd.a > (int)m_col) {
+			put(" ");
+		}
 	}
 }
 

@@ -28,13 +28,11 @@ void Shell::ls(Vector<String>& args) {
 			if (((p >> i) & 1) == 0) perm[8 - i] = "-";
 		}
 		if (n.type() == NT_FILE) {
-			outvt << " FILE " << perm << " " << n.getName() << FLUSH;
-			outvt.setCsrCol(30);
-			outvt << (s32int)n.getLength() << " bytes.\n";
+			outvt << " FILE " << perm << " " << n.getName();
+			outvt << MVT::setcsrcol(35) << (s32int)n.getLength() << " bytes.\n";
 		} else if (n.type() == NT_DIRECTORY) {
-			outvt << " DIR  " << perm << " " << n.getName() << "/" << FLUSH;
-			outvt.setCsrCol(30);
-			outvt << (s32int)n.getLength() << " items.\n";
+			outvt << " DIR  " << perm << " " << n.getName() << "/";
+			outvt << MVT::setcsrcol(35) << (s32int)n.getLength() << " items.\n";
 		}
 	}
 }

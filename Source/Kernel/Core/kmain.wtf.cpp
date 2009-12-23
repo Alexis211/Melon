@@ -44,50 +44,6 @@ extern "C" void kmain(multiboot_info_t* mbd, u32int magic);
 
 SimpleVT* kvt;
 
-u32int logoAnimation(void* p) {
-	SimpleVT& vt = *((SimpleVT*)p);
-	vt.setColor(8);
-	u8int *wat = new u8int[melonLogoLines * melonLogoCols];
-	for (int x = 0; x < melonLogoCols; x++) {
-		for (int y = 0; y < melonLogoLines; y++) {
-			wat[x * melonLogoLines + y] = melonLogo[y][x];
-			vt.putChar(y, x, " ");
-		}
-	}
-	vt.setColor(TXTLOGO_FGCOLOR);
-	u32int s = 32;
-	for (int i = 0; i < 255; i++) {
-		for (int x = 0; x < (i < melonLogoCols ? i : melonLogoCols); x++) {
-			for (int y = 0; y < melonLogoLines; y++) {
-				if (wat[x * melonLogoLines + y] != melonLogo[y][x]) {
-					wat[x * melonLogoLines + y]++;
-					if (wat[x * melonLogoLines + y] > melonLogo[y][x] && (y + x) % 2 == 1)
-						wat[x * melonLogoLines + y] += 2;
-					if (wat[x * melonLogoLines + y] >= 127)
-						wat[x * melonLogoLines + y] = 32;
-					vt.setColor(7);
-					vt.putChar(y, x, wat[x * melonLogoLines + y]);
-				} else {
-					vt.setColor(TXTLOGO_FGCOLOR);
-					vt.putChar(y, x, wat[x * melonLogoLines + y]);
-				}
-			}
-		}
-		vt.setColor(8);
-		if (i < melonLogoCols) {
-			for (int y = 0; y < melonLogoLines; y++) {
-				s += 102;
-				while (s > 127) s -= (127 - 33);
-				wat[(i + (y%3)) * melonLogoLines + y] = s;
-				vt.putChar(y, (i + (y%3)), wat[(i + (y%3)) * melonLogoLines + y]);
-			}
-		}
-		Task::currThread()->sleep(20);
-	}
-	delete wat;
-	return 0;
-}
-
 void kmain(multiboot_info_t* mbd, u32int magic) {
 	DEBUG("Entering kmain.");
 
@@ -121,12 +77,12 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	SB::progress("Create kernel VT");
 	kvt = new ScrollableVT(24, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
 	kvt->map(1, 0);
-	kvt->setColor(TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
+	*kvt << MVT::setcolor(TXTLOGO_FGCOLOR, TXTLOGO_BGCOLOR);
 	for (int i = 0; i < melonLogoLines; i++) {
-		kvt->setCursorCol(40 - (melonLogoCols / 2));
+		*kvt << MVT::setcsrcol(40 - (melonLogoCols / 2));
 		*kvt << melonLogo[i] << "\n";
 	}
-	kvt->setColor(KVT_FGCOLOR, KVT_BGCOLOR);
+	*kvt << MVT::setcolor(KVT_FGCOLOR, KVT_BGCOLOR);
 
 	SB::progress("IDT");
 	IDT::init();		//Setup interrupts 

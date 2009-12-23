@@ -4,7 +4,7 @@ CXX = g++
 CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
 
 LD = ld
-LDFLAGS = -T ../../Library/Link.ld -L ../../Library
+LDFLAGS = -T ../../Library/App.ld -L ../../Library
 
 Objects = Shell.class.o \
 		  Shell-fs.class.o
@@ -31,8 +31,8 @@ Applets/%: Applets/%.o
 
 clean:
 	echo "* Removing object files..."
-	rm -rf *.o
+	rm -rf *.o Applets/*.o
 
 mrproper: clean
 	echo "* Removing applications..."
-	rm -rf $(OutFile)
+	rm -rf $(OutFile) $(Applets)

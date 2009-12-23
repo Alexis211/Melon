@@ -22,57 +22,37 @@ void init() {
 	sb = new SimpleVT(1, 80, STATUSBAR_FGCOLOR, STATUSBAR_BGCOLOR);
 	height = 1;
 	sb->map(0, 0);
-	sb->hideCursor();
+	*sb << MVT::hidecsr();
 }
 
 void drawprogress(const String& s) {
-	sb->clear();
+	*sb << MVT::clear();
 	int d = (sb->width() / 2) - ((BOOT_ITEMS + 4) / 2);
 	if (height == 1) d -= 4;
-	sb->moveCursor(0, d);
-	*sb << "{";
+	*sb << MVT::movecsr(0, d) << "{";
 	for (u32int i = 0; i < boot_progress; i++) *sb << ":";
-	*sb << ".";
-	sb->moveCursor(0, BOOT_ITEMS + d + 3);
-	*sb << "}";
+	*sb << "." << MVT::movecsr(0, BOOT_ITEMS + d + 3) << "}";
 	if (height > 1) {
 		*sb << "\n";
-		*sb << "Loading : [" << s;
-		sb->moveCursor(1, sb->width() - 2);
-		*sb << "]";
+		*sb << "Loading : [" << s << MVT::movecsr(1, sb->width() - 2) << "]";
 	} else {
-		sb->moveCursor(0, 0);
-		*sb << "Melon is loading :";
-		sb->moveCursor(0, d + BOOT_ITEMS + 6);
-		*sb << "[" << s;
-		sb->moveCursor(0, sb->width() - 2);
-		*sb << "]";
+		*sb << MVT::movecsr(0, 0) << "Melon is loading :" << MVT::movecsr(0, d + BOOT_ITEMS + 6) << "[" << s;
+		*sb << MVT::movecsr(0, sb->width() - 2) << "]";
 	}
 }
 
 void drawnormal() {
-	sb->clear();
-	sb->moveCursor(0, 0);
-	*sb << " [Up:" << (s64int)Time::uptime() << "s";
-	sb->moveCursor(0, 10);
-	*sb << "] [Mem:" << (s64int)PhysMem::free() << "/" << (s64int)PhysMem::total();
-	sb->moveCursor(0, 28);
-	*sb << "] [Proc.:" << (s64int)Task::processes->size();
-	sb->setCursorCol(39);
+	*sb << MVT::clear() << MVT::movecsr(0, 0) << " [Up:" << (s64int)Time::uptime() << "s";
+	*sb << MVT::movecsr(0, 10) << "] [Mem:" << (s64int)PhysMem::free() << "/" << (s64int)PhysMem::total();
+	*sb << MVT::movecsr(0, 28) << "] [Proc.:" << (s64int)Task::processes->size() << MVT::setcsrcol(39);
 	if (height > 1) {
-		*sb << "]";
-		sb->moveCursor(1, 0);
+		*sb << "]" << MVT::movecsr(1, 0);
 		*sb << " [Threads:" << (s64int)Task::threads->size();
-		sb->setCursorCol(12);
-		*sb << "] [" << msg;
-		sb->setCursorCol(sb->width() - 2);
-		*sb << "]";
+		*sb << MVT::setcsrcol(12) << "] [" << msg;
+		*sb << MVT::setcsrcol(sb->width() - 2) << "]";
 	} else {
 		*sb << "] [Threads:" << (s64int)Task::threads->size();
-		sb->setCursorCol(52);
-		*sb << "] [" << msg;
-		sb->setCursorCol(sb->width() - 2);
-		*sb << "]";
+		*sb << MVT::setcsrcol(52) << "] [" << msg << MVT::setcsrcol(sb->width() - 2) << "]";
 	}
 }
 
@@ -83,7 +63,7 @@ void reinit() {
 	height = (Disp::mode.textCols < 80 ? 2 : 1);
 	sb = new SimpleVT(height, Disp::mode.textCols, STATUSBAR_FGCOLOR, STATUSBAR_BGCOLOR);
 	sb->map(0, 0);
-	sb->hideCursor();
+	*sb << MVT::hidecsr();
 	if (boot_progress != 0) {
 		drawprogress(msg);
 	} else {

@@ -70,11 +70,9 @@ u32int KernelShell::run() {
 	};
 	
 	while (1) {
-		m_vt->setColor(KVT_LIGHTCOLOR);
-		*m_vt << VFS::path(m_cwd) << " # ";
-		m_vt->setColor(KVT_ENTRYCOLOR);
+		*m_vt << MVT::setfgcolor(KVT_LIGHTCOLOR) << VFS::path(m_cwd) << " # " << MVT::setfgcolor(KVT_ENTRYCOLOR);
 		Vector<String> tokens = m_vt->readLine().split(" ");
-		m_vt->setColor(KVT_FGCOLOR);
+		*m_vt << MVT::setfgcolor(KVT_FGCOLOR);
 		if (tokens[0] == "help") {
 			*m_vt << " - Command list for integrated kernel shell:\n";
 			*m_vt << "  - help       shows this help screen\n";
