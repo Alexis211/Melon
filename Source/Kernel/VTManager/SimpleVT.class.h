@@ -3,7 +3,13 @@
 
 #include <VTManager/VirtualTerminal.proto.h>
 
+namespace VT {
+	void redrawScreen();
+}
+
 class SimpleVT : public VirtualTerminal {
+	friend void VT::redrawScreen();
+
 	protected:
 	vtchr* m_buff;
 	u32int m_rows, m_cols;

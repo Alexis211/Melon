@@ -11,7 +11,12 @@ RamFSFiles = :/System :/System/Configuration :/System/Keymaps \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
 	Source/Applications/Shell/Shell:/Shell.app \
 	Source/Applications/Shell/Help.txt:/Shell-Help.txt \
-	Source/Applications/Shell/Applets/rot13:/rot13 \
+	Source/Applications/Shell/Applets/cat:/cat \
+	Source/Applications/Shell/Applets/halt:/halt \
+	Source/Applications/Shell/Applets/reboot:/reboot \
+	Source/Applications/Shell/Applets/uptime:/uptime \
+	Source/Applications/Shell/Applets/free:/free \
+	Source/Applications/Shell/Applets/ls:/ls \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Melon-logo 
 
 Files = $(Kernel) $(RamFS)

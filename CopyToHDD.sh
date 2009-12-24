@@ -24,7 +24,7 @@ cp Source/Kernel/Ressources/Configuration/* Mount/System/Configuration
 cp Source/Kernel/Ressources/Keymaps/*.mkm Mount/System/Keymaps
 cp Source/Applications/PaperWork/PaperWork Mount/System/Applications/PaperWork.app
 cp Source/Applications/Shell/Shell Mount/Applications/Shell/Shell.app
-cp Source/Applications/Shell/Applets/rot13 Mount/Applications/Shell/Applets
+cp Source/Applications/Shell/Applets/{cat,free,halt,reboot,uptime,ls} Mount/Applications/Shell/Applets
 cp Source/Applications/Shell/Help.txt Mount/Applications/Shell
 
 # Create mount configuration file

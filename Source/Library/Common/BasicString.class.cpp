@@ -183,3 +183,12 @@ BasicString<T> BasicString<T>::substr(s32int start, s32int size) {
 	memcpy((u8int*)ret.m_string, (u8int*)(&m_string[start]), size * sizeof(T));
 	return ret;
 }
+
+template <typename T>
+bool BasicString<T>::operator<(const BasicString<T>& other) const {
+	for (u32int i = 0; i < m_length && i < other.m_length; i++) {
+		if (m_string[i] < other.m_string[i]) return true;
+	}
+	if (m_length < other.m_length) return true;
+	return false;
+}

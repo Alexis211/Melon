@@ -20,22 +20,19 @@ class Map {
 	item_t* find(const K& key, item_t* start) {
 		if (start == 0) return 0;
 		if (start->key == key) return start;
-		if (start->key > key) return find(key, start->prev);
-		if (start->key < key) return find(key, start->next);
+		if (key < start->key) return find(key, start->prev);
+		else return find(key, start->next);
 		return 0;
 	}
 	item_t* insert(const K& key, const V& value, item_t* start) {
 		if (start == 0) return new item_t(key, value);
-		if (start->key == key) return 0;
-		if (start->key > key) {
+		if (start->key == key) return start;
+		if (key < start->key) {
 			start->prev = insert(key, value, start->prev);
-			return start;
-		}
-		if (start->key < key) {
+		} else {
 			start->next = insert(key, value, start->next);
-			return start;
 		}
-		return 0;
+		return start;
 	}
 
 	public:

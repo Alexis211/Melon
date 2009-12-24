@@ -10,7 +10,7 @@ Objects = Shell.class.o \
 		  Shell-fs.class.o
 OutFile = Shell
 
-Applets = Applets/rot13
+Applets = Applets/cat Applets/halt Applets/reboot Applets/uptime Applets/free Applets/ls
 
 all: $(OutFile) $(Applets)
 	echo "* Done with $(OutFile)."

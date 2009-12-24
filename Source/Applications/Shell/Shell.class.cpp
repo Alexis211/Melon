@@ -7,26 +7,40 @@ APP(Shell);
 Shell::Shell() : ShellApp("Shell.app", "The Melon command line interpreter"), cwd(FS::cwdNode()) {
 }
 
+void Shell::setupVars() {
+	shell_var_t tmp;
+	tmp.readonly = true;
+	tmp.value = String::number(pr.getUid());
+	m_vars.set("UID", tmp);
+	tmp.value = String::number(pr.getPid());
+	m_vars.set("PID", tmp);
+	tmp.value = "/";
+	m_vars.set("CWD", tmp);
+}
+
 int Shell::run() {
 	struct {	//Command list
 		String name;
 		void (Shell::*cmd)(Vector<String>&);
 	} commands[] = {
-		{"ls",		&Shell::ls},
 		{"cd",		&Shell::cd},
 		{"pwd",		&Shell::pwd},
 		{"rm",		&Shell::rm},
 		{"mkdir",	&Shell::mkdir},
-		{"cat",		&Shell::cat},
 		{"wf",		&Shell::wf},
 		{"run",		&Shell::run},
 		{"",		0}
 	};
 
+	setupVars();
+
 	cwd = FS::cwdNode();
 	while (1) {
-		outvt << "{" << cwd.getName() << "}: " << FLUSH;
+		outvt << MVT::setfgcolor(PROMPTS_COLOR) << "{" << MVT::setfgcolor(PROMPTV_COLOR) << cwd.getName() << 
+			MVT::setfgcolor(PROMPTS_COLOR) << "}: " << MVT::setfgcolor(ENTRY_COLOR) << FLUSH;
+		m_vars["CWD"].value = cwd.path();
 		String s = invt.get();
+		outvt << MVT::setfgcolor(NORMAL_COLOR) << FLUSH;
 		if (s.contains(EOF)) return 0;
 		if (s.empty()) continue;
 		while (s[0] == WChar(" ") or s[0] == WChar("\t")) {
@@ -52,26 +66,32 @@ int Shell::run() {
 			}
 		}
 
+		for (u32int i = 0; i < cmd.size(); i++) {
+			if (cmd[i][0] == WChar("$")) {
+				String k = cmd[i].substr(1);
+				if (m_vars.has(k)) {
+					cmd[i] = m_vars[k].value;
+				} else {
+					outvt << "Unknown variable : " << k << ENDL;
+				}
+			}
+		}
+
 		//Run command
 		if (cmd[0] == "exit") {
 			if (cmd.size() == 1) return 0;
 			return cmd[1].toInt();
-		} else if (cmd[0] == "halt") {
-			Sys::halt();
-			outvt << "Something went wrong.\n";
-		} else if (cmd[0] == "reboot") {
-			Sys::reboot();
-			outvt << "Something went wrong.\n";
-		} else if (cmd[0] == "uptime") {
-			outvt << "Uptime : " << (s64int)Sys::uptime() << "s\n";
-		} else if (cmd[0] == "free") {
-			outvt << "Free RAM : " << (s64int)Sys::freeRam() << " Kio of " << (s64int)Sys::totalRam() << " Kio\n"; 
-		} else if (cmd[0] == "uid") {
-			outvt << "User ID : " << (s64int)(pr.getUid()) << "\n";
 		} else if (cmd[0] == "help") {
-			while (cmd.size() > 1) cmd.pop();
-			cmd.push("/Applications/Shell/Help.txt");
-			cat(cmd);
+			Vector<String> args;
+			args.push("cat");
+			args.push("/Applications/Shell/Help.txt");
+			appRun("cat", args);
+		} else if (cmd[0] == "echo") {
+			for (u32int i = 1; i < cmd.size(); i++) {
+				if (i > 1) outvt << " ";
+				outvt << cmd[i];
+			}
+			outvt << ENDL;
 		} else {
 			u32int i = 0;
 			bool found = false;
@@ -87,9 +107,28 @@ int Shell::run() {
 				}
 				i++;
 			}
-			if (!found) outvt << "Unknown command : " << cmd[0] << "\n";
+			if (!found) {
+				if (!appRun(cmd[0], cmd))
+					outvt << "Unknown command : " << cmd[0] << "\n";
+			}
 		}
 	}
 }
 
 
+
+bool Shell::appRun(const String& app, Vector<String>& args) {
+	Process p = Process::run(app);
+	if (p.valid()) {
+		p.setInVT(invt);
+		p.setOutVT(outvt);
+		for (u32int i = 1; i < args.size(); i++) {
+			p.pushArg(args[i]);
+		}
+		p.start();
+		s32int v = p.wait();
+		outvt << "Return value : " << (s64int)v << ENDL;
+		return true;
+	}
+	return false;
+}
