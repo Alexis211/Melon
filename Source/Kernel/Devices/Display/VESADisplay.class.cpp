@@ -253,9 +253,9 @@ void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 			if (m_pixWidth == 2) memsetw((u16int*)p, bgcolor, 9);
 			if (m_pixWidth == 3) {
 				for (int i = 0; i < 9; i++) {
-					p[0] = (bgcolor >> 16);
+					p[0] = (bgcolor);
 					p[1] = (bgcolor >> 8);
-					p[2] = (bgcolor);
+					p[2] = (bgcolor >> 16);
 					p += 3;
 				}
 				p -= (9 * 3);

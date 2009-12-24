@@ -32,6 +32,10 @@ int Shell::run() {
 		{"",		0}
 	};
 
+	String dn = FS::dirname(pr.argv(0));
+	FSNode shellDir = (dn.empty() ? FS::cwdNode() : FS::find(dn, FS::cwdNode()));
+	String appletsDir = FS::find("Applets", shellDir).path() + "/";
+
 	setupVars();
 
 	cwd = FS::cwdNode();
@@ -84,8 +88,10 @@ int Shell::run() {
 		} else if (cmd[0] == "help") {
 			Vector<String> args;
 			args.push("cat");
-			args.push("/Applications/Shell/Help.txt");
-			appRun("cat", args);
+			args.push(shellDir.path());
+			if (args.back() != "/") args.back() += "/";
+			args.back() += "Help.txt";
+			if (!appRun(appletsDir + "cat", args)) outvt << "Could not find cat command to display help file\n";
 		} else if (cmd[0] == "echo") {
 			for (u32int i = 1; i < cmd.size(); i++) {
 				if (i > 1) outvt << " ";
@@ -108,7 +114,7 @@ int Shell::run() {
 				i++;
 			}
 			if (!found) {
-				if (!appRun(cmd[0], cmd))
+				if (!appRun(appletsDir + cmd[0], cmd))
 					outvt << "Unknown command : " << cmd[0] << "\n";
 			}
 		}
