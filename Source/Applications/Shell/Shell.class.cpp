@@ -23,12 +23,9 @@ int Shell::run() {
 		String name;
 		void (Shell::*cmd)(Vector<String>&);
 	} commands[] = {
-		{"cd",		&Shell::cd},
-		{"pwd",		&Shell::pwd},
 		{"rm",		&Shell::rm},
 		{"mkdir",	&Shell::mkdir},
 		{"wf",		&Shell::wf},
-		{"run",		&Shell::run},
 		{"",		0}
 	};
 
@@ -70,6 +67,7 @@ int Shell::run() {
 			}
 		}
 
+		//Look for variables to replace
 		for (u32int i = 0; i < cmd.size(); i++) {
 			if (cmd[i][0] == WChar("$")) {
 				String k = cmd[i].substr(1);
@@ -82,7 +80,7 @@ int Shell::run() {
 		}
 
 		//Run command
-		if (cmd[0] == "exit") {
+		if (cmd[0] == "exit") {					// * * * INTEGRATED COMMANDS * * * //
 			if (cmd.size() == 1) return 0;
 			return cmd[1].toInt();
 		} else if (cmd[0] == "help") {
@@ -98,7 +96,21 @@ int Shell::run() {
 				outvt << cmd[i];
 			}
 			outvt << ENDL;
-		} else {
+		} else if (cmd[0] == "cd") {
+			if (cmd.size() != 2) {
+				outvt << "Invalid argument count.\n";
+			} else {
+				FSNode ncwd = FS::find(cmd[1], cwd);
+				if (!ncwd.valid()) {
+					outvt << "No such directory : " << cmd[1] << ENDL;
+				} else if (ncwd.type() != NT_DIRECTORY) {
+					outvt << "Not a directory : " << cmd[1] << ENDL;
+				} else {
+					ncwd.setCwd();
+					cwd = ncwd;
+				}
+			}
+		} else {								// * * * CALL AN EXTERNAL COMMAND * * * //
 			u32int i = 0;
 			bool found = false;
 			while (!commands[i].name.empty()) {
@@ -114,8 +126,13 @@ int Shell::run() {
 				i++;
 			}
 			if (!found) {
-				if (!appRun(appletsDir + cmd[0], cmd))
-					outvt << "Unknown command : " << cmd[0] << "\n";
+				if (FS::basename(cmd[0]) != cmd[0]) {
+					if (!appRun(cmd[0], cmd))
+						outvt << "No such file : " << cmd[0] << "\n";
+				} else {
+					if (!appRun(appletsDir + cmd[0], cmd))
+						outvt << "Unknown command : " << cmd[0] << "\n";
+				}
 			}
 		}
 	}

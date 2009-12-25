@@ -1,0 +1,3 @@
+Welcome to this Melon floppy !
+As loading binaries from the floppy doesn't work very well, the shell has been placed on the initrd : you have to run /Sandbox/Shell.app instead of /Applications/Shell/Shell.app
+

@@ -32,12 +32,9 @@ class Shell : public ShellApp {
 
 	bool appRun(const String& name, Vector<String>& args);
 
-	void cd(Vector<String>& args);
-	void pwd(Vector<String>& args);
 	void rm(Vector<String>& args);
 	void mkdir(Vector<String>& args);
 	void wf(Vector<String>& args);
-	void run(Vector<String>& args);
 };
 
 #endif

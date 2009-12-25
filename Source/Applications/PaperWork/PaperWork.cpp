@@ -1,4 +1,6 @@
 #include <App/ShellApp.proto.h>
+#include <Binding/FSNode.class.h>
+#include <TextFile.class.h>
 
 #define DEFAULT_SHELL "/Applications/Shell/Shell.app"
 #define PAPERWORK_PATH "/System/Applications/PaperWork.app"
@@ -33,7 +35,13 @@ int PaperWork::run() {
 			}
 		}
 	} else if (act == "login") {
-		outvt << "Logging in to Melon\n";
+		FSNode welcome = FS::find("/System/Configuration/Welcome");
+		if (welcome.valid() && welcome.type() == NT_FILE) {
+			TextFile f("/System/Configuration/Welcome");
+			while (!f.eof()) outvt << f.readLine() << ENDL;
+		} else {
+			outvt << "Logging in to Melon\n";
+		}
 		String user, pw;
 		while (1) {
 			outvt << "Username: " << FLUSH;
@@ -55,6 +63,7 @@ int PaperWork::run() {
 				p.wait();	
 				outvt << "\n\n";
 			} else {
+				outvt << "Could not run application : " << sh << ENDL;
 				return 1;
 			}
 			return 0;

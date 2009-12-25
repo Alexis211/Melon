@@ -112,11 +112,6 @@ bool VESADisplay::setMode(mode_t &mode) {
 	if ((regs.ax & 0xFF00) != 0) return false;
 
 	if (m_currMode.bpp == 8) {
-		//Set palette to 8 bit
-		regs.ax = 0x4F08;
-		regs.bx = 0x0800;
-		V86::biosInt(0x10, regs);
-		if ((regs.ax & 0xFF) != 0x4F or regs.bx != 0x0800) return false;
 		//Set palette data
 		for (int i = 0; i < 16; i++) {
 			m_8bitPalette[i].pixels = 0;
