@@ -9,6 +9,8 @@ namespace PhysMem {
 u32int nframes;
 Bitset *frames;
 
+KernelSegment keSeg;
+
 void initPaging(u32int mem_size) {
 	nframes = mem_size / 0x1000;
 	
@@ -19,7 +21,7 @@ void initPaging(u32int mem_size) {
 
 	u32int i = 0xC0000000;
 	while (i < Mem::placementAddress) {
-		if (!keSeg.allocFrame(i)) PANIC("Error allocating kernel frame.");
+		keSeg.allocFrame(i);
 		i += 0x1000;
 	}
 	//Also map thoses pages at begning of virtual memory. This is a very temporary mechanism, before setting up the real GDT
@@ -42,30 +44,15 @@ void removeTemporaryPages() {
 	}
 }
 
-void allocFrame(page_t *page, bool is_user, bool is_writable) {
-	if (page->frame != 0) {
-		return;
-	} else {
-		u32int idx = frames->firstFreeBit();
-		if (idx == (u32int) - 1) PANIC("No more free frames !");
-		frames->setBit(idx);
-		page->present = 1;
-		page->user = (is_user ? 1 : 0);
-		page->rw = (is_writable ? 1 : 0);
-		page->frame = idx;
-	}
+u32int getFrame() {
+	u32int idx = frames->firstFreeBit();
+	if (idx == (u32int) - 1) PANIC("No more free frames !");
+	frames->setBit(idx);
+	return idx;
 }
 
-void freeFrame(page_t *page) {
-	if (page->frame == 0) {
-		return;
-	} else {
-		if (page->frame >= 0x100) {	//First 1M are reserved (system)
-			frames->clearBit(page->frame);
-		}
-		page->present = 0;
-		page->frame = 0;
-	}
+void freeFrame(u32int frame) {
+	frames->clearBit(frame);
 }
 
 u32int free() {

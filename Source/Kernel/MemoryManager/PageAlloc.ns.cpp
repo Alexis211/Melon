@@ -29,13 +29,10 @@ void* alloc(u32int* phys) {
 			next = Mem::alloc(0x1000, true);
 		} else {
 			u32int i = 0xFFFFF000;
-			page_t *p;
 			while (1) {
-				p = kernelPageDirectory->getPage(i, true);
-				if (p->frame == 0) break;
+				if (PhysMem::keSeg.allocFrame(i)) break;
 				i -= 0x1000;
 			}
-			PhysMem::allocFrame(p, true, false);
 			next = (void*)i;
 		}
 		freePage[freec] = next;
@@ -52,7 +49,7 @@ void* alloc(u32int* phys) {
 		if (p == 0) {	//THIS SHOULD NEVER HAPPEN
 			PANIC("Cached free page does not exist.");
 		} else if (p->frame == 0) {
-			PhysMem::allocFrame(p, true, false);
+			PageDirectory::map(p, PhysMem::getFrame(), true, false);
 		} else {
 			*phys = (p->frame * 0x1000);
 		}
@@ -61,7 +58,7 @@ void* alloc(u32int* phys) {
 }
 
 void free(void *ptr) {
-	kernelPageDirectory->freeFrame((u32int)ptr);
+	PhysMem::keSeg.freeFrame((u32int)ptr);
 	return;
 }
 

@@ -27,6 +27,7 @@ namespace V86 {
 	void biosInt(u8int int_no, v86_regs_t &regs);
 
 	void map(Process* p = 0);
+
 	u16int allocSeg(u16int size);
 	void* alloc(u16int size);
 }
