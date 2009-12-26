@@ -67,6 +67,28 @@ inline FSNode mkdir(String name, FSNode cwd = FSNode(0)) {
 	return FSNode(RessourceCaller::sCall(FNIF_OBJTYPE, FNIF_SMKDIR, (u32int)&name, cwd.resId()));
 }
 
+inline String dirname(String filename) {
+	int lastSlash = 0;
+	for (int i = 0; i < filename.size(); i++) {
+		if (filename[i] == WChar("/")) {
+			lastSlash = i;
+		}
+	}
+	if (lastSlash == 0 and filename[0] == WChar("/")) return "/";
+	return filename.substr(0, lastSlash);
+}
+
+inline String basename(String filename) {
+	int lastSlash = 0;
+	for (int i = 0; i < filename.size(); i++) {
+		if (filename[i] == WChar("/")) {
+			lastSlash = i;
+		}
+	}
+	if (lastSlash == 0 and filename[0] != WChar("/")) return filename;
+	return filename.substr(lastSlash + 1);
+}
+
 }
 
 #endif

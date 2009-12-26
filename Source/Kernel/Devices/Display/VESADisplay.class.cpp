@@ -112,11 +112,6 @@ bool VESADisplay::setMode(mode_t &mode) {
 	if ((regs.ax & 0xFF00) != 0) return false;
 
 	if (m_currMode.bpp == 8) {
-		//Set palette to 8 bit
-		regs.ax = 0x4F08;
-		regs.bx = 0x0800;
-		V86::biosInt(0x10, regs);
-		if ((regs.ax & 0xFF) != 0x4F or regs.bx != 0x0800) return false;
 		//Set palette data
 		for (int i = 0; i < 16; i++) {
 			m_8bitPalette[i].pixels = 0;
@@ -250,9 +245,9 @@ void VESADisplay::drawChar(u16int line, u16int col, WChar c, u8int color) {
 			if (m_pixWidth == 2) memsetw((u16int*)p, bgcolor, 9);
 			if (m_pixWidth == 3) {
 				for (int i = 0; i < 9; i++) {
-					p[2] = (bgcolor >> 16);
-					p[1] = (bgcolor >> 8);
 					p[0] = (bgcolor);
+					p[1] = (bgcolor >> 8);
+					p[2] = (bgcolor >> 16);
 					p += 3;
 				}
 				p -= (9 * 3);

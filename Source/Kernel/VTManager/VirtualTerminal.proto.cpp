@@ -3,8 +3,6 @@
 #include <VTManager/VT.ns.h>
 #include <TaskManager/Task.ns.h>
 
-#include <VirtualTerminal.iface.h>
-
 VirtualTerminal::VirtualTerminal() : 
 	Ressource(VTIF_OBJTYPE, m_callTable), m_kbdMutex(false), m_kbdbuff() {
 	m_kbdbuffStart = 0;
@@ -16,7 +14,16 @@ VirtualTerminal::~VirtualTerminal() {
 
 void VirtualTerminal::write(const String& s, bool updatecsr) {
 	for (u32int i = 0; i < s.size(); i++) {
-		put(s[i], false);
+		if (s[i] == WChar(MVT_ESC)) {
+			mvt_esc_cmd_t cmd;
+			cmd.cmd = s[i + 1];
+			cmd.a = s[i + 2];
+			cmd.b = s[i + 3];
+			i += 3;
+			handleEscape(cmd);
+		} else {
+			put(s[i], false);
+		}
 	}
 	if (updatecsr) updateCursor();
 }

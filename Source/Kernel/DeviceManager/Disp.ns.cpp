@@ -60,15 +60,13 @@ void selectMode() {
 
 	for (u32int i = 0; i < Disp::modes.size(); i++) {
 		Disp::mode_t& m = Disp::modes[i];
-		*kvt << (s32int)i << ":\t" << "Text " << m.textRows << "x" << m.textCols;
-		kvt->setCursorCol(21);
+		*kvt << (s32int)i << ":\t" << "Text " << m.textRows << "x" << m.textCols << MVT::setcsrcol(21);
 		if (m.graphWidth != 0 and m.graphHeight != 0) {
 			*kvt << "Graphics " << m.graphWidth << "x" << m.graphHeight << "x" << m.graphDepth << "\t";
 		} else {
 			*kvt << "No graphics";
 		}
-		kvt->setCursorCol(45);
-		*kvt << m.device->getName() << "\n";
+		*kvt << MVT::setcsrcol(45) << m.device->getName() << "\n";
 	}
 
 	while (1) {

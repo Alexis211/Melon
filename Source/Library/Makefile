@@ -6,10 +6,8 @@ CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I C
 ASM = nasm
 ASMFLAGS = -f elf
 
-LDFLAGS = -r
 LD = ld
 
-Library = Melon.o
 Objects = Common/WChar.class.uo \
 		  Common/CMem.ns.uo \
 		  Common/Mutex.class.uo \
@@ -30,14 +28,14 @@ Objects = Common/WChar.class.uo \
 		  Userland/Syscall/RessourceCaller.class.uo \
 		  Userland/Start.uo
 
-all: $(Library)
+all: libMelon.o
 	echo "* Done with library"
 
 rebuild: mrproper all
 
-$(Library): $(Objects)
-	echo "* Linking melon library $(Library)..."
-	$(LD) $(LDFLAGS) $^ -o $@
+libMelon.o: $(Objects)
+	echo "* Linking static Melon library libMelon.o..."
+	$(LD) -r $^ -o $@
 
 %.uo: %.cpp
 	echo "* Compiling $<..."

@@ -4,14 +4,23 @@ Projects = Kernel Library Tools/MakeRamFS Applications/Shell Applications/PaperW
 
 Kernel = Source/Kernel/Melon.ke
 RamFS = Init.rfs
-RamFSFiles = :/System :/System/Configuration :/System/Keymaps \
+RamFSFiles = :/System :/System/Configuration :/System/Keymaps :/Applets \
 	Source/Kernel/Ressources/Configuration/Users:/System/Configuration/Users \
 	Source/Kernel/Ressources/Configuration/Groups:/System/Configuration/Groups \
 	Source/Kernel/Ressources/Keymaps/fr.mkm:/System/Keymaps/fr.mkm \
 	Source/Kernel/Ressources/Texts/Welcome.txt:/Welcome.txt \
 	Source/Applications/Shell/Shell:/Shell.app \
-	Source/Applications/Shell/Help.txt:/Shell-Help.txt \
-	Source/Applications/Shell/Applets/rot13:/rot13 \
+	Source/Applications/Shell/Help.txt:/Help.txt \
+	Source/Applications/Shell/Applets/cat:/Applets/cat \
+	Source/Applications/Shell/Applets/halt:/Applets/halt \
+	Source/Applications/Shell/Applets/reboot:/Applets/reboot \
+	Source/Applications/Shell/Applets/uptime:/Applets/uptime \
+	Source/Applications/Shell/Applets/free:/Applets/free \
+	Source/Applications/Shell/Applets/ls:/Applets/ls \
+	Source/Applications/Shell/Applets/rm:/Applets/rm \
+	Source/Applications/Shell/Applets/mkdir:/Applets/mkdir \
+	Source/Applications/Shell/Applets/pwd:/Applets/pwd \
+	Source/Applications/Demos/GOL:/GOL.app \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Melon-logo 
 
 Files = $(Kernel) $(RamFS)

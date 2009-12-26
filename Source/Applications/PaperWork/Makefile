@@ -4,7 +4,7 @@ CXX = g++
 CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
 
 LD = ld
-LDFLAGS = -T ../../Library/Link.ld -L ../../Library -Map Map.txt
+LDFLAGS = -T ../../Library/App.ld -L ../../Library -Map Map.txt
 
 Objects = PaperWork.o
 OutFile = PaperWork

@@ -1,9 +1,10 @@
 *.swp
 *.o
+*.a
 *.uo
-Init.rfs
+*.map
 Map.txt
-Source/Applications/Shell/Applets/*.map
+Init.rfs
 Source/Kernel/Melon.ke
 Ports
 Ports/*

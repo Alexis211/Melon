@@ -15,7 +15,7 @@ class FileVT : public VirtualTerminal {
 	FileVT(String filename, u8int mode = FM_READ, FSNode* start = 0, u8int encoding = UE_UTF8);
 
 	bool isBoxed() { return false; }
-	void setCursorCol(u32int col);
+	void handleEscape(mvt_esc_cmd_t cmd);
 
 	void put(WChar c, bool updatecsr = true);
 	keypress_t getKeypress(bool show = true, bool block = true);

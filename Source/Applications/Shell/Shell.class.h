@@ -4,10 +4,25 @@
 #include <Binding/VirtualTerminal.class.h>
 #include <Binding/FSNode.class.h>
 #include <String.class.h>
+#include <Map.class.h>
 
 #include <App/ShellApp.proto.h>
 
+#define PROMPTS_COLOR 5
+#define PROMPTV_COLOR 9
+#define ENTRY_COLOR 6
+#define NORMAL_COLOR 7
+
+struct shell_var_t {
+	bool readonly;
+	String value;
+};
+
 class Shell : public ShellApp {
+	Map<String, shell_var_t> m_vars;
+
+	void setupVars();
+
 	public:
 	Shell();
 
@@ -15,14 +30,7 @@ class Shell : public ShellApp {
 
 	FSNode cwd;
 
-	void ls(Vector<String>& args);
-	void cd(Vector<String>& args);
-	void pwd(Vector<String>& args);
-	void rm(Vector<String>& args);
-	void mkdir(Vector<String>& args);
-	void cat(Vector<String>& args);
-	void wf(Vector<String>& args);
-	void run(Vector<String>& args);
+	bool appRun(const String& name, Vector<String>& args);
 };
 
 #endif

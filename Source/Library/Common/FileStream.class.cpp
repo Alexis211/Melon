@@ -62,6 +62,7 @@ FileOStream::FileOStream(const String& filename, u8int mode, u8int encoding, FSN
 }
 
 FileOStream::~FileOStream() {
+	m_file->close();
 	delete m_file;
 }
 

@@ -28,6 +28,9 @@ class BasicString {
 	bool operator== (const BasicString<T> &other) const { return compare(other); }
 	bool operator!= (const BasicString<T> &other) const { return !compare(other); }
 
+	bool operator<(const BasicString<T>& other) const;
+	bool operator>(const BasicString<T>& other) const { return (other < *this); }
+
 	BasicString<T>& append(const BasicString<T> &other);
 	BasicString<T>& append(const T* string, u32int length);
 	BasicString<T>& append(const T other);

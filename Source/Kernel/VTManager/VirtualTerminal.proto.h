@@ -7,6 +7,8 @@
 #include <DeviceManager/Kbd.ns.h>
 #include <Vector.class.h>
 
+#include <VirtualTerminal.iface.h>
+
 #include <SyscallManager/Ressource.class.h>
 
 struct vtchr {
@@ -39,34 +41,34 @@ class VirtualTerminal : public Ressource {
 	u32int locateSC(u32int, u32int);
 	bool accessible() { return true; }
 
+	//Internal use
+	virtual void updateCursor() {}
+
 	public:
 	static u32int scall(u8int, u32int, u32int, u32int, u32int);
 
 	VirtualTerminal();
 	virtual ~VirtualTerminal();
 
-	virtual void setColor(u8int fgcolor, u8int bgcolor = 0xFF) {}	//For a pipe/file VT, this will do nothing.
 	virtual bool isBoxed() = 0;
 	virtual u8int height() { return 0; }
 	virtual u8int width() { return 0; }
 
-	virtual void updateCursor() {}
-	virtual void moveCursor(u32int row, u32int col) {}	//These are not implemented for pipe/file VTs
-	virtual void setCursorLine(u32int line) {}
-	virtual void setCursorCol(u32int col) {}	//This one could be, and should be. It's used a lot for tabulating, etc.
+	virtual void handleEscape(mvt_esc_cmd_t cmd) = 0;
 
 	//Display functions
 	virtual void put(WChar c, bool updatecsr = true) = 0;
 	void write(const String& s, bool updatecsr = true);
+
+	//Display functions for kernel use
 	void writeDec(s64int num, bool updatecsr = true);
 	void writeHex(u32int i, bool updatecsr = true);
-
 	virtual void hexDump(u8int* ptr, u32int sz, bool addnl = true);	//Always ignore parameter addnl
-	
 	inline VirtualTerminal& operator<<(const String& s) { write(s); return *this; }
 	inline VirtualTerminal& operator<<(s32int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(s64int i) { writeDec(i); return *this; }
 	inline VirtualTerminal& operator<<(u32int i) { writeHex(i); return *this; }
+	inline VirtualTerminal& operator<<(mvt_esc_cmd_t cmd) { handleEscape(cmd); return *this; }
 
 	//Keyboard functions
 	virtual void keyPress(keypress_t kp);	//Called by Kbd:: when a key is pressed, overloaded by ScrollableVT

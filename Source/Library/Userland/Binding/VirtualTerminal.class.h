@@ -25,14 +25,12 @@ class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
 	}
 	VirtualTerminal(u32int id) : RessourceCaller(id, VTIF_OBJTYPE) { m_eof = false; }
 
-	/*void writeHex(u32int number) {
-		doCall(VTIF_WRITEHEX, number);
-	}
-	void writeDec(s64int number) {
-		doCall(VTIF_WRITEDEC, (number >> 32), number);
-	}*/
+	//******** SYSCALLS ********
 	void write(const String &s) {
 		doCall(VTIF_WRITE, (u32int)&s);
+	}
+	void put(WChar c) {
+		doCall(VTIF_PUT, c);
 	}
 	String read() {
 		if (m_eof) return "";
@@ -44,23 +42,15 @@ class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
 		}
 		return ret += "\n";
 	}
-	keypress_t getKeypress(bool show = true, bool block = true) {
-		keypress_t* ptr = (keypress_t*)doCall(VTIF_GETKEYPRESS, (show ? 1 : 0) | (block ? 2 : 0));
-		return *ptr;
-	}
 	String readLine(bool show = true) {
 		flush();
 		return String::unserialize(doCall(VTIF_READLINE, (show ? 1 : 0)));
 	}
-	void setColor(u8int fg, u8int bg = 0xFF) {
-		doCall(VTIF_SETCOLOR, (fg << 8) | bg);
+	keypress_t getKeypress(bool show = true, bool block = true) {
+		keypress_t* ptr = (keypress_t*)doCall(VTIF_GETKEYPRESS, (show ? 1 : 0) | (block ? 2 : 0));
+		return *ptr;
 	}
-	void setCsrLine(u32int line) {
-		doCall(VTIF_SETCSRLINE, line);
-	}
-	void setCsrCol(u32int col) {
-		doCall(VTIF_SETCSRCOL, col);
-	}
+	//********* GET VT INFO SYSCALLS ********
 	bool isBoxed() {
 		return doCall(VTIF_ISBOXED) != 0;
 	}
@@ -70,14 +60,20 @@ class VirtualTerminal : public RessourceCaller, public OStream, public IStream {
 	u8int width() {
 		return doCall(VTIF_GETWIDTH);
 	}
-	void put(WChar c) {
-		doCall(VTIF_PUT, c);
-	}
-	void moveCursor(u8int line, u8int col) {
-		doCall(VTIF_LOCATE, line, col);
-	}
-	void put(u8int line, u8int col, WChar c) {
-		moveCursor(line, col); put(c);
+	//********** HANDLE COMMAND *******
+	VirtualTerminal& operator << (const String& s) { OStream::operator<<(s); return *this; }
+	VirtualTerminal& operator << (s64int i) { OStream::operator<<(i); return *this; }
+	VirtualTerminal& operator << (s32int i) { OStream::operator<<(i); return *this; }
+	VirtualTerminal& operator << (u32int i) { OStream::operator<<(i); return *this; }
+	VirtualTerminal& operator << (ostream_modifiers_e m) { OStream::operator<<(m); return *this; }
+	VirtualTerminal& operator << (mvt_esc_cmd_t cmd) {
+		String s("    ");
+		s[0] = 0x1A;
+		s[1] = cmd.cmd;
+		s[2] = cmd.a;
+		s[3] = cmd.b;
+		OStream::put(s);
+		return *this;
 	}
 };
 
