@@ -8,7 +8,7 @@
 
 #include <App/ShellApp.proto.h>
 
-#define PROMPTS_COLOR 1
+#define PROMPTS_COLOR 5
 #define PROMPTV_COLOR 9
 #define ENTRY_COLOR 6
 #define NORMAL_COLOR 7

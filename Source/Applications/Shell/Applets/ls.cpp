@@ -1,7 +1,7 @@
 #include <App/ShellApp.proto.h>
 #include <Binding/FSNode.class.h>
 
-#define DIR_COLOR 1
+#define DIR_COLOR 3
 #define FILE_COLOR 2
 #define NORMAL_COLOR 7
 
