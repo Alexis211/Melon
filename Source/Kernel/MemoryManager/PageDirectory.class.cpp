@@ -69,6 +69,8 @@ void PageDirectory::unmap(Segment* seg) {
 		if (mappedSegs[i]->seg == seg) {
 			seg->unmap(mappedSegs[i]);
 			delete mappedSegs[i];
+			mappedSegs[i] = mappedSegs.back();
+			mappedSegs.pop();
 			return;
 		}
 	}
