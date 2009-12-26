@@ -31,10 +31,6 @@ class Shell : public ShellApp {
 	FSNode cwd;
 
 	bool appRun(const String& name, Vector<String>& args);
-
-	void rm(Vector<String>& args);
-	void mkdir(Vector<String>& args);
-	void wf(Vector<String>& args);
 };
 
 #endif

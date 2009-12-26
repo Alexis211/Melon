@@ -19,16 +19,6 @@ void Shell::setupVars() {
 }
 
 int Shell::run() {
-	struct {	//Command list
-		String name;
-		void (Shell::*cmd)(Vector<String>&);
-	} commands[] = {
-		{"rm",		&Shell::rm},
-		{"mkdir",	&Shell::mkdir},
-		{"wf",		&Shell::wf},
-		{"",		0}
-	};
-
 	String dn = FS::dirname(pr.argv(0));
 	FSNode shellDir = (dn.empty() ? FS::cwdNode() : FS::find(dn, FS::cwdNode()));
 	String appletsDir = FS::find("Applets", shellDir).path() + "/";
@@ -111,34 +101,16 @@ int Shell::run() {
 				}
 			}
 		} else {								// * * * CALL AN EXTERNAL COMMAND * * * //
-			u32int i = 0;
-			bool found = false;
-			while (!commands[i].name.empty()) {
-				if (commands[i].name == cmd[0]) {
-					found = true;
-					if (commands[i].cmd == 0) {
-						outvt << "Not implemented yet.\n";
-					} else {
-						(this->*(commands[i].cmd))(cmd);
-					}
-					break;
-				}
-				i++;
-			}
-			if (!found) {
-				if (FS::basename(cmd[0]) != cmd[0]) {
-					if (!appRun(cmd[0], cmd))
-						outvt << "No such file : " << cmd[0] << "\n";
-				} else {
-					if (!appRun(appletsDir + cmd[0], cmd))
-						outvt << "Unknown command : " << cmd[0] << "\n";
-				}
+			if (FS::basename(cmd[0]) != cmd[0]) {
+				if (!appRun(cmd[0], cmd))
+					outvt << "No such file : " << cmd[0] << "\n";
+			} else {
+				if (!appRun(appletsDir + cmd[0], cmd))
+					outvt << "Unknown command : " << cmd[0] << "\n";
 			}
 		}
 	}
 }
-
-
 
 bool Shell::appRun(const String& app, Vector<String>& args) {
 	Process p = Process::run(app);

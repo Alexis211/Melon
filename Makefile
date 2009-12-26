@@ -17,6 +17,8 @@ RamFSFiles = :/System :/System/Configuration :/System/Keymaps :/Applets \
 	Source/Applications/Shell/Applets/uptime:/Applets/uptime \
 	Source/Applications/Shell/Applets/free:/Applets/free \
 	Source/Applications/Shell/Applets/ls:/Applets/ls \
+	Source/Applications/Shell/Applets/rm:/Applets/rm \
+	Source/Applications/Shell/Applets/mkdir:/Applets/mkdir \
 	Source/Applications/Shell/Applets/pwd:/Applets/pwd \
 	Source/Applications/Demos/GOL:/GOL.app \
    	Source/Kernel/Ressources/Graphics/logo.text.cxd:/Melon-logo 

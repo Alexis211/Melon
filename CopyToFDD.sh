@@ -17,16 +17,16 @@ mkdir Mount/{System,Volumes,Sandbox}
 mkdir Mount/System/{Applications,Logs,Configuration}
 mkdir Mount/Volumes/{HDD,InitRFS}
 
-# Copy kernel and ramfs
-cp Source/Kernel/Melon.ke Mount/System
-cp Init.rfs Mount/System
-
 # Copy system files
 cp Source/Kernel/Ressources/Configuration/* Mount/System/Configuration
 cp Source/Applications/PaperWork/FloppyWelcome.txt Mount/System/Configuration/Welcome
 
 # Copy system apps
 cp Source/Applications/PaperWork/PaperWork Mount/System/Applications/PaperWork.app
+
+# Copy kernel and ramfs
+cp Source/Kernel/Melon.ke Mount/System
+cp Init.rfs Mount/System
 
 # Create mount configuration file
 echo "/Sandbox:ramfs:0" > Mount/System/Configuration/Mount
