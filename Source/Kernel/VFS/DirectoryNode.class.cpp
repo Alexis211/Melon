@@ -30,6 +30,11 @@ u32int DirectoryNode::getNameChildSC(u32int name) {
 	return (u32int) - 1;
 }
 
+const String& DirectoryNode::getName() {
+	if (m_name == "/" && m_parent != NULL) return m_parent->getName();
+	return m_name;
+}
+
 u64int DirectoryNode::getLength() {
 	if (m_mounts != 0) return m_mounts->getLength();
 	if (!m_contentLoaded)
@@ -39,7 +44,7 @@ u64int DirectoryNode::getLength() {
 }
 
 FSNode* DirectoryNode::getParent() {
-	//if (m_name == "/" and m_parent != 0) return m_parent->getParent();
+	if (m_name == "/" and m_parent != 0) return m_parent->getParent();
 	return m_parent;
 }
 

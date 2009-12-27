@@ -27,6 +27,7 @@ class DirectoryNode : public FSNode {
 	Vector<FSNode*> &getChildren() { return m_children; }	//MUST BE USED ONLY BY FILESYSTEMS
 
 	u8int type() { return NT_DIRECTORY; }
+	const String& getName();
 	u64int getLength();
 	FSNode* getParent();
 	bool removable();

@@ -15,9 +15,8 @@ mkdir Mount/Volumes/{Floppy,InitRFS}
 # Copy welcome text
 cp Source/Kernel/Ressources/Texts/Welcome.txt Mount
 
-# Copy kernel and initramfs
+# Copy kernel
 cp Source/Kernel/Melon.ke Mount/System
-cp Init.rfs Mount/System
 
 # Copy system ressources
 cp Source/Kernel/Ressources/Configuration/* Mount/System/Configuration

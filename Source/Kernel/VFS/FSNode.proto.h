@@ -43,7 +43,7 @@ class FSNode : public Ressource {
 	virtual bool removable() = 0;	//True for files, false for non-empty directories, true otherwise
 	virtual bool used() { return false; }	//True if file is read/written from/to
 	
-	const String& getName() { return m_name; }
+	virtual const String& getName() { return m_name; }
 	virtual u64int getLength() { return m_length; }
 	u32int getPermissions() { return m_permissions; }
 	u32int getUid() { return m_uid; }
