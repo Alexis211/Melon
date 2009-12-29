@@ -1,32 +1,44 @@
 Welcome ! It seems you are intrested in my Melon OS...
 
-** HOW TO BUILD MELON : **
-This is supposed to work in a Linux environment. Maybee it could work on *BSD, or Cygwin, but that wasn't tested.
+ DISCLAIMER :
+============
+
+This software is HIGHLY UNTESTED, and will probably have UNEXPECTED EFFECTS on any hardware you run it on.
+I will not be held responsible for any damage caused by this software.
+
+
+ HOW TO BUILD MELON :
+====================
+
+This is supposed to work in a Linux environment. Maybee it could work on *BSD, or Cygwin, but that hasn't been tested.
 
 You need :
+- Git for cloning the repository
 - GCC
 - Nasm
 - Qemu or Bochs for testing (Qemu works better, debugging is planned for bochs)
 
-If you haven't yet downloaded the source code, then commit the GIT repository :
+If you haven't yet downloaded the source code, then clone the GIT repository :
 $ git clone git://github.com/Alexis211/Melon.git
 
 Then, rebuild everything :
 $ make mrproper
 $ make
 
-Create the floppy image :
-$ make floppy
-You will probably be prompted for your password. We need it to mount the floppy image as a loopback device.
-
 And run it with Qemu :
 $ make qemu
 	OR
 $ make qemu-hdd
-The second option boots from the HDD instead of the floppy
+You will probably be prompted for your password. We need it to mount the floppy/HDD image as a loopback
+device to update its contents.
+The second option boots from the HDD instead of the floppy.
 
-** HOW TO CONFIGURE THE GRUB ENTRIES : **
-If you want to change the entries that appear when you `make qemu`, then edit the Grub-menu.cfg and `make floppy` again.
+
+ HOW TO CONFIGURE THE GRUB ENTRIES : 
+===================================
+
+If you want to change the entries that appear when you `make qemu`, then edit the Grub-menu-fdd.cfg or
+Grub-menu-hdd.cfg, then re-run `make qemu` or `make qemu-hdd`.
 
 The options for the kernel command line are the following :
 - vesa:[disabled|enabled]	enables or disables the VESA driver (hangs on Bochs when enabled)
@@ -35,8 +47,4 @@ The options for the kernel command line are the following :
 - init:<init_app>			select the init application to run. empty string = go to kernel shell.
 							default is /System/Applications/PaperWork.app
 
-** About HDD.img **
-This file is not used yet, although it is attached to the qemu and bochs VMs.
-Its content can be updated with `make hdd`, the file copying happens in CopyToHDD.sh.
-For the moment, we use a boot floppy for loading the kernel as the floppy is the only thing the kernel can read for now,
-but we could as well use the GRUB that is installed on HDD.img.
+You also can edit those entries when booting by pressing 'e'. That will launch GRUB's editor.

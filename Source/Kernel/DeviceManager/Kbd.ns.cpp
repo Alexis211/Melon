@@ -7,7 +7,7 @@
 #include <VFS/File.class.h>
 #include <Core/Log.ns.h>
 
-//Whatever built-in keymap we want to use should go here. notice  without this line, melon dies.
+//Whatever built-in keymap we want to use should go here. notice that without this line, melon dies.
 #include <Ressources/Keymaps/fr.cxd>
 
 #define SETKM(a, b)  memcpy((u8int*)a, (u8int*)b, 128 * sizeof(WChar));;
