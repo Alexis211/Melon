@@ -14,16 +14,3 @@ void threadFinishedSyscall(u32int v) {
 void breakPoint() {
 	asm volatile("int $3");
 }
-
-void putch(char c) {
-	u32int x = c;
-	syscall(0xFFFFFF01, x);
-}
-
-void sleep(u32int t) {
-	syscall(0xFFFFFF02, t);
-}
-
-void write_hex(u32int n) {
-	syscall(0XFFFFFF03, n);
-}

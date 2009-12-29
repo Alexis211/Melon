@@ -1,10 +1,8 @@
 #include "Binary.proto.h"
 
-#include <Linker/MelonBinary.class.h>
 #include <Linker/ElfBinary.class.h>
 
 Binary* (*loaders[])(File& file) = {
-	&MelonBinary::load,
 	&ElfBinary::load,
 0 };
 

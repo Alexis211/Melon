@@ -13,9 +13,10 @@ class CPPDemo : public ShellApp {
 APP(CPPDemo);
 
 int CPPDemo::run() {
-	outvt << "Enter some text plz : ";
+	outvt << "Enter some text plz : " << FLUSH;
 	String s = invt.readLine();
 	outvt << s;
+	breakPoint();
 	Thread t = Thread::get();
 	for (char c = ' '; c <= 'z'; c++) {
 		t.sleep((u32int)c / 4);

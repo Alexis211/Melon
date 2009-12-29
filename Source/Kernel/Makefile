@@ -59,7 +59,6 @@ Objects = Core/loader.wtf.o \
 		../Library/Common/Mutex.class.o \
 		../Library/Common/TextFile.class.o \
 		Linker/Binary.proto.o \
-		Linker/MelonBinary.class.o \
 		Linker/ElfBinary.class.o \
 		VFS/Partition.class.o \
 		VFS/Part.ns.o \

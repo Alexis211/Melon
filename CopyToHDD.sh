@@ -32,7 +32,6 @@ echo "/Volumes/Floppy:block.floppy:0:0" >> Mount/System/Configuration/Mount
 
 # Copy demo apps
 cp Source/Applications/Demos/GOL Mount/Applications/Demos/GOL.app
-cp Source/Applications/Demos/asmdemo Mount/Applications/Demos/ASMDemo.app
 cp Source/Applications/Demos/cxxdemo Mount/Applications/Demos/CPPDemo.app
 
 echo "*** Launching a BASH shell, if you want to do any maintenance ***"

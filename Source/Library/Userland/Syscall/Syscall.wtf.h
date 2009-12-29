@@ -3,11 +3,6 @@
 
 #include <types.h>
 
-//Three basic syscalls, just for testing
-void putch(char);
-void sleep(u32int);
-void write_hex(u32int);
-
 void threadFinishedSyscall(u32int);
 void breakPoint();
 

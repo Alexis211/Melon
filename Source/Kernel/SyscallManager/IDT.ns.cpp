@@ -81,13 +81,7 @@ extern "C" void interrupt_handler(registers_t regs) {
 		u32int res = (regs.eax >> 8);
 		u8int wat = (regs.eax & 0xFF);
 		if (res == 0xFFFFFF) {
-			if (regs.eax == 0xFFFFFF01) {
-				Task::currProcess()->getOutVT()->put(WChar(regs.ebx));
-			} else if (regs.eax == 0xFFFFFF02) {
-				Task::currThread()->sleep(regs.ebx);
-			} else if (regs.eax == 0xFFFFFF03) {
-				Task::currProcess()->getOutVT()->writeHex(regs.ebx);
-			}
+			regs.eax = 0x01234567;		//RESERVED SYSCALL
 		} else {
 			regs.eax = Res::call(res, wat, regs.ebx, regs.ecx, regs.edx, regs.edi, regs.esi);
 		}

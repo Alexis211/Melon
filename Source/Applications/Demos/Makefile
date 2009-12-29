@@ -1,15 +1,12 @@
 .PHONY: clean, mrproper
 
-ASM = nasm
-ASMFLAGS = -f bin
-
 CXX = g++
 CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
 
 LD = ld
 LDFLAGS = -T ../../Library/App.ld -L ../../Library
 
-Applications = asmdemo cxxdemo GOL
+Applications = cxxdemo GOL
 
 all: $(Applications)
 	echo "* Done with applications : $(Applications)"
@@ -21,10 +18,6 @@ rebuild: mrproper all
 	$(CXX) $(CXXFLAGS) -c $< -o $@.o
 	echo "* Linking $@.o..."
 	$(LD) $(LDFLAGS) $@.o -o $@
-
-%: %.asm
-	echo "* Compiling $<..."
-	$(ASM) $(ASMFLAGS) -o $@ $<
 
 clean:
 	echo "* Removing object files..."
