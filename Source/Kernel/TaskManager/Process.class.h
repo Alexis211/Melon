@@ -31,6 +31,11 @@ class DirectoryNode;
 class Thread;
 class File;
 
+struct pr_seg_own_t {
+	Segment* seg;
+	bool owned;		//True == this segment is to be deleted when process exits
+};
+
 class Process : public Ressource {
 	friend class Thread;
 
@@ -47,7 +52,8 @@ class Process : public Ressource {
 	VirtualTerminal *m_inVT, *m_outVT;
 	DirectoryNode *m_cwd;
 
-	SimpleSegment *m_heapSeg, *m_dataSeg;
+	SimpleSegment *m_dataSeg;
+	SimpleList<pr_seg_own_t> *m_segments;
 
 	bool m_autodelete;
 
@@ -81,7 +87,7 @@ class Process : public Ressource {
 	~Process();
 
 	Heap& heap() { return *m_userHeap; }
-	SimpleSegment *dataSeg() { return m_dataSeg; }
+	Segment* addSeg(Segment* seg, bool owned = true);		//Returns seg
 	const Vector<String> &args() { return m_arguments; }
 
 	void start();	//Starts thread execution - sets m_state to P_RUNNING if == P_STARTING

@@ -17,6 +17,7 @@ class SimpleSegment : public AllocaterSegment {
 	public:
 	SimpleSegment(bool user, bool rw, u32int start, u32int len) : 
 		m_user(user), m_rw(rw), m_mapping(0), m_start(start), m_len(len) {}
+	~SimpleSegment() {}
 
 	seg_map_t *map(PageDirectory* pd);
 	void unmap(seg_map_t *mapping);

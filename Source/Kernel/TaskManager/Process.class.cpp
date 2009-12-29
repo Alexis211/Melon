@@ -70,6 +70,7 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 	m_inVT = Task::currProcess()->getInVT();
 	m_outVT = Task::currProcess()->getOutVT();
 	m_fileDescriptors = 0;
+	m_segments = 0;
 
 	//Create page directory
 	m_pagedir = new PageDirectory();
@@ -78,12 +79,12 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 
 	//Create a user heap
 	m_userHeap = new Heap();
-	m_heapSeg = new SimpleSegment(true, true, USERHEAPSTART, USERHEAPINITSIZE + USERHEAPIDXSIZE);
-	m_pagedir->map(m_heapSeg);
-	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + USERHEAPIDXSIZE, USERHEAPIDXSIZE, m_heapSeg);
+	SimpleSegment *hSeg = new SimpleSegment(true, true, USERHEAPSTART, USERHEAPINITSIZE + USERHEAPIDXSIZE);
+	addSeg(hSeg, true);
+	m_userHeap->create(USERHEAPSTART, USERHEAPINITSIZE + USERHEAPIDXSIZE, USERHEAPIDXSIZE, hSeg);
 
-	//Create a user data segment
-	m_dataSeg = new SimpleSegment(true, true, 0x10000000, 0x10000);
+	//Create a user data segment, for handling memory requests
+	m_dataSeg = new SimpleSegment(true, true, 0x40000000, 0x1000);	//no need to specify exact boundaries
 	m_pagedir->map(m_dataSeg);
 
 	Task::registerProcess(this);
@@ -91,9 +92,14 @@ Process::Process(String binfile, u32int uid) : Ressource(PRIF_OBJTYPE, m_callTab
 
 Process::~Process() {
 	exit();	//Kill all threads
-	delete m_pagedir;
-	delete m_userHeap;
 	Task::unregisterProcess(this);
+	delete m_userHeap;
+	delete m_pagedir;
+	delete m_dataSeg;
+	for (SimpleList<pr_seg_own_t> *iter = m_segments; iter != 0; iter = iter->next()) {
+		if (iter->v().owned) delete iter->v().seg;
+	}
+	delete m_segments;
 }
 
 void Process::start() {
@@ -102,6 +108,14 @@ void Process::start() {
 
 void Process::pushArg(const String& arg) {
 	m_arguments.push(arg);
+}
+
+Segment* Process::addSeg(Segment* seg, bool owned) {
+	pr_seg_own_t own;
+	own.seg = seg; own.owned = owned;
+	m_pagedir->map(seg);
+	m_segments = m_segments->cons(own);
+	return seg;
 }
 
 void Process::exit() {

@@ -35,6 +35,7 @@ u32int Process::scall(u8int wat, u32int a, u32int b, u32int c, u32int d) {
 	}
 	if (wat == PRIF_SWAIT) {
 		Process* p = Res::get<Process>(a, PRIF_OBJTYPE);
+		if (p == 0) return 0;
 		if (Task::currProcess()->getPid() != p->m_ppid) return 0;
 		while (p->m_state != P_FINISHED and !p->m_autodelete) Task::currThread()->sleep(20);
 		if (p->m_autodelete) return E_AUTODELETE;

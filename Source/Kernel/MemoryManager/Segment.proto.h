@@ -19,6 +19,8 @@ class Segment {
 	virtual void unmap(seg_map_t *mapping) = 0;
 	virtual bool handleFault(u32int addr, bool write, seg_map_t *mapping) = 0;	//true = ok, false = app segfaulted
 
+	virtual ~Segment() {}
+
 	virtual Segment* clone() { return this; }
 };
 
@@ -27,6 +29,8 @@ class AllocaterSegment : public Segment {
 	virtual bool allocFrame(u32int addr) = 0;	//false when page already was mapped to a frame
 	virtual void freeFrame(u32int addr) = 0;
 	virtual void switchToPd() {}
+
+	virtual ~AllocaterSegment() {}
 };
 
 #endif
