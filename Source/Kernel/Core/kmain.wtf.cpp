@@ -112,10 +112,10 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	
 	SB::progress("Parse command line");
 	Vector<String> opts = kcmdline.split(" ");
-	String keymap = "builtin", init = "/System/Applications/PaperWork.app";
-	String root = "ramfs:0";
+	String keymap = "builtin", init = DEFAULT_INIT;
+	String root = DEFAULT_ROOT;
 	Vector<String> mount;
-	bool enableVESA = true;
+	bool enableVESA = DEFAULT_ENABLEVESA;
 	for (u32int i = 0; i < opts.size(); i++) {
 		Vector<String> opt = opts[i].split(":");
 		if (opt[0] == "vesa" && opt[1] != "enabled") enableVESA = false;

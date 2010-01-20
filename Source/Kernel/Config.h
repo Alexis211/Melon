@@ -1,9 +1,19 @@
 #ifndef DEF_MELON_KERNEL_CONFIG
 #define DEF_MELON_KERNEL_CONFIG
 
+//Undefine if you don't want debugging. This doesn't really do anything
 #define OPT_DEBUG
 
-//Color scheme
+//******************************
+//								General options
+//													*********************************
+#define DEFAULT_INIT "/System/Applications/PaperWork.app"
+#define DEFAULT_ROOT "ramfs:0"
+#define DEFAULT_ENABLEVESA true			//enable VESA by default ?
+
+//******************************  
+//								Color scheme
+//								 					*********************************
 #define TXTLOGO_FGCOLOR 9	//Colors for the melon logo
 #define TXTLOGO_BGCOLOR 0
 
