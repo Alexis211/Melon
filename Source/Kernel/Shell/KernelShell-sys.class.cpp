@@ -83,9 +83,7 @@ void KernelShell::unmount(Vector<String>& args) {
 	if (args.size() == 2) {
 		FSNode* n = VFS::find(args[1], m_cwd);
 		bool ok = false;
-		if (n == 0) {
-			ok = false;
-		} else {
+		if (n != 0) {
 			String p = VFS::path(n);
 			for (u32int i = 0; i < VFS::filesystems.size(); i++) {
 				if (VFS::path(VFS::filesystems[i]->getRootNode()) == p) {

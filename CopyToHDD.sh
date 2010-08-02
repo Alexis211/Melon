@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # We assume Mount/ is the directory where the image is mounted, and Source/ is the directory with all the compiled files
 
@@ -6,11 +6,11 @@
 cp Grub-menu-hdd.cfg Mount/grub/menu.lst
 
 # Create directories
-mkdir Mount/{System,Applications,Volumes}
-mkdir Mount/System/{Applications,Configuration,Logs,Keymaps}
-mkdir Mount/Applications/{Demos,Shell}
+mkdir Mount/System Mount/Applications Mount/Volumes
+mkdir Mount/System/Applications Mount/System/Configuration Mount/System/Logs Mount/System/Keymaps
+mkdir Mount/Applications/Demos Mount/Applications/Shell
 mkdir Mount/Applications/Shell/Applets
-mkdir Mount/Volumes/{Floppy,InitRFS}
+mkdir Mount/Volumes/Floppy Mount/Volumes/InitRFS
 
 # Copy welcome text
 cp Source/Kernel/Ressources/Texts/Welcome.txt Mount
