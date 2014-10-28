@@ -229,7 +229,7 @@ bool FloppyDrive::doTrack(u32int cyl, u8int dir) {
 		int error = 0;
 	
 		if (st0 & 0xC0) error = 1;
-		if (st1 & 0x80) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : end of cyilnder."); error = 1; }
+		if (st1 & 0x80) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : end of cylinder."); error = 1; }
 		if (st0 & 0x08) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : drive not ready."); error = 1; }
 		if (st1 & 0x20)	{ Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : CRC error."); error = 1; }
 		if (st1 & 0x10) { Log::log(KL_ERROR, "FloppyDrive.class : error while I/O : controller timeout."); error = 1; }

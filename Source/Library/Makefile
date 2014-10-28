@@ -1,12 +1,12 @@
 .PHONY: clean, mrproper
 
-CXX = g++
+CXX = i586-elf-g++
 CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I Common -I Userland -I Interface -D THIS_IS_MELON_USERLAND -D RANDOM_SEED=1`date +%N`LL
 
 ASM = nasm
 ASMFLAGS = -f elf
 
-LD = ld
+LD = i586-elf-ld
 
 Objects = Common/WChar.class.uo \
 		  Common/CMem.ns.uo \

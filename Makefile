@@ -27,6 +27,8 @@ Files = $(Kernel) $(RamFS)
 Floppy = Melon.img
 HDD = HDD.img
 
+QemuCmd = qemu-system-i386
+
 all:
 	for p in $(Projects); do \
 		echo "=> Building $$p"; \
@@ -81,13 +83,13 @@ bochs: $(Floppy)
 	bochs -f Bochs.cfg
 
 qemu: $(Floppy)
-	qemu -fda $(Floppy) -hda $(HDD) -boot a -m 16
+	$(QemuCmd) -fda $(Floppy) -hda $(HDD) -boot a -m 16
 
 qemu-hdd: $(HDD)
-	qemu -fda $(Floppy) -hda $(HDD) -boot c -m 16
+	$(QemuCmd) -fda $(Floppy) -hda $(HDD) -boot c -m 16
 
 qemu_debug:
-	qemu -fda $(Floppy) -hda $(HDD) -boot a -m 16 -s -S & gdb Source/Kernel/Melon.ke -x Qemu-GDB-Debug-CMD 
+	$(QemuCmd) -fda $(Floppy) -hda $(HDD) -boot a -m 16 -s -S & gdb Source/Kernel/Melon.ke -x Qemu-GDB-Debug-CMD 
 
 stats:
 	echo; echo " ** Statistics for project O3S ** "; \

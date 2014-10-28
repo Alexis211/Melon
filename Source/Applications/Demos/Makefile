@@ -3,10 +3,10 @@
 ASM = nasm
 ASMFLAGS = -f bin
 
-CXX = g++
+CXX = i586-elf-g++
 CXXFLAGS = -nostartfiles -nostdlib -ffreestanding -fno-exceptions -fno-rtti -I ../../Library/Common -I ../../Library/Interface -I ../../Library/Userland -D THIS_IS_MELON_USERLAND
 
-LD = ld
+LD = i586-elf-ld
 LDFLAGS = -T ../../Library/App.ld -L ../../Library
 
 Applications = asmdemo cxxdemo GOL

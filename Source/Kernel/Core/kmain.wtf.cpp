@@ -73,6 +73,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 
 	SB::init();
 
+
 	//Create a VT for logging what kernel does
 	SB::progress("Create kernel VT");
 	kvt = new ScrollableVT(24, 80, 20, KVT_FGCOLOR, KVT_BGCOLOR);
@@ -102,6 +103,7 @@ void kmain(multiboot_info_t* mbd, u32int magic) {
 	SB::progress("Timer");
 	Dev::registerDevice(new Timer()); 	//Initialize timer
 	String kcmdline((char*)mbd->cmdline);
+
 	SB::progress("Multitasking");
 	Task::initialize(kcmdline, kvt);	//Initialize multitasking 
 	SB::gomulti();

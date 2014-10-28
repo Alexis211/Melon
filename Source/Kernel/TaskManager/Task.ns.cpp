@@ -97,12 +97,11 @@ void doSwitch() {
 	t->setKernelStack();
 
 	asm volatile("			\
-			mov %0, %%ebp;	\
-			mov %1, %%esp;	\
-			mov %2, %%ecx;	\
+			mov %%eax, %%ebp;	\
+			mov %%ebx, %%esp;	\
 			mov $0x12345, %%eax;	\
 			jmp *%%ecx;"
-		: : "r"(ebp), "r"(esp), "r"(eip));
+		: : "a"(ebp), "b"(esp), "c"(eip));
 }
 
 void triggerSwitch() {

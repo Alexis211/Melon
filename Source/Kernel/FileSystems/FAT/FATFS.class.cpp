@@ -57,7 +57,7 @@ FileSystem* FATFS::mount(Partition* p, DirectoryNode* mountpoint, bool readwrite
 	*kvt << "Detected a FAT" << (s64int)fs->m_fatType << " filesystem.\n" <<
 		"root_dir_sectors:" << fs->m_rootDirSectors << " fat_size:" << fs->m_fatSize << " total_sectors:" <<
 		fs->m_totalSectors << " data_sectors:" << dataSectors << " count_of_clusters:" << fs->m_countOfClusters <<
-		" sizeof(fat_dir_entry_t):" << sizeof(fat_dir_entry_t) << " first_data_sector:" << fs->m_firstDataSector <<
+		" sizeof(fat_dir_entry_t):" << (s64int)sizeof(fat_dir_entry_t) << (const String&)" first_data_sector:" << fs->m_firstDataSector <<
 		" cluster_size:" << fs->m_clusterSize << "\n";
 	return fs;
 }
@@ -234,12 +234,12 @@ bool FATFS::loadContents(DirectoryNode* dir) {
 }
 
 FileNode* FATFS::createFile(DirectoryNode* parent, String name) {
-	if (m_readOnly) return false;
+	if (m_readOnly) return 0;
 	return 0;
 }
 
 DirectoryNode* FATFS::createDirectory(DirectoryNode* parent, String name) {
-	if (m_readOnly) return false;
+	if (m_readOnly) return 0;
 	return 0;
 }
 

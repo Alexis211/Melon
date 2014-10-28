@@ -1,11 +1,11 @@
 .PHONY: clean, mrproper
  
-CC = gcc
-CXX = g++
-LD = ld
-LDFLAGS = -T Kernel.ld -Map Kernel.map --oformat=elf32-i386
-CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I .
-CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -I ../Library/Interface -Wall -Werror -Wno-write-strings -funsigned-char -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL -O2
+CC = i586-elf-gcc
+CXX = i586-elf-g++
+LD = i586-elf-ld
+LDFLAGS = -T Kernel.ld -Map Kernel.map --oformat=elf32-i386 -m elf_i386
+CFLAGS = -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -Wall -Wextra -Werror -I . -m32
+CXXFLAGS = -nostartfiles -nostdlib -fno-exceptions -fno-rtti -I . -I ../Library/Common -I ../Library/Interface -Wall -Werror -Wno-write-strings -funsigned-char -Wno-error=unused-but-set-variable -D THIS_IS_MELON_KERNEL -D RANDOM_SEED=1`date +%N`LL -O2 -m32
 ASM = nasm
 ASMFLAGS = -f elf
  
