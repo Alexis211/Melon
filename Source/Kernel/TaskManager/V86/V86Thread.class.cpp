@@ -79,7 +79,7 @@ bool V86Thread::handleV86GPF(registers_t *regs) {
 	u16int *ivt = 0;
 	u16int *stack = (u16int*)FP_TO_LINEAR(regs->ss, (regs->useresp & 0xFFFF));
 	u32int *stack32 = (u32int*)stack;
-	bool is_operand32 = false;
+	bool is_operand32 = false, is_address32 = false;
 
 	while (true) {
 		switch (ip[0]) {
